@@ -44,7 +44,17 @@ st.markdown(
         max-width: 1200px !important;
     }
     
-    /* Top Header Navbar */
+    /* Top Header Navbar Card Box */
+    .header-bar-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        background: rgba(17, 9, 32, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        margin-bottom: 2.5rem;
+    }
     .logo-container {
         display: flex;
         align-items: center;
@@ -54,9 +64,9 @@ st.markdown(
         background: linear-gradient(135deg, #a855f7, #7c3aed);
         color: #ffffff;
         font-weight: 800;
-        font-size: 1.2rem;
-        width: 38px;
-        height: 38px;
+        font-size: 1.1rem;
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -65,13 +75,13 @@ st.markdown(
     }
     .logo-title {
         font-weight: 800;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         color: #ffffff;
     }
     .logo-subtitle {
         color: #a78bfa;
         font-weight: 400;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
     .header-right-actions {
         display: flex;
@@ -166,7 +176,7 @@ st.markdown(
         margin-top: 0px !important;
     }
     
-    /* Header Top Download Button Fix */
+    /* Header Top Download Button Styling */
     .header-right-actions .stDownloadButton > button {
         background: transparent !important;
         border: 1px solid rgba(168, 85, 247, 0.5) !important;
@@ -299,44 +309,26 @@ Live audit generated for **{target_url}**. Server responded with **{status_code}
 """
 
 
-# --- NAVBAR HEADER WITH DOWNLOAD & OPERATIONAL BADGE ---
-nav_col1, nav_col2 = st.columns([2, 1])
+# --- EXACT NAVBAR CONTAINER FROM IMAGE ---
+dl_button_html = ""
+if st.session_state.scanned and "report" in st.session_state.audit_data:
+    dl_button_html = '<div class="header-right-actions">'
 
-with nav_col1:
-    st.markdown(
-        """
+st.markdown(
+    f"""
+    <div class="header-bar-card">
         <div class="logo-container">
             <div class="logo-badge">S</div>
             <span class="logo-title">SitePulse Enterprise</span>
             <span class="logo-subtitle">| Website Auditor</span>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with nav_col2:
-    if st.session_state.scanned and "report" in st.session_state.audit_data:
-        dl_col, stat_col = st.columns([1.2, 1])
-        with dl_col:
-            st.markdown('<div class="header-right-actions">', unsafe_allow_html=True)
-            st.download_button(
-                label="Download Report",
-                data=st.session_state.audit_data["report"],
-                file_name="website_audit_report.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
-        with stat_col:
-            st.markdown('<div class="status-badge" style="text-align: center;">System Operational</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(
-            '<div style="display: flex; justify-content: flex-end;"><div class="status-badge">System Operational</div></div>',
-            unsafe_allow_html=True
-        )
-
-st.markdown('<div style="margin-bottom: 2.5rem;"></div>', unsafe_allow_html=True)
-
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="status-badge">System Operational</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # --- AUDIT FORM SCREEN ---
 if not st.session_state.scanned:
@@ -416,7 +408,14 @@ else:
             st.session_state.scanned = False
             st.rerun()
 
-    # Metrics Row
+    # Download Button & Metrics Row
+    st.download_button(
+        label="Download Report",
+        data=d["report"],
+        file_name="website_audit_report.txt",
+        mime="text/plain",
+    )
+
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown(f'<div class="metric-box"><div class="metric-title">HTTP Status</div><div class="metric-val">{d["status"]}</div></div>', unsafe_allow_html=True)
