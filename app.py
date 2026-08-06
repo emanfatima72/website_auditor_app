@@ -26,6 +26,12 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* HIDE STREAMLIT DEFAULT HEADER BAR & 3-DOT MENU */
+    header[data-testid="stHeader"], .stAppHeader, #MainMenu, footer {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
     /* Global Page Background */
     .stApp {
         background-color: #0b0514 !important;
@@ -33,22 +39,12 @@ st.markdown(
     }
     
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
         max-width: 1200px !important;
     }
     
     /* Top Header Navbar */
-    .header-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 1.5rem;
-        background: rgba(17, 9, 32, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        margin-bottom: 2.5rem;
-    }
     .logo-container {
         display: flex;
         align-items: center;
