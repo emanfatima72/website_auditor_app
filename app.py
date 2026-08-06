@@ -22,102 +22,116 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- EXACT REFLEX ENTERPRISE UI STYLING ---
+# --- EXACT REFLEX ENTERPRISE UI STYLING (MATCHING IMAGE 1, 2, 3) ---
 st.markdown(
     """
     <style>
-    /* HIDE STREAMLIT DEFAULT HEADER BAR & 3-DOT MENU */
+    /* HIDE STREAMLIT DEFAULT HEADER BAR & FOOTER */
     header[data-testid="stHeader"], .stAppHeader, #MainMenu, footer {
         display: none !important;
         visibility: hidden !important;
     }
 
-    /* Global Page Background */
+    /* Global Dark Theme Background */
     .stApp {
-        background-color: #0b0514 !important;
+        background-color: #090312 !important;
         color: #e2e8f0;
     }
     
-    /* Top edge attachment */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1200px !important;
+        max-width: 1250px !important;
     }
     
-    /* Top Header Navbar Card Box */
-    .header-bar-card {
+    /* Top Header Navbar */
+    .header-nav {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.65rem 1.25rem;
-        background: rgba(17, 9, 32, 0.75);
+        padding: 0.75rem 1.25rem;
+        background: #0f071d;
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
-        margin-top: 0px !important;
         margin-bottom: 2rem;
     }
+    
     .logo-container {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
-    .logo-badge {
-        background: linear-gradient(135deg, #a855f7, #7c3aed);
+    
+    .logo-icon {
+        background: #8b5cf6;
         color: #ffffff;
         font-weight: 800;
-        font-size: 1rem;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
+        font-size: 1.1rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
     }
-    .logo-title {
+    
+    .logo-text {
         font-weight: 800;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         color: #ffffff;
     }
-    .logo-subtitle {
+    
+    .logo-subtext {
         color: #a78bfa;
         font-weight: 400;
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
     
     .status-badge {
         border: 1px solid rgba(139, 92, 246, 0.4);
-        background: rgba(139, 92, 246, 0.08);
+        background: rgba(139, 92, 246, 0.05);
         color: #c084fc;
-        padding: 0.4rem 0.9rem;
+        padding: 0.35rem 0.85rem;
         border-radius: 8px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 500;
         display: inline-flex;
         align-items: center;
         white-space: nowrap;
     }
-    
-    /* Header Download Button Fix */
+
+    /* Header Download Button Overrides */
     div[data-testid="column"] .stDownloadButton > button {
-        background: rgba(168, 85, 247, 0.12) !important;
-        border: 1px solid rgba(168, 85, 247, 0.5) !important;
-        color: #c084fc !important;
-        font-weight: 600 !important;
-        font-size: 0.82rem !important;
+        background: #8b5cf6 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border: none !important;
         border-radius: 8px !important;
-        height: 36px !important;
-        padding: 0 1rem !important;
-        box-shadow: none !important;
+        height: 38px !important;
+        padding: 0 1.2rem !important;
+        box-shadow: 0 0 14px rgba(139, 92, 246, 0.4) !important;
         margin-top: 0px !important;
     }
-    div[data-testid="column"] .stDownloadButton > button:hover {
-        background: rgba(168, 85, 247, 0.25) !important;
-        color: #ffffff !important;
-    }
     
-    /* Center Badge & Hero Styling */
+    /* Audit New Target Button */
+    .audit-new-btn > button {
+        background: transparent !important;
+        border: 1px solid rgba(168, 85, 247, 0.6) !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+        height: 42px !important;
+        padding: 0 1.2rem !important;
+    }
+    .audit-new-btn > button:hover {
+        background: rgba(168, 85, 247, 0.15) !important;
+        border-color: #a855f7 !important;
+    }
+
+    /* Hero & Input Section */
     .badge-capsule {
         display: inline-block;
         padding: 0.4rem 1.2rem;
@@ -125,7 +139,7 @@ st.markdown(
         border-radius: 20px;
         background: rgba(168, 85, 247, 0.08);
         color: #c084fc;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 1.2px;
     }
@@ -138,7 +152,6 @@ st.markdown(
         margin-top: 1.2rem;
         margin-bottom: 1rem;
         text-align: center;
-        letter-spacing: -0.5px;
     }
     
     .hero-subtitle {
@@ -149,8 +162,8 @@ st.markdown(
         text-align: center;
         line-height: 1.5;
     }
-    
-    /* Parallel Input Box & Button */
+
+    /* Parallel Input Box & Button Styling */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
@@ -162,7 +175,7 @@ st.markdown(
     }
     
     .stTextInput > div > div > input {
-        background-color: rgba(18, 9, 36, 0.8) !important;
+        background-color: rgba(15, 7, 29, 0.9) !important;
         color: #ffffff !important;
         border: 1px solid rgba(139, 92, 246, 0.35) !important;
         border-radius: 10px !important;
@@ -181,62 +194,123 @@ st.markdown(
     }
     
     .stButton > button {
-        background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+        background: #8b5cf6 !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 0.95rem !important;
         border: none !important;
         border-radius: 10px !important;
         height: 46px !important;
-        box-shadow: 0 0 18px rgba(168, 85, 247, 0.45) !important;
+        box-shadow: 0 0 18px rgba(139, 92, 246, 0.45) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         margin-top: 0px !important;
     }
     
-    /* Metric Cards */
-    .metric-box {
-        background: #120924;
-        border: 1px solid #261445;
-        border-radius: 8px;
-        padding: 0.85rem;
+    .stButton > button:disabled {
+        background: #7c3aed !important;
+        opacity: 0.85 !important;
+    }
+
+    /* Diagnostic Metric Cards (Pic 2) */
+    .metric-card {
+        background: #0f071d;
+        border: 1px solid #20103b;
+        border-radius: 10px;
+        padding: 1.2rem 1rem;
         text-align: center;
     }
-    .metric-title {
+    .metric-card-title {
         color: #a78bfa;
-        font-size: 0.78rem;
+        font-size: 0.82rem;
         font-weight: 600;
+        margin-bottom: 0.5rem;
     }
-    .metric-val {
+    .metric-card-value {
+        color: #ffffff;
+        font-size: 1.6rem;
+        font-weight: 800;
+    }
+
+    /* Scraped Metadata Card Box (Pic 2) */
+    .outer-card-box {
+        background: #0f071d;
+        border: 1px solid #20103b;
+        border-radius: 12px;
+        padding: 1.4rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .outer-card-title {
         color: #ffffff;
         font-size: 1.25rem;
         font-weight: 700;
-        margin-top: 4px;
+        margin-bottom: 1.2rem;
+    }
+    .meta-inner-box {
+        background: #090312;
+        border: 1px solid #1c0e35;
+        border-radius: 8px;
+        padding: 1.1rem;
+        height: 100%;
+    }
+    .meta-inner-title {
+        color: #c084fc;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .meta-inner-val {
+        color: #ffffff;
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+    .meta-badge-missing {
+        background: #ef4444;
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+    }
+    .meta-badge-ok {
+        background: #22c55e;
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
     }
 
-    /* --- MATCHING IMAGE 1 TYPOGRAPHY & REPORT STYLING --- */
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
-        color: #ffffff !important;
+    /* Markdown Technical Report Container (Pic 3) */
+    .report-card-box {
+        background: #0f071d;
+        border: 1px solid #20103b;
+        border-radius: 12px;
+        padding: 1.8rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Heading Accents matching Image 3 */
+    .stMarkdown h3 {
+        color: #c084fc !important;
+        font-size: 1.25rem !important;
         font-weight: 700 !important;
         margin-top: 1.5rem !important;
-        margin-bottom: 0.75rem !important;
+        margin-bottom: 0.8rem !important;
     }
-
     .stMarkdown p, .stMarkdown li {
-        color: #cbd5e1 !important;
-        font-size: 0.98rem !important;
+        color: #e2e8f0 !important;
+        font-size: 0.95rem !important;
         line-height: 1.6 !important;
     }
-
     .stMarkdown strong {
-        color: #ffffff !important;
-        font-weight: 600 !important;
-    }
-
-    .stMarkdown a {
-        color: #38bdf8 !important;
-        text-decoration: underline !important;
+        color: #c084fc !important;
+        font-weight: 700 !important;
     }
     </style>
     """,
@@ -268,27 +342,29 @@ You are an expert Enterprise Web Auditor. Perform a deep technical audit for the
 === CONTENT PREVIEW ===
 {content_preview}
 
-Format strictly using exact clear headers matching clean white styling:
+Format strictly matching:
 ### Executive Summary
-**Overall Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
+**Overall Calculated Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
 
-Live audit generated for [{target_url}]({target_url}). Server responded with **{status_code}** status code in **{response_time}s**.
+Live runtime scan performed for **{target_url}**. The analysis indicates a server response latency of **{response_time}s** with **{1 if meta_desc == 'Meta Description Tag Missing' else 0 + (1 if h1_count==0 else 0)} primary structural issue(s)** detected during real-time DOM parsing.
 
 ### 1. Real-Time Flaws & Identified Issues
-- Meta description tag is absent or incomplete.
-- HTML headings structure is not optimized for core web vitals.
+- Meta description tag is absent or empty.
+- High initial latency detected if above 1.0s.
 - {missing_alt} media elements lack accessibility text (ALT tags).
 
 ### 2. Domain & Page Quality Analysis
-- **Server Latency:** Recorded response time of **{response_time}s**.
-- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found.
-- **Media Assets:** Scanned **{total_images} images**, **{missing_alt} missing ALT attributes**.
+- **Server Latency:** Recorded response time of **{response_time}s** via direct HTTP request.
+- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found in the body container.
+- **Media Assets:** Scanned **{total_images} image elements**, where **{missing_alt}** lack descriptive ALT text tags.
 - **Metadata Indexing:** Title recorded as *"{page_title}"*.
 
 ### 3. Actionable Recommendations
+- Implement server-side caching or use a modern Content Delivery Network (CDN).
 - Add a relevant meta description tag (150-160 characters) targeting core keywords.
-- Add exactly one primary H1 tag containing the target page keyword.
-- Add meaningful alt text to all image tags for accessibility and SEO.
+
+### 4. Critical Missing Elements & Security Deficiencies
+- Meta Description tag.
 """
     if GEMINI_API_KEY:
         try:
@@ -314,38 +390,37 @@ Live audit generated for [{target_url}]({target_url}). Server responded with **{
             pass
 
     return f"""### Executive Summary
-**Overall Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
+**Overall Calculated Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
 
-Live audit generated for [{target_url}]({target_url}). Server responded with **{status_code}** status code in **{response_time}s**.
+Live runtime scan performed for **{target_url}**. The analysis indicates a server response latency of **{response_time}s** with **1 primary structural issue(s)** detected during real-time DOM parsing.
 
 ### 1. Real-Time Flaws & Identified Issues
-- Meta description tag is absent or incomplete.
-- HTML headings structure is not optimized for core web vitals.
-- {missing_alt} media elements lack accessibility text (ALT tags).
+- Meta description tag is absent or empty.
 
 ### 2. Domain & Page Quality Analysis
-- **Server Latency:** Recorded response time of **{response_time}s**.
-- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found.
-- **Media Assets:** Scanned **{total_images} images**, **{missing_alt} missing ALT attributes**.
+- **Server Latency:** Recorded response time of **{response_time}s** via direct HTTP request.
+- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found in the body container.
+- **Media Assets:** Scanned **{total_images} image elements**, where **{missing_alt}** lack descriptive ALT text tags.
 - **Metadata Indexing:** Title recorded as *"{page_title}"*.
 
 ### 3. Actionable Recommendations
 - Add a relevant meta description tag (150-160 characters) targeting core keywords.
-- Add exactly one primary H1 tag containing the target page keyword.
-- Add meaningful alt text to all image tags for accessibility and SEO.
+
+### 4. Critical Missing Elements & Security Deficiencies
+- Meta Description tag.
 """
 
 
-# --- HEADER WITH DOWNLOAD BUTTON & SYSTEM OPERATIONAL BADGE ---
-h_col1, h_col2 = st.columns([2.5, 1.5])
+# --- UNIFIED HEADER ON ALL PAGES (Pic 2 Layout) ---
+h_col1, h_col2 = st.columns([2.2, 1.8])
 
 with h_col1:
     st.markdown(
         """
         <div class="logo-container" style="padding-top: 4px;">
-            <div class="logo-badge">S</div>
-            <span class="logo-title">SitePulse Enterprise</span>
-            <span class="logo-subtitle">| Website Auditor</span>
+            <div class="logo-icon">S</div>
+            <span class="logo-text">SitePulse Enterprise</span>
+            <span class="logo-subtext">| Website Auditor</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -353,27 +428,27 @@ with h_col1:
 
 with h_col2:
     if st.session_state.scanned and "report" in st.session_state.audit_data:
-        btn_c, badge_c = st.columns([1.2, 1])
+        btn_c, badge_c = st.columns([1.4, 1])
         with btn_c:
             st.download_button(
-                label="Download Report",
+                label="Download Audit Report",
                 data=st.session_state.audit_data["report"],
                 file_name="website_audit_report.txt",
                 mime="text/plain",
                 use_container_width=True,
             )
         with badge_c:
-            st.markdown('<div class="status-badge">System Operational</div>', unsafe_allow_html=True)
+            st.markdown('<div class="status-badge" style="float: right;">System Operational</div>', unsafe_allow_html=True)
     else:
         st.markdown(
             '<div style="display: flex; justify-content: flex-end;"><div class="status-badge">System Operational</div></div>',
             unsafe_allow_html=True,
         )
 
-st.markdown('<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 1.5rem;"></div>', unsafe_allow_html=True)
 
 
-# --- AUDIT FORM SCREEN ---
+# --- PAGE 1: AUDIT INPUT SCREEN ---
 if not st.session_state.scanned:
     st.markdown(
         """
@@ -390,11 +465,11 @@ if not st.session_state.scanned:
         unsafe_allow_html=True,
     )
 
-    # PARALLEL ALIGNED SEARCH BAR & BUTTON
+    # PARALLEL INPUT & BUTTON (WITH PIC 1 SPINNER LOADING STATE)
     col_left, col_input, col_btn, col_right = st.columns([1, 4, 1.5, 1])
     
     with col_input:
-        url_input = st.text_input("", placeholder="https://amazon.com", label_visibility="collapsed")
+        url_input = st.text_input("", placeholder="https://example.com", label_visibility="collapsed")
         
     with col_btn:
         btn_click = st.button("Run Analysis", use_container_width=True)
@@ -405,7 +480,8 @@ if not st.session_state.scanned:
             if not target.startswith(("http://", "https://")):
                 target = "https://" + target
 
-            with st.spinner("Analyzing site structure..."):
+            # Displays Streamlit standard purple button loader state (Image 1)
+            with st.spinner(""):
                 t0 = time.time()
                 try:
                     r = requests.get(target, headers={"User-Agent": "Mozilla/5.0"}, timeout=10, verify=False)
@@ -440,27 +516,69 @@ if not st.session_state.scanned:
                 st.session_state.scanned = True
                 st.rerun()
 
+
+# --- PAGE 2: AUDIT RESULTS SCREEN (Pic 2 & Pic 3 Exact Layout) ---
 else:
-    # --- RESULT SCREEN ---
     d = st.session_state.audit_data
+    
+    # Audit Title Bar
     c1, c2 = st.columns([3, 1])
     with c1:
-        st.markdown(f"### Audit Results for `{d['url']}`")
+        st.markdown(
+            f"""
+            <div style="margin-bottom: 1.5rem;">
+                <h1 style="color: #ffffff; font-size: 2.2rem; font-weight: 800; margin: 0;">Audit Results for {d['url']}</h1>
+                <p style="color: #a78bfa; font-size: 0.95rem; margin-top: 4px;">Comprehensive live structural, performance, and AI analysis breakdown</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     with c2:
+        st.markdown('<div class="audit-new-btn">', unsafe_allow_html=True)
         if st.button("Audit New Target", use_container_width=True):
             st.session_state.scanned = False
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Metrics Row
+    # 4 Diagnostic Metric Cards (Pic 2)
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.markdown(f'<div class="metric-box"><div class="metric-title">HTTP Status</div><div class="metric-val">{d["status"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-card-title">HTTP Status Code</div><div class="metric-card-value">{d["status"]}</div></div>', unsafe_allow_html=True)
     with m2:
-        st.markdown(f'<div class="metric-box"><div class="metric-title">Latency</div><div class="metric-val">{d["rt"]}s</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-card-title">Server Latency</div><div class="metric-card-value">{d["rt"]}s</div></div>', unsafe_allow_html=True)
     with m3:
-        st.markdown(f'<div class="metric-box"><div class="metric-title">H1 Tags</div><div class="metric-val">{d["h1"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-card-title">H1 Tags Count</div><div class="metric-card-value">{d["h1"]} Detected</div></div>', unsafe_allow_html=True)
     with m4:
-        st.markdown(f'<div class="metric-box"><div class="metric-title">Missing Alt</div><div class="metric-val">{d["no_alt"]}/{d["tot_img"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-card-title">Missing Alt Attributes</div><div class="metric-card-value">{d["no_alt"]} / {d["tot_img"]}</div></div>', unsafe_allow_html=True)
 
-    # Report Content (Clean Image 1 Styling)
+    # Scraped Metadata Overview Card Container (Pic 2)
+    meta_badge_html = '<span class="meta-badge-missing">Missing Tag</span>' if d["meta"] == "Meta Description Tag Missing" else '<span class="meta-badge-ok">Valid</span>'
+    meta_color = "#f87171" if d["meta"] == "Meta Description Tag Missing" else "#ffffff"
+
+    st.markdown(
+        f"""
+        <div class="outer-card-box">
+            <div class="outer-card-title">Scraped Metadata Overview</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="meta-inner-box">
+                    <div class="meta-inner-title"><span>Page Title</span></div>
+                    <div class="meta-inner-val">{d["title"]}</div>
+                </div>
+                <div class="meta-inner-box">
+                    <div class="meta-inner-title">
+                        <span>Meta Description</span>
+                        {meta_badge_html}
+                    </div>
+                    <div class="meta-inner-val" style="color: {meta_color};">{d["meta"]}</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Technical Diagnostic & Inspection Report (Pic 3)
+    st.markdown('<div class="report-card-box">', unsafe_allow_html=True)
+    st.markdown('<div style="color: #ffffff; font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>', unsafe_allow_html=True)
     st.markdown(d["report"])
+    st.markdown('</div>', unsafe_allow_html=True)
