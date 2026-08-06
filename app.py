@@ -353,75 +353,83 @@ if FPDF is not None:
             self.cell(0, 10, f'Page {self.page_no()}/{{nb}} | Automated SitePulse Diagnostics Engine', align='C')
 
 def clean_pdf_text(text):
-    """Prevents latin-1 encoding issues in FPDF."""
+    """Clean special characters to prevent FPDF latin-1 encoding crashes."""
     if not text:
-        return "N/A"
-    text = text.replace("**", "").replace("### ", "").replace("`", "")
-    return str(text).encode('latin-1', 'replace').decode('latin-1')
+        return ""
+    text = str(text).replace("**", "").replace("### ", "").replace("`", "").replace("⚡", "").replace("•", "-")
+    return text.encode('latin-1', 'ignore').decode('latin-1')
 
 def generate_pdf_bytes(data):
     if FPDF is None:
         return b""
-    pdf = SitePulsePDF()
-    pdf.alias_nb_pages()
-    pdf.add_page()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    
-    # Target Meta Info
-    pdf.set_font('Helvetica', 'B', 11)
-    pdf.set_text_color(50, 50, 50)
-    pdf.cell(0, 6, clean_pdf_text(f"Target URL: {data['url']}"), ln=True)
-    pdf.cell(0, 6, clean_pdf_text(f"Calculated Health Score: {data['health_score']}/100"), ln=True)
-    pdf.ln(4)
+    try:
+        pdf = SitePulsePDF()
+        pdf.alias_nb_pages()
+        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        
+        # Target Meta Info
+        pdf.set_font('Helvetica', 'B', 11)
+        pdf.set_text_color(50, 50, 50)
+        pdf.cell(0, 6, clean_pdf_text(f"Target URL: {data['url']}"), ln=True)
+        pdf.cell(0, 6, clean_pdf_text(f"Calculated Health Score: {data['health_score']}/100"), ln=True)
+        pdf.ln(4)
 
-    # 1. Scraped Technical Metrics
-    pdf.set_font('Helvetica', 'B', 12)
-    pdf.set_text_color(139, 92, 246)
-    pdf.cell(0, 8, clean_pdf_text("1. SCRAPED TECHNICAL METRICS"), ln=True)
-    
-    metrics = [
-        ("HTTP Status Code", str(data['status'])),
-        ("Server Latency", f"{data['rt']} seconds"),
-        ("Payload Size", f"{data['size_kb']} KB"),
-        ("H1 Headings", f"{data['h1']} Detected"),
-        ("Missing Image Alt", f"{data['no_alt']} / {data['tot_img']}"),
-        ("Page Title", data['title']),
-        ("Meta Description", data['meta'])
-    ]
-    
-    for label, val in metrics:
-        pdf.set_font('Helvetica', 'B', 9)
-        pdf.set_text_color(60, 60, 60)
-        pdf.cell(50, 6, clean_pdf_text(f"{label}:"), border=0)
-        pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(30, 30, 30)
-        pdf.multi_cell(0, 6, clean_pdf_text(val))
-    pdf.ln(4)
+        # 1. Scraped Technical Metrics
+        pdf.set_font('Helvetica', 'B', 12)
+        pdf.set_text_color(139, 92, 246)
+        pdf.cell(0, 8, clean_pdf_text("1. SCRAPED TECHNICAL METRICS"), ln=True)
+        
+        metrics = [
+            ("HTTP Status Code", str(data['status'])),
+            ("Server Latency", f"{data['rt']} seconds"),
+            ("Payload Size", f"{data['size_kb']} KB"),
+            ("H1 Headings", f"{data['h1']} Detected"),
+            ("Missing Image Alt", f"{data['no_alt']} / {data['tot_img']}"),
+            ("Page Title", data['title']),
+            ("Meta Description", data['meta'])
+        ]
+        
+        for label, val in metrics:
+            pdf.set_font('Helvetica', 'B', 9)
+            pdf.set_text_color(60, 60, 60)
+            pdf.cell(50, 6, clean_pdf_text(f"{label}:"), border=0)
+            pdf.set_font('Helvetica', '', 9)
+            pdf.set_text_color(30, 30, 30)
+            pdf.multi_cell(0, 6, clean_pdf_text(val))
+        pdf.ln(4)
 
-    # 2. Complete Inspection & Report Breakdown
-    pdf.set_font('Helvetica', 'B', 12)
-    pdf.set_text_color(139, 92, 246)
-    pdf.cell(0, 8, clean_pdf_text("2. DETAILED DIAGNOSTIC REPORT & AI ANALYSIS"), ln=True)
-    
-    pdf.set_font('Helvetica', '', 9.5)
-    pdf.set_text_color(40, 40, 40)
-    
-    report_lines = data['report'].split('\n')
-    for line in report_lines:
-        line_str = line.strip()
-        if not line_str:
-            pdf.ln(2)
-            continue
-        if line_str.startswith("###"):
-            pdf.set_font('Helvetica', 'B', 10.5)
-            pdf.set_text_color(139, 92, 246)
-            pdf.cell(0, 7, clean_pdf_text(line_str), ln=True)
-            pdf.set_font('Helvetica', '', 9.5)
-            pdf.set_text_color(40, 40, 40)
-        else:
-            pdf.multi_cell(0, 5.5, clean_pdf_text(line_str))
-            
-    return bytes(pdf.output())
+        # 2. Complete Inspection & Report Breakdown
+        pdf.set_font('Helvetica', 'B', 12)
+        pdf.set_text_color(139, 92, 246)
+        pdf.cell(0, 8, clean_pdf_text("2. DETAILED DIAGNOSTIC REPORT & AI ANALYSIS"), ln=True)
+        
+        pdf.set_font('Helvetica', '', 9.5)
+        pdf.set_text_color(40, 40, 40)
+        
+        report_text = data.get('report', '')
+        for line in report_text.split('\n'):
+            line_str = line.strip()
+            if not line_str:
+                pdf.ln(2)
+                continue
+            if line_str.startswith("###"):
+                pdf.set_font('Helvetica', 'B', 10.5)
+                pdf.set_text_color(139, 92, 246)
+                pdf.cell(0, 7, clean_pdf_text(line_str), ln=True)
+                pdf.set_font('Helvetica', '', 9.5)
+                pdf.set_text_color(40, 40, 40)
+            else:
+                pdf.multi_cell(0, 5.5, clean_pdf_text(line_str))
+                
+        # Output handling for both fpdf and fpdf2
+        output_res = pdf.output(dest='S')
+        if isinstance(output_res, str):
+            return output_res.encode('latin-1', 'ignore')
+        return bytes(output_res)
+
+    except Exception:
+        return b""
 
 
 def perform_website_audit(target_url):
