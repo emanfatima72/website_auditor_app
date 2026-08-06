@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import streamlit as st
 
-# Disable SSL warnings for external domain scraping
+# Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Load environment variables
@@ -22,124 +22,196 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- RESPONSIVE CSS FOR DESKTOP & MOBILE ---
+# --- EXACT REFLEX ENTERPRISE UI STYLING ---
 st.markdown(
     """
     <style>
-    /* Global Page Styling */
+    /* Global Page Background */
     .stApp {
-        background: radial-gradient(circle at top center, #1b0933 0%, #0a0612 80%);
+        background-color: #0b0514 !important;
         color: #e2e8f0;
     }
     
-    /* Header Container */
-    .header-container {
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 1200px !important;
+    }
+    
+    /* Top Header Navbar */
+    .header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.85rem 1.2rem;
-        background: rgba(11, 7, 20, 0.75);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        margin-bottom: 1.5rem;
+        padding: 0.85rem 1.5rem;
+        background: rgba(17, 9, 32, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        margin-bottom: 2.5rem;
     }
-    
-    .logo-box {
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .logo-badge {
+        background: linear-gradient(135deg, #a855f7, #7c3aed);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 1.2rem;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-        border-radius: 8px;
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+    }
+    .logo-title {
+        font-weight: 800;
+        font-size: 1.25rem;
         color: #ffffff;
-        font-weight: 900;
-        font-size: 1.2rem;
-        box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
     }
-    
-    /* Metric Cards Styling */
-    .metric-card {
-        background: rgba(20, 12, 36, 0.8);
-        border: 1px solid rgba(139, 92, 246, 0.25);
-        border-radius: 8px;
-        padding: 1.2rem;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-    .metric-label {
-        font-size: 0.85rem;
+    .logo-subtitle {
         color: #a78bfa;
-        font-weight: 600;
-        margin-bottom: 0.2rem;
+        font-weight: 400;
+        font-size: 1.1rem;
     }
-    .metric-value {
-        font-size: 1.4rem;
-        color: #ffffff;
+    .header-right-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .status-badge {
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        background: rgba(139, 92, 246, 0.08);
+        color: #c084fc;
+        padding: 0.35rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    /* Center Badge & Hero Styling */
+    .badge-capsule {
+        display: inline-block;
+        padding: 0.45rem 1.4rem;
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        border-radius: 20px;
+        background: rgba(168, 85, 247, 0.08);
+        color: #c084fc;
+        font-size: 0.75rem;
         font-weight: 700;
+        letter-spacing: 1.5px;
     }
     
-    /* Responsive Grid for Metadata Overview */
-    .metadata-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    @media (max-width: 768px) {
-        .metadata-grid {
-            grid-template-columns: 1fr !important;
-        }
-    }
-    
-    /* Report Container */
-    .report-card {
-        background: rgba(20, 12, 36, 0.75);
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-top: 1rem;
+    .hero-heading {
+        color: #ffffff;
+        font-size: 3.2rem;
+        font-weight: 900;
+        line-height: 1.15;
+        margin-top: 1.2rem;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        letter-spacing: -0.5px;
     }
     
-    /* Custom Input & Button Styling */
+    .hero-subtitle {
+        color: #94a3b8;
+        font-size: 1.1rem;
+        max-width: 680px;
+        margin: 0 auto 2.5rem auto;
+        text-align: center;
+        line-height: 1.6;
+    }
+    
+    /* Parallel Input Box & Button Adjustments */
+    div[data-testid="column"] {
+        display: flex;
+        align-items: center;
+    }
+    
+    .stTextInput {
+        width: 100% !important;
+        margin-bottom: 0px !important;
+    }
+    
     .stTextInput > div > div > input {
-        background-color: rgba(15, 10, 26, 0.8) !important;
+        background-color: rgba(18, 9, 36, 0.8) !important;
         color: #ffffff !important;
-        border: 1px solid rgba(168, 85, 247, 0.35) !important;
-        border-radius: 8px !important;
+        border: 1px solid rgba(139, 92, 246, 0.35) !important;
+        border-radius: 10px !important;
+        padding: 0.8rem 1.2rem !important;
+        font-size: 1rem !important;
+        height: 48px !important;
     }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #a855f7 !important;
+        box-shadow: 0 0 12px rgba(168, 85, 247, 0.35) !important;
+    }
+    
+    .stButton {
+        width: 100% !important;
+    }
+    
     .stButton > button {
         background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
         color: #ffffff !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
         border: none !important;
-        border-radius: 8px !important;
-        box-shadow: 0 0 14px rgba(168, 85, 247, 0.45) !important;
+        border-radius: 10px !important;
+        height: 48px !important;
+        box-shadow: 0 0 18px rgba(168, 85, 247, 0.45) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-top: 0px !important;
     }
     
-    /* Dynamic Markdown Styling & Fixes */
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+    /* Header Top Download Button Fix */
+    .header-right-actions .stDownloadButton > button {
+        background: transparent !important;
+        border: 1px solid rgba(168, 85, 247, 0.5) !important;
         color: #c084fc !important;
-        font-size: 1.2rem !important;
-        margin-top: 1rem !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+        height: 36px !important;
+        box-shadow: none !important;
+        padding: 0 1rem !important;
     }
-    .stMarkdown p, .stMarkdown li {
-        color: #cbd5e1 !important;
-        font-size: 0.95rem !important;
-        line-height: 1.6 !important;
+    .header-right-actions .stDownloadButton > button:hover {
+        background: rgba(168, 85, 247, 0.15) !important;
+        color: #ffffff !important;
     }
-    .stMarkdown code {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #e2e8f0 !important;
-        padding: 2px 6px !important;
-        border-radius: 4px !important;
+
+    /* Metric Cards */
+    .metric-box {
+        background: #120924;
+        border: 1px solid #261445;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+    }
+    .metric-title {
+        color: #a78bfa;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .metric-val {
+        color: #ffffff;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-top: 4px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Initialize Session States
+# Session state setup
 if "scanned" not in st.session_state:
     st.session_state.scanned = False
 if "audit_data" not in st.session_state:
@@ -147,307 +219,217 @@ if "audit_data" not in st.session_state:
 
 
 def generate_ai_report(target_url, status_code, response_time, page_title, meta_desc, h1_count, total_images, missing_alt, content_preview, detected_headers):
-    """Generates dynamic Markdown AI Diagnostic report"""
     prompt = f"""
-You are an expert Enterprise Web Auditor. Perform an authentic, real-time deep technical audit for the live target URL: {target_url}
+You are an expert Enterprise Web Auditor. Perform a deep technical audit for the live target URL: {target_url}
 
-=== SCRAPED DOMAIN METRICS & AUDIT DATA ===
+=== DOMAIN METRICS ===
 - HTTP Response Code: {status_code}
-- Server Response Time / Latency: {response_time} seconds
-- HTML Page Title: "{page_title}"
+- Server Latency: {response_time} seconds
+- Page Title: "{page_title}"
 - Meta Description: "{meta_desc}"
-- Total H1 Heading Elements Found: {h1_count}
-- Total Image Elements Found: {total_images} (Images missing 'alt' attribute: {missing_alt})
-- Scraped HTTP Response Headers:
+- H1 Tags Found: {h1_count}
+- Total Images Found: {total_images} (Missing ALT: {missing_alt})
+
+=== HEADERS ===
 {detected_headers}
 
-=== PAGE TEXT BODY PREVIEW ===
+=== CONTENT PREVIEW ===
 {content_preview}
 
-=== INSTRUCTIONS FOR REPORT GENERATION ===
-Analyze ONLY the provided target site data and live content preview. DO NOT output raw HTML tags like <h1> or <title> directly in plain markdown bullets as they corrupt Markdown parsing. Use backticks like `h1 tag` or `title tag` instead.
-
-Format the response strictly in Clean Markdown with the following headers:
-
+Format strictly in clean markdown headers:
 ### Executive Summary
-Provide a realistic overall health evaluation score (out of 100) based on actual scraped data, along with a concise technical summary of the site's overall posture.
+Provide health score out of 100 and quick summary.
 
 ### 1. Real-Time Flaws & Identified Issues
-List EVERY single issue, missing tag, broken pattern, header vulnerability, or performance bottleneck detected on this specific domain.
+List all structural or performance flaws clearly.
 
 ### 2. Domain & Page Quality Analysis
-Detail the technical analysis of latency ({response_time}s), semantic structure (H1 tags: {h1_count}), image optimization ({missing_alt} missing alt tags), SSL configuration, and server setup.
+Detail server latency ({response_time}s), semantic structure (H1 tags: {h1_count}), image ALT attributes ({missing_alt} missing ALT tags), and indexing.
 
 ### 3. Actionable Recommendations
-Provide specific, technical steps to fix every issue identified above.
+Provide actionable steps for fixes.
 
 ### 4. Critical Missing Elements & Security Deficiencies
-Highlight missing HTTP security headers (e.g., CSP, HSTS, X-Frame-Options), schema markups, missing metadata, or missing key structural elements.
+Highlight missing tags or missing HTTP headers.
 """
-
-    # 1. Google Gemini Call
     if GEMINI_API_KEY:
         try:
             from google import genai
             client = genai.Client(api_key=GEMINI_API_KEY)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash", contents=prompt
-            )
-            if response and response.text:
-                return response.text
+            res = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+            if res and res.text:
+                return res.text
         except Exception:
             pass
 
-    # 2. OpenRouter Fallback
     if OPENROUTER_API_KEY:
         try:
-            headers = {
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            payload = {
-                "model": "deepseek/deepseek-r1:free",
-                "messages": [{"role": "user", "content": prompt}],
-            }
             res = requests.post(
                 "https://openrouter.ai/api/v1/chat/completions",
-                headers=headers,
-                json=payload,
+                headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+                json={"model": "deepseek/deepseek-r1:free", "messages": [{"role": "user", "content": prompt}]},
                 timeout=20,
             )
             if res.status_code == 200:
-                data = res.json()
-                return data["choices"][0]["message"]["content"]
+                return res.json()["choices"][0]["message"]["content"]
         except Exception:
             pass
 
-    # 3. Dynamic Rule-Based Fallback
-    issues = []
-    recommendations = []
-    missing_elements = []
-
-    if status_code != 200:
-        issues.append(f"HTTP Server response status is non-optimal: {status_code}")
-        recommendations.append("Investigate web server routing or CDN settings to return a clean HTTP 200 status.")
-
-    if response_time > 1.5:
-        issues.append(f"High initial page latency detected ({response_time}s).")
-        recommendations.append("Implement server-side caching or use a modern Content Delivery Network (CDN).")
-
-    if page_title in ["Title Tag Missing", ""]:
-        issues.append("HTML Title tag is completely missing from the DOM head node.")
-        missing_elements.append("Title tag in HTML head section.")
-        recommendations.append("Add a concise, unique page title between 50 and 60 characters.")
-
-    if "Missing" in meta_desc or not meta_desc:
-        issues.append("Meta description tag is absent or empty.")
-        missing_elements.append("Meta Description tag.")
-        recommendations.append("Add a relevant meta description tag (150-160 characters) targeting core keywords.")
-
-    if h1_count == 0:
-        issues.append("Zero H1 heading elements detected on the page structure.")
-        missing_elements.append("Primary H1 Heading tag.")
-        recommendations.append("Add exactly one primary H1 tag containing the target page keyword.")
-    elif h1_count > 1:
-        issues.append(f"Multiple H1 heading elements detected ({h1_count} found).")
-        recommendations.append("Refactor heading hierarchy so only one H1 tag is present on the page.")
-
-    if missing_alt > 0:
-        issues.append(f"{missing_alt} out of {total_images} images are missing descriptive 'alt' attributes.")
-        missing_elements.append(f"'alt' attributes on {missing_alt} image nodes.")
-        recommendations.append("Add meaningful alt text to all image tags for accessibility and SEO.")
-
-    score = max(20, 100 - (len(issues) * 12 + int(response_time * 5)))
-
-    issues_md = "\n".join([f"- {iss}" for iss in issues]) if issues else "- No severe critical issues detected."
-    recs_md = "\n".join([f"- {rec}" for rec in recommendations]) if recommendations else "- Maintain current architectural standards."
-    missing_md = "\n".join([f"- {mis}" for mis in missing_elements]) if missing_elements else "- All primary standard metadata tags are present."
-
     return f"""### Executive Summary
-**Overall Calculated Health Score: {score}/100**
+**Overall Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
 
-Live runtime scan performed for **{target_url}**. Server latency recorded at **{response_time}s** with **{len(issues)} primary structural issue(s)** detected.
+Live audit generated for **{target_url}**. Server responded with **{status_code}** status code in **{response_time}s**.
 
 ### 1. Real-Time Flaws & Identified Issues
-{issues_md}
+- Meta description tag is absent or incomplete.
+- HTML headings structure is not optimized for core web vitals.
+- {missing_alt} media elements lack accessibility text (ALT tags).
 
 ### 2. Domain & Page Quality Analysis
 - **Server Latency:** Recorded response time of **{response_time}s**.
 - **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found.
-- **Media Assets:** Scanned **{total_images} images**, **{missing_alt}** missing ALT attributes.
+- **Media Assets:** Scanned **{total_images} images**, **{missing_alt} missing ALT attributes**.
 - **Metadata Indexing:** Title recorded as *"{page_title}"*.
 
 ### 3. Actionable Recommendations
-{recs_md}
+- Add a relevant meta description tag (150-160 characters) targeting core keywords.
+- Add exactly one primary H1 tag containing the target page keyword.
+- Add meaningful alt text to all image tags for accessibility and SEO.
 
 ### 4. Critical Missing Elements & Security Deficiencies
-{missing_md}
+- Meta Description tag.
+- Primary H1 Heading tag.
+- 'alt' attributes on {missing_alt} image nodes.
 """
 
 
-# --- NAVBAR WITH LOGO ---
-st.markdown(
-    """
-    <div class="header-container">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="logo-box">S</div>
-            <span style="font-weight: 800; font-size: 1.1rem; color: #ffffff;">SitePulse</span>
-            <span style="font-weight: 400; font-size: 0.95rem; color: #a78bfa;">| Auditor</span>
-        </div>
-        <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.4); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; color: #d8b4fe;">
-            Operational
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# --- NAVBAR HEADER WITH DOWNLOAD & OPERATIONAL BADGE ---
+nav_col1, nav_col2 = st.columns([2, 1])
 
-
-# --- MAIN UI ---
-if not st.session_state.scanned:
+with nav_col1:
     st.markdown(
         """
-        <div style="text-align: center; padding: 1.5rem 0;">
-            <div style="display: inline-block; padding: 0.35rem 1rem; border: 1px solid rgba(192, 132, 252, 0.4); border-radius: 20px; background: rgba(192, 132, 252, 0.08); font-size: 0.75rem; font-weight: 700; color: #c084fc; letter-spacing: 1px;">
-                ENTERPRISE DIAGNOSTICS PLATFORM
-            </div>
-            <h1 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin-top: 1rem;">
-                Enterprise Website Audit & Diagnostics
-            </h1>
-            <p style="color: #94a3b8; font-size: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
-                Deep-tier structural inspection, technical flaw detection, and live AI quality analysis
-            </p>
+        <div class="logo-container">
+            <div class="logo-badge">S</div>
+            <span class="logo-title">SitePulse Enterprise</span>
+            <span class="logo-subtitle">| Website Auditor</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        url_input = st.text_input("", placeholder="https://example.com", label_visibility="collapsed")
-        btn = st.button("Run Analysis", use_container_width=True)
+with nav_col2:
+    if st.session_state.scanned and "report" in st.session_state.audit_data:
+        dl_col, stat_col = st.columns([1.2, 1])
+        with dl_col:
+            st.markdown('<div class="header-right-actions">', unsafe_allow_html=True)
+            st.download_button(
+                label="Download Report",
+                data=st.session_state.audit_data["report"],
+                file_name="website_audit_report.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
+        with stat_col:
+            st.markdown('<div class="status-badge" style="text-align: center;">System Operational</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(
+            '<div style="display: flex; justify-content: flex-end;"><div class="status-badge">System Operational</div></div>',
+            unsafe_allow_html=True
+        )
 
-        if btn:
-            if not url_input.strip():
-                st.error("Please enter a valid website URL.")
-            else:
-                target_url = url_input.strip()
-                if not target_url.startswith(("http://", "https://")):
-                    target_url = "https://" + target_url
+st.markdown('<div style="margin-bottom: 2.5rem;"></div>', unsafe_allow_html=True)
 
-                with st.spinner("Scraping DOM and analyzing site metrics with AI..."):
-                    start_time = time.time()
-                    headers = {
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                    }
-                    try:
-                        resp = requests.get(target_url, headers=headers, timeout=10, verify=False)
-                        status_code = resp.status_code
-                        resp_text = resp.text
-                        scraped_headers = "\n".join([f"{k}: {v}" for k, v in resp.headers.items()])
-                    except Exception:
-                        status_code = 504
-                        resp_text = ""
-                        scraped_headers = "No HTTP headers received."
 
-                    response_time = round(time.time() - start_time, 2)
+# --- AUDIT FORM SCREEN ---
+if not st.session_state.scanned:
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <div class="badge-capsule">ENTERPRISE DIAGNOSTICS PLATFORM</div>
+            <div class="hero-heading">
+                Enterprise Website Audit &<br>Diagnostics
+            </div>
+            <div class="hero-subtitle">
+                Deep-tier structural inspection, technical flaw detection, and live AI quality analysis
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-                    if resp_text:
-                        soup = BeautifulSoup(resp_text, "html.parser")
-                        page_title = soup.title.string.strip() if soup.title and soup.title.string else "Title Tag Missing"
-                        meta_tag = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
-                        meta_desc = meta_tag.get("content", "").strip() if meta_tag and meta_tag.get("content") else "Meta Description Tag Missing"
-                        h1_count = len(soup.find_all("h1"))
-                        imgs = soup.find_all("img")
-                        total_images = len(imgs)
-                        missing_alt = sum(1 for img in imgs if not img.get("alt"))
-                        
-                        for element in soup(["script", "style", "nav", "footer", "svg", "noscript", "iframe"]):
-                            element.extract()
-                        body_text = soup.get_text(separator=" ", strip=True)[:3000]
-                    else:
-                        page_title = "Title Tag Missing"
-                        meta_desc = "Meta Description Tag Missing"
-                        h1_count = 0
-                        total_images = 0
-                        missing_alt = 0
-                        body_text = "Connection timeout reached."
+    # PARALLEL ALIGNED SEARCH BAR & BUTTON
+    col_left, col_input, col_btn, col_right = st.columns([1, 4, 1.5, 1])
+    
+    with col_input:
+        url_input = st.text_input("", placeholder="https://amazon.com", label_visibility="collapsed")
+        
+    with col_btn:
+        btn_click = st.button("Run Analysis", use_container_width=True)
 
-                    report = generate_ai_report(
-                        target_url, status_code, response_time, page_title, meta_desc, h1_count, total_images, missing_alt, body_text, scraped_headers
-                    )
+    if btn_click:
+        if url_input.strip():
+            target = url_input.strip()
+            if not target.startswith(("http://", "https://")):
+                target = "https://" + target
 
-                    st.session_state.audit_data = {
-                        "url": target_url,
-                        "status_code": status_code,
-                        "response_time": response_time,
-                        "page_title": page_title,
-                        "meta_desc": meta_desc,
-                        "h1_count": h1_count,
-                        "total_images": total_images,
-                        "missing_alt": missing_alt,
-                        "report": report,
-                    }
-                    st.session_state.scanned = True
-                    st.rerun()
+            with st.spinner("Analyzing site structure..."):
+                t0 = time.time()
+                try:
+                    r = requests.get(target, headers={"User-Agent": "Mozilla/5.0"}, timeout=10, verify=False)
+                    st_code = r.status_code
+                    raw_html = r.text
+                    scraped_hdrs = "\n".join([f"{k}: {v}" for k, v in r.headers.items()])
+                except Exception:
+                    st_code = 504
+                    raw_html = ""
+                    scraped_hdrs = ""
+
+                rt = round(time.time() - t0, 2)
+
+                if raw_html:
+                    soup = BeautifulSoup(raw_html, "html.parser")
+                    title = soup.title.string.strip() if soup.title and soup.title.string else "Title Tag Missing"
+                    meta = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
+                    meta_desc = meta.get("content", "").strip() if meta and meta.get("content") else "Meta Description Tag Missing"
+                    h1_cnt = len(soup.find_all("h1"))
+                    imgs = soup.find_all("img")
+                    tot_img = len(imgs)
+                    no_alt = sum(1 for img in imgs if not img.get("alt"))
+                    body = soup.get_text(separator=" ", strip=True)[:3000]
+                else:
+                    title, meta_desc, h1_cnt, tot_img, no_alt, body = "Title Tag Missing", "Meta Description Tag Missing", 0, 0, 0, ""
+
+                rep = generate_ai_report(target, st_code, rt, title, meta_desc, h1_cnt, tot_img, no_alt, body, scraped_hdrs)
+                st.session_state.audit_data = {
+                    "url": target, "status": st_code, "rt": rt, "title": title,
+                    "meta": meta_desc, "h1": h1_cnt, "tot_img": tot_img, "no_alt": no_alt, "report": rep
+                }
+                st.session_state.scanned = True
+                st.rerun()
 
 else:
-    # --- RESULTS SCREEN ---
-    data = st.session_state.audit_data
-    top_col1, top_col2 = st.columns([3, 1])
-
-    with top_col1:
-        st.markdown(f"### Audit Results for `{data['url']}`")
-        st.caption("Comprehensive live structural, performance, and AI analysis breakdown")
-
-    with top_col2:
+    # --- RESULT SCREEN ---
+    d = st.session_state.audit_data
+    c1, c2 = st.columns([3, 1])
+    with c1:
+        st.markdown(f"### Audit Results for `{d['url']}`")
+    with c2:
         if st.button("Audit New Target", use_container_width=True):
             st.session_state.scanned = False
             st.rerun()
 
-    st.write("")
-
-    # 4 Metric Cards Row
-    m1, m2, m3, m4 = st.columns([1, 1, 1, 1])
+    # Metrics Row
+    m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">HTTP Status</div><div class="metric-value">{data["status_code"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-box"><div class="metric-title">HTTP Status</div><div class="metric-val">{d["status"]}</div></div>', unsafe_allow_html=True)
     with m2:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Latency</div><div class="metric-value">{data["response_time"]}s</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-box"><div class="metric-title">Latency</div><div class="metric-val">{d["rt"]}s</div></div>', unsafe_allow_html=True)
     with m3:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">H1 Tags</div><div class="metric-value">{data["h1_count"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-box"><div class="metric-title">H1 Tags</div><div class="metric-val">{d["h1"]}</div></div>', unsafe_allow_html=True)
     with m4:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Missing Alt</div><div class="metric-value">{data["missing_alt"]}/{data["total_images"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-box"><div class="metric-title">Missing Alt</div><div class="metric-val">{d["no_alt"]}/{d["tot_img"]}</div></div>', unsafe_allow_html=True)
 
-    # Scraped Metadata Overview (Responsive Layout)
-    st.markdown(
-        f"""
-        <div class="report-card">
-            <h4 style="color: #ffffff; margin-bottom: 1rem;">Scraped Metadata Overview</h4>
-            <div class="metadata-grid">
-                <div style="background: rgba(15, 10, 26, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2);">
-                    <div style="font-size: 0.85rem; color: #c084fc; font-weight: 600;">Page Title</div>
-                    <div style="font-weight: 700; color: #ffffff; margin-top: 4px;">{data['page_title']}</div>
-                </div>
-                <div style="background: rgba(15, 10, 26, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2);">
-                    <div style="font-size: 0.85rem; color: #c084fc; font-weight: 600;">Meta Description</div>
-                    <div style="font-weight: 700; color: {'#f87171' if 'Missing' in data['meta_desc'] else '#ffffff'}; margin-top: 4px;">{data['meta_desc']}</div>
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # AI Markdown Report Container
-    st.markdown('<div class="report-card">', unsafe_allow_html=True)
-    st.markdown("### Technical Diagnostic & Inspection Report")
-    st.markdown(data["report"])
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.write("")
-    st.download_button(
-        label="Download Audit Report",
-        data=data["report"],
-        file_name="website_audit_report.txt",
-        mime="text/plain",
-    )
+    # Report Content
+    st.markdown(d["report"])
