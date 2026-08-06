@@ -22,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- EXACT REFLEX ENTERPRISE UI STYLING (MATCHING IMAGE 1, 2, 3) ---
+# --- EXACT REFLEX ENTERPRISE UI STYLING ---
 st.markdown(
     """
     <style>
@@ -45,17 +45,6 @@ st.markdown(
     }
     
     /* Top Header Navbar */
-    .header-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1.25rem;
-        background: #0f071d;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        margin-bottom: 2rem;
-    }
-    
     .logo-container {
         display: flex;
         align-items: center;
@@ -163,7 +152,7 @@ st.markdown(
         line-height: 1.5;
     }
 
-    /* Parallel Input Box & Button Styling */
+    /* Input & Button Styling */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
@@ -207,13 +196,8 @@ st.markdown(
         justify-content: center !important;
         margin-top: 0px !important;
     }
-    
-    .stButton > button:disabled {
-        background: #7c3aed !important;
-        opacity: 0.85 !important;
-    }
 
-    /* Diagnostic Metric Cards (Pic 2) */
+    /* Metric Cards */
     .metric-card {
         background: #0f071d;
         border: 1px solid #20103b;
@@ -233,7 +217,7 @@ st.markdown(
         font-weight: 800;
     }
 
-    /* Scraped Metadata Card Box (Pic 2) */
+    /* Metadata Card Box */
     .outer-card-box {
         background: #0f071d;
         border: 1px solid #20103b;
@@ -268,6 +252,7 @@ st.markdown(
         color: #ffffff;
         font-size: 1.05rem;
         font-weight: 700;
+        word-break: break-word;
     }
     .meta-badge-missing {
         background: #ef4444;
@@ -286,7 +271,7 @@ st.markdown(
         border-radius: 4px;
     }
 
-    /* Markdown Technical Report Container (Pic 3) */
+    /* Report Box */
     .report-card-box {
         background: #0f071d;
         border: 1px solid #20103b;
@@ -295,7 +280,6 @@ st.markdown(
         margin-top: 1.5rem;
     }
 
-    /* Heading Accents matching Image 3 */
     .stMarkdown h3 {
         color: #c084fc !important;
         font-size: 1.25rem !important;
@@ -324,48 +308,192 @@ if "audit_data" not in st.session_state:
     st.session_state.audit_data = {}
 
 
-def generate_ai_report(target_url, status_code, response_time, page_title, meta_desc, h1_count, total_images, missing_alt, content_preview, detected_headers):
+def perform_website_audit(target_url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+    }
+    
+    t0 = time.time()
+    try:
+        r = requests.get(target_url, headers=headers, timeout=12, verify=False, allow_redirects=True)
+        status_code = r.status_code
+        raw_html = r.text
+        response_headers = r.headers
+        content_size_kb = round(len(r.content) / 1024, 2)
+    except Exception as e:
+        status_code = 504
+        raw_html = ""
+        response_headers = {}
+        content_size_kb = 0.0
+
+    latency = round(time.time() - t0, 2)
+
+    # Scrape detailed HTML features
+    flaws = []
+    recommendations = []
+    missing_critical = []
+
+    if raw_html:
+        soup = BeautifulSoup(raw_html, "html.parser")
+        
+        # Title
+        title_tag = soup.title
+        title = title_tag.string.strip() if title_tag and title_tag.string else "Title Tag Missing"
+        if title == "Title Tag Missing":
+            flaws.append("Page Title `<title>` tag is completely missing.")
+            missing_critical.append("Document Title `<title>` tag")
+            recommendations.append("Add a concise `<title>` tag (50-60 characters) relevant to target keywords.")
+        elif len(title) < 20 or len(title) > 70:
+            flaws.append(f"Page Title length ({len(title)} chars) is non-optimal (recommended: 50-60 chars).")
+
+        # Meta Description
+        meta_tag = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
+        meta_desc = meta_tag.get("content", "").strip() if meta_tag and meta_tag.get("content") else "Meta Description Tag Missing"
+        if meta_desc == "Meta Description Tag Missing":
+            flaws.append("Meta description tag is absent or empty.")
+            missing_critical.append("Meta Description Tag")
+            recommendations.append("Add a compelling meta description tag (140-160 characters) to improve Search CTR.")
+
+        # H1 Tag Count
+        h1_tags = soup.find_all("h1")
+        h1_count = len(h1_tags)
+        if h1_count == 0:
+            flaws.append("No primary `<h1>` heading tag found on the page.")
+            missing_critical.append("Main `<h1>` Heading Tag")
+            recommendations.append("Include exactly one primary `<h1>` tag containing the main page topic.")
+        elif h1_count > 1:
+            flaws.append(f"Multiple ({h1_count}) `<h1>` tags detected (best practice is 1 per page).")
+            recommendations.append("Consolidate headings so there is only one top-level `<h1>` per page.")
+
+        # Images & Alt
+        imgs = soup.find_all("img")
+        tot_img = len(imgs)
+        no_alt = sum(1 for img in imgs if not img.get("alt") or not img.get("alt").strip())
+        if no_alt > 0:
+            flaws.append(f"{no_alt} out of {tot_img} image elements lack accessibility descriptive `alt` text.")
+            recommendations.append(f"Add descriptive `alt` attributes to all {no_alt} missing image elements.")
+
+        # Viewport (Mobile Responsiveness)
+        viewport = soup.find("meta", attrs={"name": "viewport"})
+        has_viewport = bool(viewport)
+        if not has_viewport:
+            flaws.append("Mobile viewport meta tag `<meta name=\"viewport\">` is missing.")
+            missing_critical.append("Mobile Viewport Configuration Tag")
+            recommendations.append("Add `<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">` for mobile responsiveness.")
+
+        # Open Graph Social Tags
+        og_title = soup.find("meta", attrs={"property": "og:title"})
+        if not og_title:
+            flaws.append("Open Graph `og:title` social media tag is not configured.")
+
+        # Canonical URL
+        canonical = soup.find("link", attrs={"rel": "canonical"})
+        has_canonical = bool(canonical)
+        if not has_canonical:
+            flaws.append("Canonical URL link `<link rel=\"canonical\">` is missing.")
+            recommendations.append("Add a canonical tag to prevent duplicate content indexing issues.")
+
+        # Content Preview
+        body_text = soup.get_text(separator=" ", strip=True)[:2500]
+
+    else:
+        title = "Title Tag Missing"
+        meta_desc = "Meta Description Tag Missing"
+        h1_count = 0
+        tot_img = 0
+        no_alt = 0
+        has_viewport = False
+        has_canonical = False
+        body_text = ""
+        flaws.append("Failed to establish a valid HTTP connection or received empty payload.")
+
+    # Security & Latency Flaws
+    if latency > 1.5:
+        flaws.append(f"High server response latency detected ({latency}s).")
+        recommendations.append("Optimize server-side execution, leverage CDN caching, or optimize web host response time.")
+
+    if not target_url.startswith("https://"):
+        flaws.append("Target URL is served over insecure HTTP instead of encrypted HTTPS.")
+        missing_critical.append("HTTPS / SSL Encryption")
+        recommendations.append("Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS.")
+
+    # Security Headers Check
+    sec_headers = ["Strict-Transport-Security", "X-Frame-Options", "Content-Security-Policy"]
+    missing_sec_headers = [sh for sh in sec_headers if sh not in response_headers and sh.lower() not in response_headers]
+    if missing_sec_headers:
+        flaws.append(f"Missing security headers: {', '.join(missing_sec_headers)}.")
+        recommendations.append(f"Configure server response headers: {', '.join(missing_sec_headers)}.")
+
+    # Health Score Calculation
+    deductions = len(flaws) * 12
+    health_score = max(20, min(100, 100 - deductions))
+
+    scraped_data = {
+        "url": target_url,
+        "status": status_code,
+        "rt": latency,
+        "title": title,
+        "meta": meta_desc,
+        "h1": h1_count,
+        "tot_img": tot_img,
+        "no_alt": no_alt,
+        "size_kb": content_size_kb,
+        "health_score": health_score,
+        "flaws": flaws,
+        "recommendations": recommendations,
+        "missing_critical": missing_critical,
+        "body_text": body_text,
+        "headers_str": "\n".join([f"{k}: {v}" for k, v in response_headers.items()]),
+    }
+
+    return scraped_data
+
+
+def generate_ai_report(data):
+    # Try AI API Generation
     prompt = f"""
-You are an expert Enterprise Web Auditor. Perform a deep technical audit for the live target URL: {target_url}
+You are an expert Enterprise Web Auditor. Perform a deep technical audit for: {data['url']}
 
 === DOMAIN METRICS ===
-- HTTP Response Code: {status_code}
-- Server Latency: {response_time} seconds
-- Page Title: "{page_title}"
-- Meta Description: "{meta_desc}"
-- H1 Tags Found: {h1_count}
-- Total Images Found: {total_images} (Missing ALT: {missing_alt})
+- HTTP Response Status: {data['status']}
+- Server Latency: {data['rt']} seconds
+- Page Size: {data['size_kb']} KB
+- Calculated Health Score: {data['health_score']}/100
+- Page Title: "{data['title']}"
+- Meta Description: "{data['meta']}"
+- H1 Tags Found: {data['h1']}
+- Images: {data['tot_img']} (Missing Alt: {data['no_alt']})
 
-=== HEADERS ===
-{detected_headers}
+=== DETECTED FLAWS ===
+{chr(10).join(['- ' + f for f in data['flaws']])}
 
-=== CONTENT PREVIEW ===
-{content_preview}
+=== RECOMMENDATIONS ===
+{chr(10).join(['- ' + r for r in data['recommendations']])}
 
-Format strictly matching:
+Format the response strictly with Markdown:
 ### Executive Summary
-**Overall Calculated Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
+**Overall Calculated Health Score: {data['health_score']}/100**
 
-Live runtime scan performed for **{target_url}**. The analysis indicates a server response latency of **{response_time}s** with **{1 if meta_desc == 'Meta Description Tag Missing' else 0 + (1 if h1_count==0 else 0)} primary structural issue(s)** detected during real-time DOM parsing.
+Live runtime scan performed for **{data['url']}**. The analysis indicates a server response latency of **{data['rt']}s** with **{len(data['flaws'])} primary structural/technical issue(s)** detected during real-time DOM parsing.
 
 ### 1. Real-Time Flaws & Identified Issues
-- Meta description tag is absent or empty.
-- High initial latency detected if above 1.0s.
-- {missing_alt} media elements lack accessibility text (ALT tags).
+(List all detected flaws with bullets)
 
 ### 2. Domain & Page Quality Analysis
-- **Server Latency:** Recorded response time of **{response_time}s** via direct HTTP request.
-- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found in the body container.
-- **Media Assets:** Scanned **{total_images} image elements**, where **{missing_alt}** lack descriptive ALT text tags.
-- **Metadata Indexing:** Title recorded as *"{page_title}"*.
+- **Server Latency:** Recorded response time of **{data['rt']}s** via direct HTTP request.
+- **Semantic Structure:** Headings parsed with **{data['h1']} H1 tags** found in the body container.
+- **Media Assets:** Scanned **{data['tot_img']} image elements**, where **{data['no_alt']}** lack descriptive ALT text tags.
+- **Metadata Indexing:** Title recorded as *"{data['title']}"*.
 
 ### 3. Actionable Recommendations
-- Implement server-side caching or use a modern Content Delivery Network (CDN).
-- Add a relevant meta description tag (150-160 characters) targeting core keywords.
+(List top 3-5 recommendations)
 
 ### 4. Critical Missing Elements & Security Deficiencies
-- Meta Description tag.
+(List critical missing items)
 """
+
     if GEMINI_API_KEY:
         try:
             from google import genai
@@ -382,36 +510,42 @@ Live runtime scan performed for **{target_url}**. The analysis indicates a serve
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
                 json={"model": "deepseek/deepseek-r1:free", "messages": [{"role": "user", "content": prompt}]},
-                timeout=20,
+                timeout=18,
             )
             if res.status_code == 200:
                 return res.json()["choices"][0]["message"]["content"]
         except Exception:
             pass
 
-    return f"""### Executive Summary
-**Overall Calculated Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
+    # Dynamic Fallback Report (Customized to target URL, NO static hardcoded text!)
+    flaws_formatted = "\n".join([f"- {f}" for f in data['flaws']]) if data['flaws'] else "- No major critical flaws detected during DOM sweep."
+    recs_formatted = "\n".join([f"- {r}" for r in data['recommendations']]) if data['recommendations'] else "- Maintain current technical standards and monitor performance."
+    missing_formatted = "\n".join([f"- {m}" for m in data['missing_critical']]) if data['missing_critical'] else "- No high-severity missing structural tags detected."
 
-Live runtime scan performed for **{target_url}**. The analysis indicates a server response latency of **{response_time}s** with **1 primary structural issue(s)** detected during real-time DOM parsing.
+    return f"""### Executive Summary
+**Overall Calculated Health Score: {data['health_score']}/100**
+
+Live runtime scan performed for **{data['url']}**. The analysis indicates a server response latency of **{data['rt']}s** with **{len(data['flaws'])} primary structural/technical issue(s)** detected during real-time DOM parsing.
 
 ### 1. Real-Time Flaws & Identified Issues
-- Meta description tag is absent or empty.
+{flaws_formatted}
 
 ### 2. Domain & Page Quality Analysis
-- **Server Latency:** Recorded response time of **{response_time}s** via direct HTTP request.
-- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found in the body container.
-- **Media Assets:** Scanned **{total_images} image elements**, where **{missing_alt}** lack descriptive ALT text tags.
-- **Metadata Indexing:** Title recorded as *"{page_title}"*.
+- **Server Latency:** Recorded response time of **{data['rt']}s** via direct HTTP request.
+- **Payload & Size:** Page download payload recorded at **{data['size_kb']} KB**.
+- **Semantic Structure:** Headings parsed with **{data['h1']} H1 tag(s)** found in the body container.
+- **Media Assets:** Scanned **{data['tot_img']} image element(s)**, where **{data['no_alt']}** lack descriptive `alt` tags.
+- **Metadata Indexing:** Title tag recorded as *"{data['title']}"*.
 
 ### 3. Actionable Recommendations
-- Add a relevant meta description tag (150-160 characters) targeting core keywords.
+{recs_formatted}
 
 ### 4. Critical Missing Elements & Security Deficiencies
-- Meta Description tag.
+{missing_formatted}
 """
 
 
-# --- UNIFIED HEADER ON ALL PAGES (Pic 2 Layout) ---
+# --- UNIFIED HEADER NAVBAR ---
 h_col1, h_col2 = st.columns([2.2, 1.8])
 
 with h_col1:
@@ -465,7 +599,6 @@ if not st.session_state.scanned:
         unsafe_allow_html=True,
     )
 
-    # PARALLEL INPUT & BUTTON (WITH PIC 1 SPINNER LOADING STATE)
     col_left, col_input, col_btn, col_right = st.columns([1, 4, 1.5, 1])
     
     with col_input:
@@ -480,44 +613,17 @@ if not st.session_state.scanned:
             if not target.startswith(("http://", "https://")):
                 target = "https://" + target
 
-            # Displays Streamlit standard purple button loader state (Image 1)
             with st.spinner(""):
-                t0 = time.time()
-                try:
-                    r = requests.get(target, headers={"User-Agent": "Mozilla/5.0"}, timeout=10, verify=False)
-                    st_code = r.status_code
-                    raw_html = r.text
-                    scraped_hdrs = "\n".join([f"{k}: {v}" for k, v in r.headers.items()])
-                except Exception:
-                    st_code = 504
-                    raw_html = ""
-                    scraped_hdrs = ""
-
-                rt = round(time.time() - t0, 2)
-
-                if raw_html:
-                    soup = BeautifulSoup(raw_html, "html.parser")
-                    title = soup.title.string.strip() if soup.title and soup.title.string else "Title Tag Missing"
-                    meta = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
-                    meta_desc = meta.get("content", "").strip() if meta and meta.get("content") else "Meta Description Tag Missing"
-                    h1_cnt = len(soup.find_all("h1"))
-                    imgs = soup.find_all("img")
-                    tot_img = len(imgs)
-                    no_alt = sum(1 for img in imgs if not img.get("alt"))
-                    body = soup.get_text(separator=" ", strip=True)[:3000]
-                else:
-                    title, meta_desc, h1_cnt, tot_img, no_alt, body = "Title Tag Missing", "Meta Description Tag Missing", 0, 0, 0, ""
-
-                rep = generate_ai_report(target, st_code, rt, title, meta_desc, h1_cnt, tot_img, no_alt, body, scraped_hdrs)
-                st.session_state.audit_data = {
-                    "url": target, "status": st_code, "rt": rt, "title": title,
-                    "meta": meta_desc, "h1": h1_cnt, "tot_img": tot_img, "no_alt": no_alt, "report": rep
-                }
+                audit_res = perform_website_audit(target)
+                report_md = generate_ai_report(audit_res)
+                audit_res["report"] = report_md
+                
+                st.session_state.audit_data = audit_res
                 st.session_state.scanned = True
                 st.rerun()
 
 
-# --- PAGE 2: AUDIT RESULTS SCREEN (Pic 2 & Pic 3 Exact Layout) ---
+# --- PAGE 2: AUDIT RESULTS SCREEN ---
 else:
     d = st.session_state.audit_data
     
@@ -540,7 +646,7 @@ else:
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 4 Diagnostic Metric Cards (Pic 2)
+    # 4 Diagnostic Metric Cards
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown(f'<div class="metric-card"><div class="metric-card-title">HTTP Status Code</div><div class="metric-card-value">{d["status"]}</div></div>', unsafe_allow_html=True)
@@ -551,7 +657,7 @@ else:
     with m4:
         st.markdown(f'<div class="metric-card"><div class="metric-card-title">Missing Alt Attributes</div><div class="metric-card-value">{d["no_alt"]} / {d["tot_img"]}</div></div>', unsafe_allow_html=True)
 
-    # Scraped Metadata Overview Card Container (Pic 2)
+    # Scraped Metadata Overview Card Container
     meta_badge_html = '<span class="meta-badge-missing">Missing Tag</span>' if d["meta"] == "Meta Description Tag Missing" else '<span class="meta-badge-ok">Valid</span>'
     meta_color = "#f87171" if d["meta"] == "Meta Description Tag Missing" else "#ffffff"
 
@@ -577,7 +683,7 @@ else:
         unsafe_allow_html=True,
     )
 
-    # Technical Diagnostic & Inspection Report (Pic 3)
+    # Technical Diagnostic & Inspection Report
     st.markdown('<div class="report-card-box">', unsafe_allow_html=True)
     st.markdown('<div style="color: #ffffff; font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>', unsafe_allow_html=True)
     st.markdown(d["report"])
