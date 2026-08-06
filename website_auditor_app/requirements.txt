@@ -1,0 +1,6 @@
+reflex
+requests
+beautifulsoup4
+python-dotenv
+google-genai
+urllib3

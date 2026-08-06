@@ -1,0 +1,15 @@
+{
+  "name": "SitePulse Enterprise",
+  "short_name": "SitePulse",
+  "start_url": "http://192.168.0.109:3000",
+  "display": "standalone",
+  "background_color": "#211a36",
+  "theme_color": "#5b3cc2",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
