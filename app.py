@@ -1,5 +1,7 @@
 import os
+import re
 import time
+import urllib.parse
 import requests
 import urllib3
 from bs4 import BeautifulSoup
@@ -90,8 +92,8 @@ st.markdown(
         white-space: nowrap;
     }
 
-    /* Header Download Button Overrides */
-    div[data-testid="column"] .stDownloadButton > button {
+    /* DOWNLOAD BUTTON PURPLE SHADE & STYLING */
+    .stDownloadButton > button {
         background: #8b5cf6 !important;
         color: #ffffff !important;
         font-weight: 700 !important;
@@ -102,6 +104,12 @@ st.markdown(
         padding: 0 1.2rem !important;
         box-shadow: 0 0 14px rgba(139, 92, 246, 0.4) !important;
         margin-top: 0px !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    .stDownloadButton > button:hover {
+        background: #7c3aed !important;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.7) !important;
+        color: #ffffff !important;
     }
     
     /* Audit New Target Button */
@@ -308,6 +316,15 @@ if "audit_data" not in st.session_state:
     st.session_state.audit_data = {}
 
 
+def get_clean_filename(url):
+    """Generates a clean filename derived from the target website URL."""
+    netloc = urllib.parse.urlparse(url).netloc or url
+    clean_domain = re.sub(r"[^a-zA-Z0-9]", "_", netloc).strip("_")
+    if not clean_domain:
+        clean_domain = "website"
+    return f"{clean_domain}_audit_report.txt"
+
+
 def perform_website_audit(target_url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -322,7 +339,7 @@ def perform_website_audit(target_url):
         raw_html = r.text
         response_headers = r.headers
         content_size_kb = round(len(r.content) / 1024, 2)
-    except Exception as e:
+    except Exception:
         status_code = 504
         raw_html = ""
         response_headers = {}
@@ -330,7 +347,6 @@ def perform_website_audit(target_url):
 
     latency = round(time.time() - t0, 2)
 
-    # Scrape detailed HTML features
     flaws = []
     recommendations = []
     missing_critical = []
@@ -375,27 +391,24 @@ def perform_website_audit(target_url):
             flaws.append(f"{no_alt} out of {tot_img} image elements lack accessibility descriptive `alt` text.")
             recommendations.append(f"Add descriptive `alt` attributes to all {no_alt} missing image elements.")
 
-        # Viewport (Mobile Responsiveness)
+        # Viewport Tag
         viewport = soup.find("meta", attrs={"name": "viewport"})
-        has_viewport = bool(viewport)
-        if not has_viewport:
+        if not viewport:
             flaws.append("Mobile viewport meta tag `<meta name=\"viewport\">` is missing.")
             missing_critical.append("Mobile Viewport Configuration Tag")
             recommendations.append("Add `<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">` for mobile responsiveness.")
 
-        # Open Graph Social Tags
+        # Open Graph
         og_title = soup.find("meta", attrs={"property": "og:title"})
         if not og_title:
             flaws.append("Open Graph `og:title` social media tag is not configured.")
 
         # Canonical URL
         canonical = soup.find("link", attrs={"rel": "canonical"})
-        has_canonical = bool(canonical)
-        if not has_canonical:
+        if not canonical:
             flaws.append("Canonical URL link `<link rel=\"canonical\">` is missing.")
             recommendations.append("Add a canonical tag to prevent duplicate content indexing issues.")
 
-        # Content Preview
         body_text = soup.get_text(separator=" ", strip=True)[:2500]
 
     else:
@@ -404,12 +417,10 @@ def perform_website_audit(target_url):
         h1_count = 0
         tot_img = 0
         no_alt = 0
-        has_viewport = False
-        has_canonical = False
         body_text = ""
         flaws.append("Failed to establish a valid HTTP connection or received empty payload.")
 
-    # Security & Latency Flaws
+    # Latency check
     if latency > 1.5:
         flaws.append(f"High server response latency detected ({latency}s).")
         recommendations.append("Optimize server-side execution, leverage CDN caching, or optimize web host response time.")
@@ -426,11 +437,10 @@ def perform_website_audit(target_url):
         flaws.append(f"Missing security headers: {', '.join(missing_sec_headers)}.")
         recommendations.append(f"Configure server response headers: {', '.join(missing_sec_headers)}.")
 
-    # Health Score Calculation
     deductions = len(flaws) * 12
     health_score = max(20, min(100, 100 - deductions))
 
-    scraped_data = {
+    return {
         "url": target_url,
         "status": status_code,
         "rt": latency,
@@ -448,11 +458,8 @@ def perform_website_audit(target_url):
         "headers_str": "\n".join([f"{k}: {v}" for k, v in response_headers.items()]),
     }
 
-    return scraped_data
-
 
 def generate_ai_report(data):
-    # Try AI API Generation
     prompt = f"""
 You are an expert Enterprise Web Auditor. Perform a deep technical audit for: {data['url']}
 
@@ -517,7 +524,6 @@ Live runtime scan performed for **{data['url']}**. The analysis indicates a serv
         except Exception:
             pass
 
-    # Dynamic Fallback Report (Customized to target URL, NO static hardcoded text!)
     flaws_formatted = "\n".join([f"- {f}" for f in data['flaws']]) if data['flaws'] else "- No major critical flaws detected during DOM sweep."
     recs_formatted = "\n".join([f"- {r}" for r in data['recommendations']]) if data['recommendations'] else "- Maintain current technical standards and monitor performance."
     missing_formatted = "\n".join([f"- {m}" for m in data['missing_critical']]) if data['missing_critical'] else "- No high-severity missing structural tags detected."
@@ -564,10 +570,11 @@ with h_col2:
     if st.session_state.scanned and "report" in st.session_state.audit_data:
         btn_c, badge_c = st.columns([1.4, 1])
         with btn_c:
+            dynamic_filename = get_clean_filename(st.session_state.audit_data.get("url", "website"))
             st.download_button(
                 label="Download Audit Report",
                 data=st.session_state.audit_data["report"],
-                file_name="website_audit_report.txt",
+                file_name=dynamic_filename,
                 mime="text/plain",
                 use_container_width=True,
             )
