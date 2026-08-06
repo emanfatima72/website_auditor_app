@@ -38,8 +38,9 @@ st.markdown(
         color: #e2e8f0;
     }
     
+    /* Remove top margin/padding to attach header to the top edge */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 0.5rem !important;
         padding-bottom: 2rem !important;
         max-width: 1200px !important;
     }
@@ -49,10 +50,11 @@ st.markdown(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 1.25rem;
+        padding: 0.65rem 1.25rem;
         background: rgba(17, 9, 32, 0.75);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
+        margin-top: 0px !important;
         margin-bottom: 2.5rem;
     }
     .logo-container {
@@ -64,24 +66,24 @@ st.markdown(
         background: linear-gradient(135deg, #a855f7, #7c3aed);
         color: #ffffff;
         font-weight: 800;
-        font-size: 1.1rem;
-        width: 36px;
-        height: 36px;
+        font-size: 1rem;
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+        box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
     }
     .logo-title {
         font-weight: 800;
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         color: #ffffff;
     }
     .logo-subtitle {
         color: #a78bfa;
         font-weight: 400;
-        font-size: 1.05rem;
+        font-size: 1rem;
     }
     .header-right-actions {
         display: flex;
@@ -92,43 +94,43 @@ st.markdown(
         border: 1px solid rgba(139, 92, 246, 0.4);
         background: rgba(139, 92, 246, 0.08);
         color: #c084fc;
-        padding: 0.35rem 0.9rem;
+        padding: 0.3rem 0.85rem;
         border-radius: 8px;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 500;
     }
     
     /* Center Badge & Hero Styling */
     .badge-capsule {
         display: inline-block;
-        padding: 0.45rem 1.4rem;
+        padding: 0.4rem 1.2rem;
         border: 1px solid rgba(168, 85, 247, 0.4);
         border-radius: 20px;
         background: rgba(168, 85, 247, 0.08);
         color: #c084fc;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
-        letter-spacing: 1.5px;
+        letter-spacing: 1.2px;
     }
     
     .hero-heading {
         color: #ffffff;
-        font-size: 3.2rem;
+        font-size: 2.8rem;
         font-weight: 900;
         line-height: 1.15;
         margin-top: 1.2rem;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
         text-align: center;
         letter-spacing: -0.5px;
     }
     
     .hero-subtitle {
         color: #94a3b8;
-        font-size: 1.1rem;
-        max-width: 680px;
-        margin: 0 auto 2.5rem auto;
+        font-size: 1rem;
+        max-width: 650px;
+        margin: 0 auto 2.2rem auto;
         text-align: center;
-        line-height: 1.6;
+        line-height: 1.5;
     }
     
     /* Parallel Input Box & Button Adjustments */
@@ -147,9 +149,9 @@ st.markdown(
         color: #ffffff !important;
         border: 1px solid rgba(139, 92, 246, 0.35) !important;
         border-radius: 10px !important;
-        padding: 0.8rem 1.2rem !important;
-        font-size: 1rem !important;
-        height: 48px !important;
+        padding: 0.75rem 1.1rem !important;
+        font-size: 0.95rem !important;
+        height: 46px !important;
     }
     
     .stTextInput > div > div > input:focus {
@@ -165,10 +167,10 @@ st.markdown(
         background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         border: none !important;
         border-radius: 10px !important;
-        height: 48px !important;
+        height: 46px !important;
         box-shadow: 0 0 18px rgba(168, 85, 247, 0.45) !important;
         display: flex !important;
         align-items: center !important;
@@ -176,39 +178,22 @@ st.markdown(
         margin-top: 0px !important;
     }
     
-    /* Header Top Download Button Styling */
-    .header-right-actions .stDownloadButton > button {
-        background: transparent !important;
-        border: 1px solid rgba(168, 85, 247, 0.5) !important;
-        color: #c084fc !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-        border-radius: 8px !important;
-        height: 36px !important;
-        box-shadow: none !important;
-        padding: 0 1rem !important;
-    }
-    .header-right-actions .stDownloadButton > button:hover {
-        background: rgba(168, 85, 247, 0.15) !important;
-        color: #ffffff !important;
-    }
-
     /* Metric Cards */
     .metric-box {
         background: #120924;
         border: 1px solid #261445;
         border-radius: 8px;
-        padding: 1rem;
+        padding: 0.85rem;
         text-align: center;
     }
     .metric-title {
         color: #a78bfa;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 600;
     }
     .metric-val {
         color: #ffffff;
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         font-weight: 700;
         margin-top: 4px;
     }
@@ -309,13 +294,9 @@ Live audit generated for **{target_url}**. Server responded with **{status_code}
 """
 
 
-# --- EXACT NAVBAR CONTAINER FROM IMAGE ---
-dl_button_html = ""
-if st.session_state.scanned and "report" in st.session_state.audit_data:
-    dl_button_html = '<div class="header-right-actions">'
-
+# --- NAVBAR HEADER ATTACHED TO TOP EDGE ---
 st.markdown(
-    f"""
+    """
     <div class="header-bar-card">
         <div class="logo-container">
             <div class="logo-badge">S</div>
