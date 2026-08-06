@@ -205,6 +205,13 @@ st.markdown(
         margin-top: 0px !important;
     }
 
+    .stButton > button:disabled {
+        background: #6d28d9 !important;
+        color: #e2e8f0 !important;
+        opacity: 0.9 !important;
+        cursor: not-allowed !important;
+    }
+
     /* Metric Cards */
     .metric-card {
         background: #0f071d;
@@ -314,6 +321,8 @@ if "scanned" not in st.session_state:
     st.session_state.scanned = False
 if "audit_data" not in st.session_state:
     st.session_state.audit_data = {}
+if "loading" not in st.session_state:
+    st.session_state.loading = False
 
 
 def get_clean_filename(url):
@@ -668,26 +677,29 @@ if not st.session_state.scanned:
         url_input = st.text_input("", placeholder="https://example.com", label_visibility="collapsed")
         
     with col_btn:
-        btn_click = st.button("Run Analysis", use_container_width=True)
+        button_label = "⚡ Analyzing..." if st.session_state.loading else "Run Analysis"
+        btn_click = st.button(button_label, use_container_width=True, disabled=st.session_state.loading)
 
-    if btn_click:
-        if url_input.strip():
-            target = url_input.strip()
-            if not target.startswith(("http://", "https://")):
-                target = "https://" + target
+    if btn_click and url_input.strip():
+        st.session_state.loading = True
+        st.rerun()
 
-            with st.spinner("⚡ Running deep technical audit, inspecting DOM structure, and compiling Notepad report..."):
-                time.sleep(1.2)
-                audit_res = perform_website_audit(target)
-                report_md = generate_ai_report(audit_res)
-                audit_res["report"] = report_md
-                
-                txt_bytes = generate_txt_bytes(audit_res)
-                audit_res["txt_data"] = txt_bytes
-                
-                st.session_state.audit_data = audit_res
-                st.session_state.scanned = True
-                st.rerun()
+    if st.session_state.loading:
+        target = url_input.strip()
+        if not target.startswith(("http://", "https://")):
+            target = "https://" + target
+
+        audit_res = perform_website_audit(target)
+        report_md = generate_ai_report(audit_res)
+        audit_res["report"] = report_md
+        
+        txt_bytes = generate_txt_bytes(audit_res)
+        audit_res["txt_data"] = txt_bytes
+        
+        st.session_state.audit_data = audit_res
+        st.session_state.scanned = True
+        st.session_state.loading = False
+        st.rerun()
 
 
 # --- PAGE 2: AUDIT RESULTS SCREEN ---
