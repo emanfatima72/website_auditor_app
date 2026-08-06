@@ -38,7 +38,7 @@ st.markdown(
         color: #e2e8f0;
     }
     
-    /* Remove top margin/padding to attach header to the top edge */
+    /* Attach header to top edge */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 2rem !important;
@@ -85,11 +85,6 @@ st.markdown(
         font-weight: 400;
         font-size: 1rem;
     }
-    .header-right-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
     .status-badge {
         border: 1px solid rgba(139, 92, 246, 0.4);
         background: rgba(139, 92, 246, 0.08);
@@ -133,7 +128,7 @@ st.markdown(
         line-height: 1.5;
     }
     
-    /* Parallel Input Box & Button Adjustments */
+    /* Parallel Input Box & Button */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
