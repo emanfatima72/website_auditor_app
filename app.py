@@ -637,7 +637,7 @@ with h_col2:
         with btn_c:
             dynamic_filename = get_clean_filename(st.session_state.audit_data.get("url", "website"))
             st.download_button(
-                label="Download Notepad Report",
+                label="Download Report",
                 data=st.session_state.audit_data["txt_data"],
                 file_name=dynamic_filename,
                 mime="text/plain",
