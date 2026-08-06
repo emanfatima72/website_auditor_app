@@ -8,15 +8,6 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import streamlit as st
 
-# Safe FPDF Import Engine for Streamlit Cloud & Local Environments
-try:
-    from fpdf import FPDF
-except ModuleNotFoundError:
-    try:
-        from fpdf2 import FPDF
-    except ModuleNotFoundError:
-        FPDF = None
-
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -326,110 +317,68 @@ if "audit_data" not in st.session_state:
 
 
 def get_clean_filename(url):
-    """Generates a clean PDF filename derived from the target website URL."""
+    """Generates a clean Notepad (.txt) filename derived from the target website URL."""
     netloc = urllib.parse.urlparse(url).netloc or url
     clean_domain = re.sub(r"[^a-zA-Z0-9]", "_", netloc).strip("_")
     if not clean_domain:
         clean_domain = "website"
-    return f"{clean_domain}_audit_report.pdf"
+    return f"{clean_domain}_audit_report.txt"
 
 
-# --- FPDF PDF GENERATION ENGINE ---
-if FPDF is not None:
-    class SitePulsePDF(FPDF):
-        def header(self):
-            self.set_font('Helvetica', 'B', 15)
-            self.set_text_color(139, 92, 246)  # Reflex Purple Header
-            self.cell(0, 10, 'SITEPULSE ENTERPRISE - TECHNICAL SEO REPORT', border=False, ln=True, align='C')
-            self.set_draw_color(139, 92, 246)
-            self.set_line_width(0.5)
-            self.line(10, 22, 200, 22)
-            self.ln(5)
+def generate_txt_bytes(data):
+    """Generates a comprehensive full-screen report content for Notepad download."""
+    flaws_text = "\n".join([f"  - {f}" for f in data.get('flaws', [])]) if data.get('flaws') else "  - No major critical flaws detected."
+    recs_text = "\n".join([f"  - {r}" for r in data.get('recommendations', [])]) if data.get('recommendations') else "  - Maintain current technical standards."
+    missing_text = "\n".join([f"  - {m}" for m in data.get('missing_critical', [])]) if data.get('missing_critical') else "  - None detected."
 
-        def footer(self):
-            self.set_y(-15)
-            self.set_font('Helvetica', 'I', 8)
-            self.set_text_color(150, 150, 150)
-            self.cell(0, 10, f'Page {self.page_no()}/{{nb}} | Automated SitePulse Diagnostics Engine', align='C')
+    full_report = f"""====================================================================
+SITEPULSE ENTERPRISE - TECHNICAL SEO & DIAGNOSTIC REPORT
+====================================================================
+Target URL: {data.get('url')}
+Calculated Health Score: {data.get('health_score')}/100
+HTTP Response Status: {data.get('status')}
+Server Latency: {data.get('rt')} seconds
+Payload Size: {data.get('size_kb')} KB
 
-def clean_pdf_text(text):
-    """Clean special characters to prevent FPDF latin-1 encoding crashes."""
-    if not text:
-        return ""
-    text = str(text).replace("**", "").replace("### ", "").replace("`", "").replace("⚡", "").replace("•", "-")
-    return text.encode('latin-1', 'ignore').decode('latin-1')
+--------------------------------------------------------------------
+1. SCRAPED TECHNICAL METRICS
+--------------------------------------------------------------------
+- Page Title: {data.get('title')}
+- Meta Description: {data.get('meta')}
+- H1 Headings Count: {data.get('h1')}
+- Image Count: {data.get('tot_img')}
+- Missing Image Alt Attributes: {data.get('no_alt')}
 
-def generate_pdf_bytes(data):
-    if FPDF is None:
-        return b""
-    try:
-        pdf = SitePulsePDF()
-        pdf.alias_nb_pages()
-        pdf.add_page()
-        pdf.set_auto_page_break(auto=True, margin=15)
-        
-        # Target Meta Info
-        pdf.set_font('Helvetica', 'B', 11)
-        pdf.set_text_color(50, 50, 50)
-        pdf.cell(0, 6, clean_pdf_text(f"Target URL: {data['url']}"), ln=True)
-        pdf.cell(0, 6, clean_pdf_text(f"Calculated Health Score: {data['health_score']}/100"), ln=True)
-        pdf.ln(4)
+--------------------------------------------------------------------
+2. DETECTED FLAWS & ISSUES
+--------------------------------------------------------------------
+{flaws_text}
 
-        # 1. Scraped Technical Metrics
-        pdf.set_font('Helvetica', 'B', 12)
-        pdf.set_text_color(139, 92, 246)
-        pdf.cell(0, 8, clean_pdf_text("1. SCRAPED TECHNICAL METRICS"), ln=True)
-        
-        metrics = [
-            ("HTTP Status Code", str(data['status'])),
-            ("Server Latency", f"{data['rt']} seconds"),
-            ("Payload Size", f"{data['size_kb']} KB"),
-            ("H1 Headings", f"{data['h1']} Detected"),
-            ("Missing Image Alt", f"{data['no_alt']} / {data['tot_img']}"),
-            ("Page Title", data['title']),
-            ("Meta Description", data['meta'])
-        ]
-        
-        for label, val in metrics:
-            pdf.set_font('Helvetica', 'B', 9)
-            pdf.set_text_color(60, 60, 60)
-            pdf.cell(50, 6, clean_pdf_text(f"{label}:"), border=0)
-            pdf.set_font('Helvetica', '', 9)
-            pdf.set_text_color(30, 30, 30)
-            pdf.multi_cell(0, 6, clean_pdf_text(val))
-        pdf.ln(4)
+--------------------------------------------------------------------
+3. ACTIONABLE RECOMMENDATIONS
+--------------------------------------------------------------------
+{recs_text}
 
-        # 2. Complete Inspection & Report Breakdown
-        pdf.set_font('Helvetica', 'B', 12)
-        pdf.set_text_color(139, 92, 246)
-        pdf.cell(0, 8, clean_pdf_text("2. DETAILED DIAGNOSTIC REPORT & AI ANALYSIS"), ln=True)
-        
-        pdf.set_font('Helvetica', '', 9.5)
-        pdf.set_text_color(40, 40, 40)
-        
-        report_text = data.get('report', '')
-        for line in report_text.split('\n'):
-            line_str = line.strip()
-            if not line_str:
-                pdf.ln(2)
-                continue
-            if line_str.startswith("###"):
-                pdf.set_font('Helvetica', 'B', 10.5)
-                pdf.set_text_color(139, 92, 246)
-                pdf.cell(0, 7, clean_pdf_text(line_str), ln=True)
-                pdf.set_font('Helvetica', '', 9.5)
-                pdf.set_text_color(40, 40, 40)
-            else:
-                pdf.multi_cell(0, 5.5, clean_pdf_text(line_str))
-                
-        # Output handling for both fpdf and fpdf2
-        output_res = pdf.output(dest='S')
-        if isinstance(output_res, str):
-            return output_res.encode('latin-1', 'ignore')
-        return bytes(output_res)
+--------------------------------------------------------------------
+4. CRITICAL MISSING ELEMENTS & SECURITY DEFICIENCIES
+--------------------------------------------------------------------
+{missing_text}
 
-    except Exception:
-        return b""
+--------------------------------------------------------------------
+5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN
+--------------------------------------------------------------------
+{data.get('report', '')}
+
+--------------------------------------------------------------------
+6. RESPONSE HEADERS
+--------------------------------------------------------------------
+{data.get('headers_str', 'N/A')}
+
+====================================================================
+End of SitePulse Enterprise Diagnostic Report
+====================================================================
+"""
+    return full_report.encode("utf-8")
 
 
 def perform_website_audit(target_url):
@@ -674,15 +623,15 @@ with h_col1:
     )
 
 with h_col2:
-    if st.session_state.scanned and "pdf_data" in st.session_state.audit_data:
+    if st.session_state.scanned and "txt_data" in st.session_state.audit_data:
         btn_c, badge_c = st.columns([1.4, 1])
         with btn_c:
             dynamic_filename = get_clean_filename(st.session_state.audit_data.get("url", "website"))
             st.download_button(
-                label="Download PDF Report",
-                data=st.session_state.audit_data["pdf_data"],
+                label="Download Notepad Report",
+                data=st.session_state.audit_data["txt_data"],
                 file_name=dynamic_filename,
-                mime="application/pdf",
+                mime="text/plain",
                 use_container_width=True,
             )
         with badge_c:
@@ -727,14 +676,14 @@ if not st.session_state.scanned:
             if not target.startswith(("http://", "https://")):
                 target = "https://" + target
 
-            with st.spinner("⚡ Running deep technical audit, inspecting DOM structure, and compiling PDF report..."):
+            with st.spinner("⚡ Running deep technical audit, inspecting DOM structure, and compiling Notepad report..."):
                 time.sleep(1.2)
                 audit_res = perform_website_audit(target)
                 report_md = generate_ai_report(audit_res)
                 audit_res["report"] = report_md
                 
-                pdf_bytes = generate_pdf_bytes(audit_res)
-                audit_res["pdf_data"] = pdf_bytes
+                txt_bytes = generate_txt_bytes(audit_res)
+                audit_res["txt_data"] = txt_bytes
                 
                 st.session_state.audit_data = audit_res
                 st.session_state.scanned = True
