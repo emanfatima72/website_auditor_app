@@ -1,3 +1,6 @@
-reflex
+streamlit
 requests
-google-generativeai
+urllib3
+beautifulsoup4
+python-dotenv
+google-genai

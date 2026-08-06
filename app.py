@@ -22,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- CUSTOM CSS FOR REFLEX-LIKE DARK THEME & METRICS ---
+# --- RESPONSIVE CSS FOR DESKTOP & MOBILE ---
 st.markdown(
     """
     <style>
@@ -37,11 +37,11 @@ st.markdown(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.85rem 1.5rem;
+        padding: 0.85rem 1.2rem;
         background: rgba(11, 7, 20, 0.75);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 10px;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     
     .logo-box {
@@ -65,7 +65,7 @@ st.markdown(
         border-radius: 8px;
         padding: 1.2rem;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     .metric-label {
         font-size: 0.85rem;
@@ -74,9 +74,21 @@ st.markdown(
         margin-bottom: 0.2rem;
     }
     .metric-value {
-        font-size: 1.45rem;
+        font-size: 1.4rem;
         color: #ffffff;
         font-weight: 700;
+    }
+    
+    /* Responsive Grid for Metadata Overview */
+    .metadata-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    @media (max-width: 768px) {
+        .metadata-grid {
+            grid-template-columns: 1fr !important;
+        }
     }
     
     /* Report Container */
@@ -88,15 +100,13 @@ st.markdown(
         margin-top: 1rem;
     }
     
-    /* Input Styling */
+    /* Custom Input & Button Styling */
     .stTextInput > div > div > input {
         background-color: rgba(15, 10, 26, 0.8) !important;
         color: #ffffff !important;
         border: 1px solid rgba(168, 85, 247, 0.35) !important;
         border-radius: 8px !important;
     }
-    
-    /* Button Styling */
     .stButton > button {
         background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
         color: #ffffff !important;
@@ -106,10 +116,10 @@ st.markdown(
         box-shadow: 0 0 14px rgba(168, 85, 247, 0.45) !important;
     }
     
-    /* Markdown Fixes to prevent enlarged raw HTML text */
+    /* Dynamic Markdown Styling & Fixes */
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
         color: #c084fc !important;
-        font-size: 1.25rem !important;
+        font-size: 1.2rem !important;
         margin-top: 1rem !important;
         font-weight: 700 !important;
     }
@@ -185,7 +195,7 @@ Highlight missing HTTP security headers (e.g., CSP, HSTS, X-Frame-Options), sche
             )
             if response and response.text:
                 return response.text
-        except Exception as e:
+        except Exception:
             pass
 
     # 2. OpenRouter Fallback
@@ -279,13 +289,13 @@ Live runtime scan performed for **{target_url}**. Server latency recorded at **{
 st.markdown(
     """
     <div class="header-container">
-        <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             <div class="logo-box">S</div>
-            <span style="font-weight: 800; font-size: 1.15rem; color: #ffffff;">SitePulse Enterprise</span>
-            <span style="font-weight: 400; font-size: 1.05rem; color: #a78bfa;">| Website Auditor</span>
+            <span style="font-weight: 800; font-size: 1.1rem; color: #ffffff;">SitePulse</span>
+            <span style="font-weight: 400; font-size: 0.95rem; color: #a78bfa;">| Auditor</span>
         </div>
-        <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.4); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #d8b4fe;">
-            System Operational
+        <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.4); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; color: #d8b4fe;">
+            Operational
         </div>
     </div>
     """,
@@ -297,14 +307,14 @@ st.markdown(
 if not st.session_state.scanned:
     st.markdown(
         """
-        <div style="text-align: center; padding: 2rem 0;">
+        <div style="text-align: center; padding: 1.5rem 0;">
             <div style="display: inline-block; padding: 0.35rem 1rem; border: 1px solid rgba(192, 132, 252, 0.4); border-radius: 20px; background: rgba(192, 132, 252, 0.08); font-size: 0.75rem; font-weight: 700; color: #c084fc; letter-spacing: 1px;">
                 ENTERPRISE DIAGNOSTICS PLATFORM
             </div>
-            <h1 style="font-size: 2.8rem; font-weight: 800; color: #ffffff; margin-top: 1rem;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin-top: 1rem;">
                 Enterprise Website Audit & Diagnostics
             </h1>
-            <p style="color: #94a3b8; font-size: 1.1rem; max-width: 650px; margin: 0 auto 2rem auto;">
+            <p style="color: #94a3b8; font-size: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
                 Deep-tier structural inspection, technical flaw detection, and live AI quality analysis
             </p>
         </div>
@@ -398,22 +408,22 @@ else:
     st.write("")
 
     # 4 Metric Cards Row
-    m1, m2, m3, m4 = st.columns(4)
+    m1, m2, m3, m4 = st.columns([1, 1, 1, 1])
     with m1:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">HTTP Status Code</div><div class="metric-value">{data["status_code"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">HTTP Status</div><div class="metric-value">{data["status_code"]}</div></div>', unsafe_allow_html=True)
     with m2:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Server Latency</div><div class="metric-value">{data["response_time"]}s</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">Latency</div><div class="metric-value">{data["response_time"]}s</div></div>', unsafe_allow_html=True)
     with m3:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">H1 Tags Count</div><div class="metric-value">{data["h1_count"]} Detected</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">H1 Tags</div><div class="metric-value">{data["h1_count"]}</div></div>', unsafe_allow_html=True)
     with m4:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Missing Alt Attributes</div><div class="metric-value">{data["missing_alt"]} / {data["total_images"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">Missing Alt</div><div class="metric-value">{data["missing_alt"]}/{data["total_images"]}</div></div>', unsafe_allow_html=True)
 
-    # Scraped Metadata Overview
+    # Scraped Metadata Overview (Responsive Layout)
     st.markdown(
         f"""
         <div class="report-card">
             <h4 style="color: #ffffff; margin-bottom: 1rem;">Scraped Metadata Overview</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="metadata-grid">
                 <div style="background: rgba(15, 10, 26, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2);">
                     <div style="font-size: 0.85rem; color: #c084fc; font-weight: 600;">Page Title</div>
                     <div style="font-weight: 700; color: #ffffff; margin-top: 4px;">{data['page_title']}</div>
