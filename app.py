@@ -7,7 +7,15 @@ import urllib3
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import streamlit as st
-from fpdf import FPDF
+
+# Safe FPDF Import Engine for Streamlit Cloud & Local Environments
+try:
+    from fpdf import FPDF
+except ModuleNotFoundError:
+    try:
+        from fpdf2 import FPDF
+    except ModuleNotFoundError:
+        FPDF = None
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -327,31 +335,33 @@ def get_clean_filename(url):
 
 
 # --- FPDF PDF GENERATION ENGINE ---
-class SitePulsePDF(FPDF):
-    def header(self):
-        self.set_font('Helvetica', 'B', 15)
-        self.set_text_color(139, 92, 246)  # Reflex Purple Header
-        self.cell(0, 10, 'SITEPULSE ENTERPRISE - TECHNICAL SEO REPORT', border=False, ln=True, align='C')
-        self.set_draw_color(139, 92, 246)
-        self.set_line_width(0.5)
-        self.line(10, 22, 200, 22)
-        self.ln(5)
+if FPDF is not None:
+    class SitePulsePDF(FPDF):
+        def header(self):
+            self.set_font('Helvetica', 'B', 15)
+            self.set_text_color(139, 92, 246)  # Reflex Purple Header
+            self.cell(0, 10, 'SITEPULSE ENTERPRISE - TECHNICAL SEO REPORT', border=False, ln=True, align='C')
+            self.set_draw_color(139, 92, 246)
+            self.set_line_width(0.5)
+            self.line(10, 22, 200, 22)
+            self.ln(5)
 
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Helvetica', 'I', 8)
-        self.set_text_color(150, 150, 150)
-        self.cell(0, 10, f'Page {self.page_no()}/{{nb}} | Automated SitePulse Diagnostics Engine', align='C')
+        def footer(self):
+            self.set_y(-15)
+            self.set_font('Helvetica', 'I', 8)
+            self.set_text_color(150, 150, 150)
+            self.cell(0, 10, f'Page {self.page_no()}/{{nb}} | Automated SitePulse Diagnostics Engine', align='C')
 
 def clean_pdf_text(text):
     """Prevents latin-1 encoding issues in FPDF."""
     if not text:
         return "N/A"
-    # Stripping unsupported markdown symbols for clean PDF rendering
     text = text.replace("**", "").replace("### ", "").replace("`", "")
     return str(text).encode('latin-1', 'replace').decode('latin-1')
 
 def generate_pdf_bytes(data):
+    if FPDF is None:
+        return b""
     pdf = SitePulsePDF()
     pdf.alias_nb_pages()
     pdf.add_page()
@@ -709,14 +719,12 @@ if not st.session_state.scanned:
             if not target.startswith(("http://", "https://")):
                 target = "https://" + target
 
-            # Visual Loading Spinner Implementation
             with st.spinner("⚡ Running deep technical audit, inspecting DOM structure, and compiling PDF report..."):
-                time.sleep(1.2)  # Smooth UX delay
+                time.sleep(1.2)
                 audit_res = perform_website_audit(target)
                 report_md = generate_ai_report(audit_res)
                 audit_res["report"] = report_md
                 
-                # PDF Generation & Storage in session
                 pdf_bytes = generate_pdf_bytes(audit_res)
                 audit_res["pdf_data"] = pdf_bytes
                 
