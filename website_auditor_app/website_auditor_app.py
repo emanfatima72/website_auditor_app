@@ -6,753 +6,646 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import reflex as rx
 
-# Disable SSL warnings for insecure HTTP requests
+# Disable SSL warnings for external domain scraping
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# -------------------------------------------------------------------
-# CONFIGURATION & ENVIRONMENT LOAD
-# -------------------------------------------------------------------
+# Load environment variables
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 
-# -------------------------------------------------------------------
-# BACKEND STATE
-# -------------------------------------------------------------------
 class State(rx.State):
+    """Application State & Web Scraping Engine"""
     url: str = ""
+    active_view: str = "home"  # 'home' or 'results'
     is_scanning: bool = False
     error_msg: str = ""
-    has_results: bool = False
 
-    # Scraped Data Metrics
-    status_code: int = 0
-    status_color: str = "#a855f7"
+    # Scraped Audit Attributes
+    status_code: int = 200
     response_time: float = 0.0
     page_title: str = ""
     meta_desc: str = ""
-    h1_list: list[str] = []
     h1_count: int = 0
     total_images: int = 0
     images_missing_alt: int = 0
     text_content_preview: str = ""
 
-    # AI Audit Results
+    # Dynamic AI Diagnostic Structure
     ai_report: str = ""
 
     def set_url(self, new_url: str):
         self.url = new_url
 
-    def reset_view(self):
-        self.has_results = False
+    def reset_to_home(self):
+        """Switches view back to Home search screen"""
+        self.active_view = "home"
         self.error_msg = ""
 
-    def download_report(self):
-        """Generates downloadable text file for the user."""
-        report_content = f"""====================================================
-SITEPULSE ENTERPRISE DIAGNOSTIC REPORT
-Target URL: {self.url}
-HTTP Status: {self.status_code} | Latency: {self.response_time}s
-H1 Count: {self.h1_count} | Missing Alt Tags: {self.images_missing_alt}/{self.total_images}
-====================================================
+    def analyze_with_ai(self, target_url: str, content_preview: str, detected_headers: str):
+        """Generates dynamic real-time AI diagnostic report based on exact scraped metrics"""
+        prompt = f"""
+You are an expert Enterprise Web Auditor. Perform an authentic, real-time deep technical audit for the live target URL: {target_url}
 
-PAGE TITLE:
-{self.page_title}
+=== SCRAPED DOMAIN METRICS & AUDIT DATA ===
+- HTTP Response Code: {self.status_code}
+- Server Response Time / Latency: {self.response_time} seconds
+- HTML Page Title: "{self.page_title}"
+- Meta Description: "{self.meta_desc}"
+- Total H1 Heading Elements Found: {self.h1_count}
+- Total Image Elements Found: {self.total_images} (Images missing 'alt' attribute: {self.images_missing_alt})
+- Scraped HTTP Response Headers:
+{detected_headers}
 
-META DESCRIPTION:
-{self.meta_desc}
+=== PAGE TEXT BODY PREVIEW ===
+{content_preview}
 
-----------------------------------------------------
-TECHNICAL AI INSPECTION REPORT
-----------------------------------------------------
-{self.ai_report}
+=== INSTRUCTIONS FOR REPORT GENERATION ===
+Analyze ONLY the provided target site data and live content preview. DO NOT output raw HTML tags like <h1> or <title> directly in plain markdown bullets as they corrupt Markdown parsing. Use backticks like `h1 tag` or `title tag` instead.
+
+List ALL identified technical flaws, structural weaknesses, missing security headers, missing metadata, content issues, or accessibility concerns dynamically.
+
+Format the response strictly in Clean Markdown with the following headers:
+
+### Executive Summary
+Provide a realistic overall health evaluation score (out of 100) based on actual scraped data, along with a concise technical summary of the site's overall posture.
+
+### 1. Real-Time Flaws & Identified Issues
+List EVERY single issue, missing tag, broken pattern, header vulnerability, or performance bottleneck detected on this specific domain. Use detailed bullet points.
+
+### 2. Domain & Page Quality Analysis
+Detail the technical analysis of latency ({self.response_time}s), semantic structure (H1 tags: {self.h1_count}), image optimization ({self.images_missing_alt} missing alt tags), SSL configuration, and server setup.
+
+### 3. Actionable Recommendations
+Provide specific, technical steps to fix every issue identified above.
+
+### 4. Critical Missing Elements & Security Deficiencies
+Highlight missing HTTP security headers (e.g., CSP, HSTS, X-Frame-Options), schema markups, missing metadata, or missing key structural elements.
 """
-        return rx.download(
-            data=report_content,
-            filename=f"sitepulse_audit_{self.url.replace('https://', '').replace('http://', '').replace('/', '_')}.txt",
-        )
+        # 1. Google Gemini Call
+        if GEMINI_API_KEY:
+            try:
+                from google import genai
+                client = genai.Client(api_key=GEMINI_API_KEY)
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
+                if response and response.text:
+                    self.ai_report = response.text
+                    return
+            except Exception as e:
+                print(f"Gemini AI Engine Exception: {e}")
+
+        # 2. OpenRouter Fallback
+        if OPENROUTER_API_KEY:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "deepseek/deepseek-r1:free",
+                    "messages": [{"role": "user", "content": prompt}]
+                }
+                res = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers=headers,
+                    json=payload,
+                    timeout=20
+                )
+                if res.status_code == 200:
+                    data = res.json()
+                    self.ai_report = data["choices"][0]["message"]["content"]
+                    return
+            except Exception as e:
+                print(f"OpenRouter Fallback Exception: {e}")
+
+        # 3. Dynamic Rule-Based Fallback (No Raw HTML Angle Brackets to prevent enlarged text)
+        issues = []
+        recommendations = []
+        missing_elements = []
+
+        if self.status_code != 200:
+            issues.append(f"HTTP Server response status is non-optimal: {self.status_code}")
+            recommendations.append("Investigate web server routing or CDN settings to return a clean HTTP 200 status.")
+
+        if self.response_time > 1.5:
+            issues.append(f"High initial page latency detected ({self.response_time}s).")
+            recommendations.append("Implement server-side caching or use a modern Content Delivery Network (CDN).")
+
+        if self.page_title in ["Title Tag Missing", ""]:
+            issues.append("HTML Title tag is completely missing from the DOM head node.")
+            missing_elements.append("Title tag in HTML head section.")
+            recommendations.append("Add a concise, unique page title between 50 and 60 characters.")
+
+        if "Missing" in self.meta_desc or not self.meta_desc:
+            issues.append("Meta description tag is absent or empty.")
+            missing_elements.append("Meta Description tag.")
+            recommendations.append("Add a relevant meta description tag (150-160 characters) targeting core keywords.")
+
+        if self.h1_count == 0:
+            issues.append("Zero H1 heading elements detected on the page structure.")
+            missing_elements.append("Primary H1 Heading tag.")
+            recommendations.append("Add exactly one primary H1 tag containing the target page keyword.")
+        elif self.h1_count > 1:
+            issues.append(f"Multiple H1 heading elements detected ({self.h1_count} found). This dilutes semantic heading hierarchy.")
+            recommendations.append("Refactor heading hierarchy so only one H1 tag is present on the page.")
+
+        if self.images_missing_alt > 0:
+            issues.append(f"{self.images_missing_alt} out of {self.total_images} images are missing descriptive 'alt' attributes.")
+            missing_elements.append(f"'alt' attributes on {self.images_missing_alt} image nodes.")
+            recommendations.append("Add meaningful alt text to all image tags for accessibility and search engine compliance.")
+
+        score = max(20, 100 - (len(issues) * 12 + int(self.response_time * 5)))
+
+        issues_md = "\n".join([f"- {iss}" for iss in issues]) if issues else "- No severe critical issues detected in base HTML DOM scan."
+        recs_md = "\n".join([f"- {rec}" for rec in recommendations]) if recommendations else "- Maintain current architectural and structural standards."
+        missing_md = "\n".join([f"- {mis}" for mis in missing_elements]) if missing_elements else "- All primary standard metadata tags are present."
+
+        self.ai_report = f"""### Executive Summary
+**Overall Calculated Health Score: {score}/100**
+
+Live runtime scan performed for **{target_url}**. The analysis indicates a server response latency of **{self.response_time}s** with **{len(issues)} primary structural issue(s)** detected during real-time DOM parsing.
+
+### 1. Real-Time Flaws & Identified Issues
+{issues_md}
+
+### 2. Domain & Page Quality Analysis
+- **Server Latency:** Recorded response time of **{self.response_time}s** via direct HTTP request.
+- **Semantic Structure:** Headings parsed with **{self.h1_count} H1 tags** found in the body container.
+- **Media Assets:** Scanned **{self.total_images} image elements**, where **{self.images_missing_alt}** lack descriptive ALT text tags.
+- **Metadata Indexing:** Title recorded as *"{self.page_title}"*.
+
+### 3. Actionable Recommendations
+{recs_md}
+
+### 4. Critical Missing Elements & Security Deficiencies
+{missing_md}
+"""
 
     def run_audit(self):
-        if not self.url:
+        """Scrapes URL dynamically, parses full real-time metrics, and generates live report"""
+        if not self.url.strip():
             self.error_msg = "Please enter a valid website URL."
             return
 
-        # Immediate state update to trigger UI loading spinner
         self.is_scanning = True
         self.error_msg = ""
-        self.has_results = False
         yield
 
         target_url = self.url.strip()
-        if not target_url.startswith("http://") and not target_url.startswith("https://"):
+        if not target_url.startswith(("http://", "https://")):
             target_url = "https://" + target_url
 
         start_time = time.time()
         headers = {
             "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-                " AppleWebKit/537.36 (KHTML, like Gecko)"
-                " Chrome/120.0.0.0 Safari/537.36"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
             )
         }
 
         resp_text = ""
         fetch_success = False
+        scraped_headers = ""
 
-        # Attempt 1: Fast direct fetch with SSL bypass
         try:
-            resp = requests.get(target_url, headers=headers, timeout=8, verify=False)
+            resp = requests.get(target_url, headers=headers, timeout=10, verify=False)
             self.status_code = resp.status_code
             resp_text = resp.text
+            scraped_headers = "\n".join([f"{k}: {v}" for k, v in resp.headers.items()])
             fetch_success = True
         except Exception:
-            # Attempt 2: Fallback retry
             try:
-                if target_url.startswith("http://"):
-                    alt_url = target_url.replace("http://", "https://")
-                else:
-                    alt_url = target_url.replace("https://", "http://")
-                resp = requests.get(alt_url, headers=headers, timeout=8, verify=False)
+                alt_url = (
+                    target_url.replace("http://", "https://")
+                    if target_url.startswith("http://")
+                    else target_url.replace("https://", "http://")
+                )
+                resp = requests.get(alt_url, headers=headers, timeout=10, verify=False)
                 self.status_code = resp.status_code
                 resp_text = resp.text
+                scraped_headers = "\n".join([f"{k}: {v}" for k, v in resp.headers.items()])
                 fetch_success = True
             except Exception:
                 fetch_success = False
 
         self.response_time = round(time.time() - start_time, 2)
-        self.status_color = "#a855f7" if (fetch_success and self.status_code == 200) else "#ef4444"
 
         if fetch_success and resp_text:
-            # Optimized HTML DOM Parsing
             soup = BeautifulSoup(resp_text, "html.parser")
 
-            for element in soup(["script", "style", "nav", "footer", "svg", "noscript", "iframe"]):
-                element.extract()
-
-            # Metadata Extraction
+            # Extract Page Title
             self.page_title = (
                 soup.title.string.strip()
                 if soup.title and soup.title.string
                 else "Title Tag Missing"
             )
+
+            # Extract Meta Description
             meta_tag = soup.find(
                 "meta", attrs={"name": "description"}
             ) or soup.find("meta", attrs={"property": "og:description"})
+
             self.meta_desc = (
-                meta_tag["content"].strip()
-                if meta_tag and "content" in meta_tag.attrs
+                meta_tag.get("content", "").strip()
+                if meta_tag and meta_tag.get("content")
                 else "Meta Description Tag Missing"
             )
 
-            # Headings & Images Inspection
-            self.h1_list = [
-                h1.get_text().strip()
-                for h1 in soup.find_all("h1")
-                if h1.get_text().strip()
-            ]
-            self.h1_count = len(self.h1_list)
+            # Count H1 Tags
+            h1_tags = soup.find_all("h1")
+            self.h1_count = len(h1_tags)
 
+            # Count Images & missing ALTs
             imgs = soup.find_all("img")
             self.total_images = len(imgs)
             self.images_missing_alt = sum(1 for img in imgs if not img.get("alt"))
 
-            body_text = soup.get_text(separator=" ", strip=True)[:1500]
+            # Remove unneeded scripts/styles before feeding body text to AI
+            for element in soup(["script", "style", "nav", "footer", "svg", "noscript", "iframe"]):
+                element.extract()
+
+            body_text = soup.get_text(separator=" ", strip=True)[:3000]
             self.text_content_preview = body_text
         else:
-            # Safe Fallback Data for network timeout domains
             self.status_code = 504
-            self.page_title = "Domain Connection Timeout"
-            self.meta_desc = "Server failed to respond within timeout window."
+            self.page_title = "Title Tag Missing"
+            self.meta_desc = "Meta Description Tag Missing"
             self.h1_count = 0
             self.total_images = 0
             self.images_missing_alt = 0
-            body_text = "Connection timeout reached while requesting target domain."
+            body_text = "Connection timeout reached while reaching domain."
+            scraped_headers = "No HTTP headers received."
 
-        # AI Analysis Execution
-        self.analyze_with_ai(target_url, body_text)
-
-        self.has_results = True
+        # Pass live parameters to dynamic AI generator
+        self.analyze_with_ai(target_url, body_text, scraped_headers)
         self.is_scanning = False
+        self.active_view = "results"
         yield
 
-    def analyze_with_ai(self, site_url: str, content: str):
-        prompt = f"""
-        You are an enterprise-level Website Technical Auditor and SEO Specialist.
-        Perform an exhaustive and unconstrained technical evaluation for the website: {site_url}
 
-        Metadata context:
-        - Page Title: {self.page_title}
-        - Meta Description: {self.meta_desc}
-        - H1 Count: {self.h1_count}
-        - Images Missing Alt Attributes: {self.images_missing_alt} out of {self.total_images}
-        - Content Sample: {content}
+# --- UI Components & Navigation ---
 
-        Format your output strictly using clean Markdown without any emojis or informal text.
-        Do NOT truncate or limit your findings. Include ALL valid observations, defects, and recommendations detected.
-
-        Structure the report into these exact primary sections:
-
-        ### Executive Summary
-        Provide a concise high-level evaluation score (out of 100) and critical overall impression.
-
-        ### 1. Identified Website Flaws & Issues
-        Detail ALL technical, structural, SEO, accessibility, and content defects detected on the page.
-
-        ### 2. Domain & Page Quality Analysis
-        Evaluate domain credibility markers, page structure, content depth, readability, and technical performance indicators.
-
-        ### 3. Key Recommendations for Improvement
-        List concrete actionable changes required to enhance site architecture, user experience, and search engine positioning.
-
-        ### 4. Essential Missing Elements
-        Detail specific missing technical schemas, structural components, conversion elements (CTAs), security headers, or UI modules.
-        """
-
-        if OPENROUTER_API_KEY:
-            try:
-                headers = {
-                    "Authorization": f"Bearer {OPENROUTER_API_KEY.strip()}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "http://localhost:3000",
-                    "X-Title": "SitePulse Enterprise",
-                }
-                payload = {
-                    "model": "deepseek/deepseek-chat",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 2500,
-                }
-                response = requests.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers=headers,
-                    json=payload,
-                    timeout=12,
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    self.ai_report = data["choices"][0]["message"]["content"]
-                    return
-            except Exception:
-                pass
-
-        if GEMINI_API_KEY:
-            try:
-                from google import genai
-
-                client = genai.Client(api_key=GEMINI_API_KEY.strip())
-                response = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=prompt,
-                )
-                self.ai_report = response.text
-                return
-            except Exception:
-                pass
-
-        self.ai_report = f"""### Executive Summary
-Evaluation Score: 45/100. Target URL ({site_url}) encountered severe network latency or connection timeout issues. Immediate network routing and SSL transport optimizations are required.
-
-### 1. Identified Website Flaws & Issues
-- Connection Timeout: Primary HTTP handshake failed or exceeded maximum wait threshold (8s).
-- Security Layer: Lack of responsive SSL fallback or improper port forwarding configuration.
-- Missing Metadata: Title and Meta description fields could not be parsed due to host unresponsiveness.
-- Unreachable Assets: Media and stylesheets failed to load over standard HTTP/HTTPS channels.
-- DOM Availability: Zero structural elements or HTML body content could be verified.
-
-### 2. Domain & Page Quality Analysis
-- Server Availability: Target host connection timed out, resulting in HTTP {self.status_code} state.
-- Structural Hierarchy: H1 tags count is registered at 0 due to network read timeout.
-- Response Latency: Recorded latency of {self.response_time}s exceeded connection budget.
-- DNS / Routing: Host routing rules or firewall settings are blocking automated HTTP clients.
-- SSL Compliance: Protocol handshakes failed to establish a stable socket connection.
-
-### 3. Key Recommendations for Improvement
-- Audit DNS records and web server firewall settings to ensure public accessibility.
-- Implement CDN proxy layers (e.g. Cloudflare) to reduce connection latency globally.
-- Configure proper HTTP to HTTPS redirection and valid SSL certificate chains.
-- Add structured meta tags and fallback HTML DOM structures.
-- Set up monitoring alerts for uptime and latency thresholds.
-
-### 4. Essential Missing Elements
-- Active Web Service: Server failed to return a 200 OK status code.
-- Essential Meta Tags: Primary title, description, and canonical tags missing.
-- Schema Architecture: No JSON-LD structured metadata detected.
-- Security Headers: Missing HSTS, CSP, and X-Frame-Options headers."""
+def navbar() -> rx.Component:
+    return rx.hstack(
+        rx.hstack(
+            rx.center(
+                rx.text(
+                    "S", 
+                    font_weight="900", 
+                    font_size="1.1rem", 
+                    color="#ffffff",
+                    line_height="1",
+                ),
+                width="34px",
+                height="34px",
+                background="linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)",
+                border_radius="8px",
+                box_shadow="0 0 10px rgba(168, 85, 247, 0.4)",
+            ),
+            rx.text(
+                "SitePulse Enterprise",
+                font_weight="800",
+                font_size="1.15rem",
+                color="#ffffff",
+            ),
+            rx.text(
+                "| Website Auditor",
+                font_weight="400",
+                font_size="1.05rem",
+                color="#a78bfa",
+            ),
+            align="center",
+            spacing="2",
+        ),
+        rx.hstack(
+            rx.cond(
+                State.active_view == "results",
+                rx.button(
+                    "Download Audit Report",
+                    on_click=rx.download(
+                        data=State.ai_report,
+                        filename="website_audit_report.txt",
+                    ),
+                    variant="solid",
+                    color_scheme="purple",
+                    size="2",
+                    cursor="pointer",
+                    background="linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)",
+                    color="#ffffff",
+                    font_weight="600",
+                ),
+            ),
+            rx.box(
+                rx.text("System Operational", font_size="0.8rem", color="#d8b4fe"),
+                padding="0.25rem 0.75rem",
+                border="1px solid rgba(168, 85, 247, 0.4)",
+                border_radius="6px",
+                background="rgba(168, 85, 247, 0.1)",
+            ),
+            spacing="3",
+            align="center",
+        ),
+        justify="between",
+        align="center",
+        width="100%",
+        padding="0.85rem 2rem",
+        border_bottom="1px solid rgba(255, 255, 255, 0.08)",
+        background="rgba(11, 7, 20, 0.75)",
+        backdrop_filter="blur(10px)",
+        position="sticky",
+        top="0",
+        z_index="100",
+    )
 
 
-# -------------------------------------------------------------------
-# STYLISH & RESPONSIVE COMPONENTS
-# -------------------------------------------------------------------
-def metric_card(title: str, value: str) -> rx.Component:
+def metric_card(label: str, value: str | rx.Var):
     return rx.box(
         rx.vstack(
-            rx.text(
-                title,
-                size="1",
-                color="#c084fc",
-                weight="medium",
-                align="center",
-            ),
-            rx.text(
-                value,
-                size="4",
-                weight="bold",
-                color="#f4f4f5",
-                align="center",
-            ),
-            spacing="1",
+            rx.text(label, font_size="0.8rem", color="#a78bfa", font_weight="600"),
+            rx.text(value, font_size="1.45rem", color="#ffffff", font_weight="700"),
             align="center",
             justify="center",
-            height="100%",
+            spacing="1",
+        ),
+        padding="1.2rem",
+        background="rgba(20, 12, 36, 0.8)",
+        border="1px solid rgba(139, 92, 246, 0.25)",
+        border_radius="8px",
+        width="100%",
+        text_align="center",
+    )
+
+
+# --- View 1: Home Screen ---
+
+def home_view() -> rx.Component:
+    return rx.center(
+        rx.vstack(
+            rx.box(
+                rx.text(
+                    "ENTERPRISE DIAGNOSTICS PLATFORM",
+                    font_size="0.72rem",
+                    font_weight="700",
+                    letter_spacing="1.2px",
+                    color="#c084fc",
+                ),
+                padding="0.35rem 1rem",
+                border="1px solid rgba(192, 132, 252, 0.4)",
+                border_radius="20px",
+                background="rgba(192, 132, 252, 0.08)",
+                margin_bottom="1rem",
+            ),
+            rx.heading(
+                "Enterprise Website Audit & Diagnostics",
+                font_size=["2.2rem", "3.6rem"],
+                font_weight="800",
+                color="#ffffff",
+                text_align="center",
+                line_height="1.15",
+                max_width="850px",
+            ),
+            rx.text(
+                "Deep-tier structural inspection, technical flaw detection, and live AI quality analysis",
+                font_size=["1rem", "1.2rem"],
+                color="#94a3b8",
+                text_align="center",
+                max_width="650px",
+                margin_bottom="1.5rem",
+            ),
+            rx.hstack(
+                rx.input(
+                    placeholder="https://amazon.com",
+                    value=State.url,
+                    on_change=State.set_url,
+                    size="3",
+                    width=["100%", "480px"],
+                    background="rgba(15, 10, 26, 0.8)",
+                    border="1px solid rgba(168, 85, 247, 0.35)",
+                    color="#ffffff",
+                ),
+                rx.button(
+                    rx.cond(
+                        State.is_scanning,
+                        rx.spinner(size="2", color="white"),
+                        "Run Analysis"
+                    ),
+                    on_click=State.run_audit,
+                    is_disabled=State.is_scanning,
+                    size="3",
+                    background="linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)",
+                    color="#ffffff",
+                    font_weight="600",
+                    cursor="pointer",
+                    box_shadow="0 0 18px rgba(168, 85, 247, 0.45)",
+                    padding="0 1.5rem",
+                ),
+                width="100%",
+                justify="center",
+                wrap="wrap",
+                spacing="3",
+            ),
+            rx.cond(
+                State.error_msg != "",
+                rx.callout(
+                    State.error_msg,
+                    icon="circle_alert",
+                    color_scheme="red",
+                    width="100%",
+                    margin_top="1.5rem",
+                )
+            ),
+            align="center",
+            spacing="4",
+            max_width="1000px",
+            width="100%",
+            padding="4rem 1rem",
+        ),
+        width="100%",
+    )
+
+
+# --- View 2: Results Screen ---
+
+def results_view() -> rx.Component:
+    is_missing = State.meta_desc.to_string().contains("Missing")
+
+    return rx.vstack(
+        # Page Title Row
+        rx.hstack(
+            rx.vstack(
+                rx.heading(
+                    f"Audit Results for {State.url}",
+                    font_size="2.2rem",
+                    font_weight="800",
+                    color="#ffffff",
+                ),
+                rx.text(
+                    "Comprehensive live structural, performance, and AI analysis breakdown",
+                    color="#a78bfa",
+                    font_size="1rem",
+                ),
+                align_items="start",
+                spacing="1",
+            ),
+            rx.button(
+                "Audit New Target",
+                on_click=State.reset_to_home,
+                variant="outline",
+                color_scheme="purple",
+                size="3",
+                cursor="pointer",
+                border="1px solid rgba(168, 85, 247, 0.6)",
+                color="#ffffff",
+            ),
+            justify="between",
+            align="center",
+            width="100%",
+            margin_bottom="1rem",
+        ),
+
+        # 4 Metric Cards Row
+        rx.grid(
+            metric_card("HTTP Status Code", State.status_code),
+            metric_card("Server Latency", f"{State.response_time}s"),
+            metric_card("H1 Tags Count", f"{State.h1_count} Detected"),
+            metric_card("Missing Alt Attributes", f"{State.images_missing_alt} / {State.total_images}"),
+            columns=rx.breakpoints(initial="1", sm="2", md="4"),
+            spacing="4",
+            width="100%",
+            margin_bottom="1.5rem",
+        ),
+
+        # Scraped Metadata Overview
+        rx.box(
+            rx.vstack(
+                rx.heading(
+                    "Scraped Metadata Overview",
+                    font_size="1.25rem",
+                    color="#ffffff",
+                    font_weight="700",
+                    margin_bottom="0.5rem",
+                ),
+                rx.grid(
+                    # Title Box
+                    rx.box(
+                        rx.vstack(
+                            rx.text("Page Title", font_size="0.85rem", color="#c084fc", font_weight="600"),
+                            rx.text(State.page_title, font_weight="700", color="#ffffff", font_size="1.05rem"),
+                            align_items="start",
+                            spacing="1",
+                        ),
+                        padding="1rem",
+                        background="rgba(15, 10, 26, 0.6)",
+                        border="1px solid rgba(139, 92, 246, 0.2)",
+                        border_radius="6px",
+                    ),
+                    # Meta Description Box
+                    rx.box(
+                        rx.hstack(
+                            rx.vstack(
+                                rx.text("Meta Description", font_size="0.85rem", color="#c084fc", font_weight="600"),
+                                rx.text(
+                                    State.meta_desc,
+                                    font_weight="700",
+                                    color=rx.cond(is_missing, "#f87171", "#ffffff"),
+                                    font_size="1.05rem"
+                                ),
+                                align_items="start",
+                                spacing="1",
+                            ),
+                            rx.cond(
+                                is_missing,
+                                rx.badge("Missing Tag", color_scheme="red", variant="solid", font_size="0.75rem")
+                            ),
+                            justify="between",
+                            align="start",
+                            width="100%",
+                        ),
+                        padding="1rem",
+                        background="rgba(15, 10, 26, 0.6)",
+                        border="1px solid rgba(139, 92, 246, 0.2)",
+                        border_radius="6px",
+                    ),
+                    columns=rx.breakpoints(initial="1", md="2"),
+                    spacing="4",
+                    width="100%",
+                ),
+                align_items="start",
+                width="100%",
+            ),
+            padding="1.5rem",
+            background="rgba(20, 12, 36, 0.75)",
+            border="1px solid rgba(139, 92, 246, 0.3)",
+            border_radius="10px",
+            width="100%",
+            margin_bottom="1.5rem",
+        ),
+
+        # Technical Diagnostic Report Section
+        rx.box(
+            rx.vstack(
+                rx.heading(
+                    "Technical Diagnostic & Inspection Report",
+                    font_size="1.25rem",
+                    color="#ffffff",
+                    font_weight="700",
+                    margin_bottom="0.8rem",
+                ),
+                rx.markdown(
+                    State.ai_report,
+                    color="#e2e8f0",
+                    style={
+                        "h1": {"color": "#c084fc", "font_size": "1.2rem", "margin_top": "1rem", "font_weight": "700"},
+                        "h2": {"color": "#c084fc", "font_size": "1.15rem", "margin_top": "1rem", "font_weight": "700"},
+                        "h3": {"color": "#c084fc", "font_size": "1.1rem", "margin_top": "1rem", "font_weight": "700"},
+                        "strong": {"color": "#c084fc"},
+                        "p": {"font_size": "0.95rem", "line_height": "1.6", "color": "#cbd5e1"},
+                        "ul": {"padding_left": "1.2rem", "margin_bottom": "1rem"},
+                        "li": {"margin_bottom": "0.4rem", "font_size": "0.95rem", "color": "#cbd5e1", "line_height": "1.5"},
+                        "code": {"font_size": "0.9rem", "background": "rgba(255, 255, 255, 0.1)", "padding": "2px 6px", "border_radius": "4px"}
+                    }
+                ),
+                align_items="start",
+                width="100%",
+            ),
+            padding="1.5rem",
+            background="rgba(20, 12, 36, 0.75)",
+            border="1px solid rgba(139, 92, 246, 0.3)",
+            border_radius="10px",
             width="100%",
         ),
+
+        spacing="4",
+        max_width="1200px",
         width="100%",
-        height="75px",
-        padding_x="3",
-        padding_y="2",
-        border="1px solid #581c87",
-        background="linear-gradient(180deg, #1e1136 0%, #130a24 100%)",
-        border_radius="10px",
-        box_shadow="0 4px 12px rgba(88, 28, 135, 0.15)",
-        display="flex",
-        align_items="center",
-        justify="center",
+        padding="2rem 1.5rem",
     )
 
 
-def custom_markdown_h3(text):
-    """Renders H3 heading with icon exclusively for Executive Summary."""
-    text_str = str(text)
-    is_executive = "Executive" in text_str
-
-    return rx.hstack(
-        rx.cond(
-            is_executive,
-            rx.icon(
-                tag="file-text",
-                size=18,
-                color="#c084fc",
-            ),
-            rx.fragment(),
-        ),
-        rx.heading(
-            text,
-            size="3",
-            weight="bold",
-            color="#c084fc",
-        ),
-        spacing="2",
-        align="center",
-        padding_y="2",
-        margin_top="3",
-        margin_bottom="1",
-        border_bottom="1px solid #3b0764",
-        width="100%",
-    )
-
+# --- Main App Container ---
 
 def index() -> rx.Component:
     return rx.box(
-        # Top Header Navigation
-        rx.box(
-            rx.hstack(
-                rx.hstack(
-                    rx.center(
-                        rx.text("S", color="white", weight="bold", size="3"),
-                        width="32px",
-                        height="32px",
-                        border_radius="6px",
-                        background="linear-gradient(135deg, #a855f7 0%, #6b21a8 100%)",
-                        box_shadow="0 0 12px rgba(168, 85, 247, 0.4)",
-                        flex_shrink="0",
-                    ),
-                    rx.heading(
-                        "SitePulse Enterprise",
-                        size="4",
-                        weight="bold",
-                        color="white",
-                    ),
-                    rx.text(
-                        "| Website Auditor",
-                        size="2",
-                        color="#c084fc",
-                        display=rx.breakpoints(
-                            initial="none", sm="none", md="block"
-                        ),
-                    ),
-                    spacing="3",
-                    align="center",
-                ),
-                rx.badge(
-                    "Operational",
-                    color_scheme="purple",
-                    variant="surface",
-                    size="2",
-                ),
-                justify="between",
-                align="center",
-                width="100%",
-                padding_x=rx.breakpoints(initial="4", sm="6"),
+        navbar(),
+        rx.center(
+            rx.cond(
+                State.active_view == "home",
+                home_view(),
+                results_view(),
             ),
-            border_bottom="1px solid #3b0764",
-            background="rgba(15, 9, 26, 0.95)",
-            backdrop_filter="blur(10px)",
             width="100%",
-            position="sticky",
-            top="0",
-            z_index="100",
-            padding_y="3",
-        ),
-        # DYNAMIC VIEW CONTAINER
-        rx.cond(
-            ~State.has_results,
-            # PAGE 1: HERO INPUT PAGE
-            rx.center(
-                rx.vstack(
-                    rx.badge(
-                        "ENTERPRISE DIAGNOSTICS PLATFORM",
-                        color_scheme="purple",
-                        variant="outline",
-                        size="2",
-                        padding_x="3",
-                        padding_y="1",
-                        border_radius="9999px",
-                    ),
-                    rx.heading(
-                        "Enterprise Website Audit & Diagnostics",
-                        size=rx.breakpoints(initial="7", sm="8", md="9"),
-                        weight="bold",
-                        align="center",
-                        color="#f4f4f5",
-                    ),
-                    rx.text(
-                        "Deep-tier structural inspection, technical flaw"
-                        " detection, and AI quality analysis",
-                        color="#a1a1aa",
-                        size="3",
-                        align="center",
-                        max_width="600px",
-                    ),
-                    rx.box(
-                        rx.flex(
-                            rx.input(
-                                placeholder="Enter domain or URL (e.g., github.com)...",
-                                value=State.url,
-                                on_change=State.set_url,
-                                size="3",
-                                width=rx.breakpoints(
-                                    initial="100%", sm="100%", md="480px"
-                                ),
-                                border="1px solid #581c87",
-                                background="#130a24",
-                                focus_border_color="#a855f7",
-                            ),
-                            rx.button(
-                                rx.cond(
-                                    State.is_scanning,
-                                    rx.hstack(
-                                        rx.spinner(size="2", color="white"),
-                                        rx.text("Analyzing..."),
-                                        spacing="2",
-                                        align="center",
-                                    ),
-                                    rx.text("Run Analysis"),
-                                ),
-                                on_click=State.run_audit,
-                                disabled=State.is_scanning,
-                                size="3",
-                                color_scheme="purple",
-                                cursor=rx.cond(
-                                    State.is_scanning, "not-allowed", "pointer"
-                                ),
-                                padding_x="6",
-                                width=rx.breakpoints(
-                                    initial="100%", sm="100%", md="auto"
-                                ),
-                                background="linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
-                                box_shadow="0 0 20px rgba(168, 85, 247, 0.4)",
-                            ),
-                            direction=rx.breakpoints(
-                                initial="column", sm="column", md="row"
-                            ),
-                            spacing="3",
-                            justify="center",
-                            align="center",
-                            width="100%",
-                        ),
-                        padding="4",
-                        background="rgba(30, 17, 54, 0.6)",
-                        border="1px solid #3b0764",
-                        border_radius="16px",
-                        box_shadow="0 20px 40px rgba(0, 0, 0, 0.5)",
-                        margin_top="4",
-                        width="100%",
-                    ),
-                    rx.cond(
-                        State.error_msg != "",
-                        rx.callout(
-                            State.error_msg,
-                            color_scheme="red",
-                            width="100%",
-                            margin_top="4",
-                        ),
-                    ),
-                    spacing="5",
-                    align="center",
-                    max_width="800px",
-                    padding=rx.breakpoints(initial="4", sm="6"),
-                    width="100%",
-                ),
-                min_height="calc(100vh - 80px)",
-                width="100%",
-            ),
-            # PAGE 2: DIAGNOSTIC REPORT PAGE
-            rx.container(
-                rx.vstack(
-                    rx.flex(
-                        rx.vstack(
-                            rx.heading(
-                                f"Audit Results for {State.url}",
-                                size=rx.breakpoints(
-                                    initial="5", sm="6", md="7"
-                                ),
-                                weight="bold",
-                                color="#f4f4f5",
-                            ),
-                            rx.text(
-                                "Comprehensive structural, performance, and AI"
-                                " analysis breakdown",
-                                color="#a1a1aa",
-                                size="2",
-                            ),
-                            spacing="1",
-                            align_items="start",
-                        ),
-                        rx.hstack(
-                            rx.button(
-                                rx.icon(tag="download", size=16),
-                                "Download Report",
-                                on_click=State.download_report,
-                                color_scheme="purple",
-                                variant="solid",
-                                size="2",
-                                cursor="pointer",
-                            ),
-                            rx.button(
-                                "Audit New Target",
-                                on_click=State.reset_view,
-                                color_scheme="purple",
-                                variant="surface",
-                                size="2",
-                                cursor="pointer",
-                            ),
-                            spacing="2",
-                            margin_top=rx.breakpoints(initial="3", sm="0"),
-                        ),
-                        direction=rx.breakpoints(initial="column", sm="row"),
-                        justify="between",
-                        align=rx.breakpoints(initial="start", sm="center"),
-                        width="100%",
-                        padding_y="4",
-                    ),
-                    # Responsive Grid Metrics
-                    rx.grid(
-                        metric_card("HTTP Status Code", f"{State.status_code}"),
-                        metric_card(
-                            "Server Latency", f"{State.response_time}s"
-                        ),
-                        metric_card(
-                            "H1 Tags Count", f"{State.h1_count} Detected"
-                        ),
-                        metric_card(
-                            "Missing Alt Attributes",
-                            f"{State.images_missing_alt} /"
-                            f" {State.total_images}",
-                        ),
-                        columns=rx.breakpoints(
-                            initial="1", sm="2", md="4"
-                        ),
-                        spacing="4",
-                        width="100%",
-                    ),
-                    # Scraped Metadata Box
-                    rx.box(
-                        rx.vstack(
-                            rx.heading(
-                                "Scraped Metadata Overview",
-                                size="4",
-                                weight="bold",
-                                color="#f4f4f5",
-                            ),
-                            rx.divider(color_scheme="purple"),
-                            rx.grid(
-                                rx.box(
-                                    rx.vstack(
-                                        rx.text(
-                                            "Page Title",
-                                            weight="bold",
-                                            size="2",
-                                            color="#c084fc",
-                                        ),
-                                        rx.text(
-                                            State.page_title,
-                                            size="3",
-                                            weight="medium",
-                                            color="#e4e4e7",
-                                        ),
-                                        spacing="1",
-                                        align_items="start",
-                                    ),
-                                    padding="4",
-                                    border="1px solid #3b0764",
-                                    background="#120921",
-                                    border_radius="8px",
-                                    width="100%",
-                                ),
-                                rx.box(
-                                    rx.vstack(
-                                        rx.hstack(
-                                            rx.text(
-                                                "Meta Description",
-                                                weight="bold",
-                                                size="2",
-                                                color="#c084fc",
-                                            ),
-                                            rx.cond(
-                                                State.meta_desc
-                                                == "Meta Description Tag Missing",
-                                                rx.badge(
-                                                    "Missing Tag",
-                                                    color_scheme="red",
-                                                    size="1",
-                                                ),
-                                                rx.badge(
-                                                    "Detected",
-                                                    color_scheme="green",
-                                                    size="1",
-                                                ),
-                                            ),
-                                            justify="between",
-                                            width="100%",
-                                        ),
-                                        rx.text(
-                                            State.meta_desc,
-                                            size="3",
-                                            weight="medium",
-                                            color=rx.cond(
-                                                State.meta_desc
-                                                == "Meta Description Tag Missing",
-                                                "#f87171",
-                                                "#e4e4e7",
-                                            ),
-                                        ),
-                                        spacing="1",
-                                        align_items="start",
-                                    ),
-                                    padding="4",
-                                    border="1px solid #3b0764",
-                                    background="#120921",
-                                    border_radius="8px",
-                                    width="100%",
-                                ),
-                                columns=rx.breakpoints(
-                                    initial="1", md="2"
-                                ),
-                                spacing="4",
-                                width="100%",
-                            ),
-                            spacing="3",
-                            align_items="start",
-                        ),
-                        width="100%",
-                        padding=rx.breakpoints(initial="4", sm="6"),
-                        border="1px solid #581c87",
-                        background=(
-                            "linear-gradient(180deg, #1e1136 0%, #130a24"
-                            " 100%)"
-                        ),
-                        border_radius="12px",
-                        box_shadow="0 8px 20px rgba(88, 28, 135, 0.15)",
-                    ),
-                    # Technical AI Inspection Report Box
-                    rx.box(
-                        rx.vstack(
-                            rx.heading(
-                                "Technical Diagnostic & Inspection Report",
-                                size="4",
-                                weight="bold",
-                                color="#f4f4f5",
-                            ),
-                            rx.divider(color_scheme="purple"),
-                            rx.box(
-                                rx.markdown(
-                                    State.ai_report,
-                                    component_map={
-                                        "h3": custom_markdown_h3,
-                                        "p": lambda text: rx.text(
-                                            text,
-                                            color="#d4d4d8",
-                                            size="3",
-                                            line_height="1.6",
-                                            margin_y="2",
-                                        ),
-                                        "li": lambda text: rx.hstack(
-                                            rx.box(
-                                                width="5px",
-                                                height="5px",
-                                                border_radius="9999px",
-                                                background="#c084fc",
-                                                margin_top="9px",
-                                                flex_shrink="0",
-                                            ),
-                                            rx.text(
-                                                text,
-                                                color="#e4e4e7",
-                                                size="3",
-                                                line_height="1.5",
-                                            ),
-                                            spacing="3",
-                                            align_items="start",
-                                            margin_y="1.5",
-                                            padding_left="2",
-                                        ),
-                                    },
-                                ),
-                                width="100%",
-                                padding=rx.breakpoints(initial="4", sm="6"),
-                                border="1px solid #3b0764",
-                                background="#120921",
-                                border_radius="10px",
-                                box_shadow="inset 0 0 10px rgba(0,0,0,0.5)",
-                            ),
-                            spacing="4",
-                            align_items="start",
-                        ),
-                        width="100%",
-                        padding=rx.breakpoints(initial="4", sm="6"),
-                        border="1px solid #581c87",
-                        background=(
-                            "linear-gradient(180deg, #1e1136 0%, #130a24"
-                            " 100%)"
-                        ),
-                        border_radius="12px",
-                        box_shadow="0 8px 20px rgba(88, 28, 135, 0.15)",
-                    ),
-                    spacing="6",
-                    padding_bottom="10",
-                    width="100%",
-                ),
-                size="4",
-                max_width="1200px",
-                padding_x=rx.breakpoints(initial="3", sm="4", md="6"),
-            ),
         ),
         min_height="100vh",
-        background=(
-            "radial-gradient(circle at 50% 30%, #2e1065 0%, #0a0512 100%)"
-        ),
+        background="radial-gradient(circle at top center, #1b0933 0%, #0a0612 80%)",
+        width="100%",
     )
 
 
+# --- Reflex Entry Point ---
 app = rx.App()
-app.add_page(index, title="SitePulse Enterprise - Website Auditor")
+app.add_page(index, title="SitePulse Enterprise | Website Auditor")
