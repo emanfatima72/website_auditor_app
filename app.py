@@ -38,7 +38,7 @@ st.markdown(
         color: #e2e8f0;
     }
     
-    /* Attach header to top edge */
+    /* Top edge attachment */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 2rem !important;
@@ -55,7 +55,7 @@ st.markdown(
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
         margin-top: 0px !important;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
     }
     .logo-container {
         display: flex;
@@ -85,14 +85,36 @@ st.markdown(
         font-weight: 400;
         font-size: 1rem;
     }
+    
     .status-badge {
         border: 1px solid rgba(139, 92, 246, 0.4);
         background: rgba(139, 92, 246, 0.08);
         color: #c084fc;
-        padding: 0.3rem 0.85rem;
+        padding: 0.4rem 0.9rem;
         border-radius: 8px;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    
+    /* Header Download Button Fix */
+    div[data-testid="column"] .stDownloadButton > button {
+        background: rgba(168, 85, 247, 0.12) !important;
+        border: 1px solid rgba(168, 85, 247, 0.5) !important;
+        color: #c084fc !important;
+        font-weight: 600 !important;
+        font-size: 0.82rem !important;
+        border-radius: 8px !important;
+        height: 36px !important;
+        padding: 0 1rem !important;
+        box-shadow: none !important;
+        margin-top: 0px !important;
+    }
+    div[data-testid="column"] .stDownloadButton > button:hover {
+        background: rgba(168, 85, 247, 0.25) !important;
+        color: #ffffff !important;
     }
     
     /* Center Badge & Hero Styling */
@@ -192,6 +214,30 @@ st.markdown(
         font-weight: 700;
         margin-top: 4px;
     }
+
+    /* --- MATCHING IMAGE 1 TYPOGRAPHY & REPORT STYLING --- */
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .stMarkdown p, .stMarkdown li {
+        color: #cbd5e1 !important;
+        font-size: 0.98rem !important;
+        line-height: 1.6 !important;
+    }
+
+    .stMarkdown strong {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+
+    .stMarkdown a {
+        color: #38bdf8 !important;
+        text-decoration: underline !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -222,21 +268,27 @@ You are an expert Enterprise Web Auditor. Perform a deep technical audit for the
 === CONTENT PREVIEW ===
 {content_preview}
 
-Format strictly in clean markdown headers:
+Format strictly using exact clear headers matching clean white styling:
 ### Executive Summary
-Provide health score out of 100 and quick summary.
+**Overall Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
+
+Live audit generated for [{target_url}]({target_url}). Server responded with **{status_code}** status code in **{response_time}s**.
 
 ### 1. Real-Time Flaws & Identified Issues
-List all structural or performance flaws clearly.
+- Meta description tag is absent or incomplete.
+- HTML headings structure is not optimized for core web vitals.
+- {missing_alt} media elements lack accessibility text (ALT tags).
 
 ### 2. Domain & Page Quality Analysis
-Detail server latency ({response_time}s), semantic structure (H1 tags: {h1_count}), image ALT attributes ({missing_alt} missing ALT tags), and indexing.
+- **Server Latency:** Recorded response time of **{response_time}s**.
+- **Semantic Structure:** Headings parsed with **{h1_count} H1 tags** found.
+- **Media Assets:** Scanned **{total_images} images**, **{missing_alt} missing ALT attributes**.
+- **Metadata Indexing:** Title recorded as *"{page_title}"*.
 
 ### 3. Actionable Recommendations
-Provide actionable steps for fixes.
-
-### 4. Critical Missing Elements & Security Deficiencies
-Highlight missing tags or missing HTTP headers.
+- Add a relevant meta description tag (150-160 characters) targeting core keywords.
+- Add exactly one primary H1 tag containing the target page keyword.
+- Add meaningful alt text to all image tags for accessibility and SEO.
 """
     if GEMINI_API_KEY:
         try:
@@ -264,7 +316,7 @@ Highlight missing tags or missing HTTP headers.
     return f"""### Executive Summary
 **Overall Health Score: {max(30, 100 - (missing_alt * 5 + (1 if h1_count==0 else 0)*20))}/100**
 
-Live audit generated for **{target_url}**. Server responded with **{status_code}** status code in **{response_time}s**.
+Live audit generated for [{target_url}]({target_url}). Server responded with **{status_code}** status code in **{response_time}s**.
 
 ### 1. Real-Time Flaws & Identified Issues
 - Meta description tag is absent or incomplete.
@@ -281,30 +333,45 @@ Live audit generated for **{target_url}**. Server responded with **{status_code}
 - Add a relevant meta description tag (150-160 characters) targeting core keywords.
 - Add exactly one primary H1 tag containing the target page keyword.
 - Add meaningful alt text to all image tags for accessibility and SEO.
-
-### 4. Critical Missing Elements & Security Deficiencies
-- Meta Description tag.
-- Primary H1 Heading tag.
-- 'alt' attributes on {missing_alt} image nodes.
 """
 
 
-# --- NAVBAR HEADER ATTACHED TO TOP EDGE ---
-st.markdown(
-    """
-    <div class="header-bar-card">
-        <div class="logo-container">
+# --- HEADER WITH DOWNLOAD BUTTON & SYSTEM OPERATIONAL BADGE ---
+h_col1, h_col2 = st.columns([2.5, 1.5])
+
+with h_col1:
+    st.markdown(
+        """
+        <div class="logo-container" style="padding-top: 4px;">
             <div class="logo-badge">S</div>
             <span class="logo-title">SitePulse Enterprise</span>
             <span class="logo-subtitle">| Website Auditor</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="status-badge">System Operational</div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+        """,
+        unsafe_allow_html=True,
+    )
+
+with h_col2:
+    if st.session_state.scanned and "report" in st.session_state.audit_data:
+        btn_c, badge_c = st.columns([1.2, 1])
+        with btn_c:
+            st.download_button(
+                label="Download Report",
+                data=st.session_state.audit_data["report"],
+                file_name="website_audit_report.txt",
+                mime="text/plain",
+                use_container_width=True,
+            )
+        with badge_c:
+            st.markdown('<div class="status-badge">System Operational</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(
+            '<div style="display: flex; justify-content: flex-end;"><div class="status-badge">System Operational</div></div>',
+            unsafe_allow_html=True,
+        )
+
+st.markdown('<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True)
+
 
 # --- AUDIT FORM SCREEN ---
 if not st.session_state.scanned:
@@ -384,14 +451,7 @@ else:
             st.session_state.scanned = False
             st.rerun()
 
-    # Download Button & Metrics Row
-    st.download_button(
-        label="Download Report",
-        data=d["report"],
-        file_name="website_audit_report.txt",
-        mime="text/plain",
-    )
-
+    # Metrics Row
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown(f'<div class="metric-box"><div class="metric-title">HTTP Status</div><div class="metric-val">{d["status"]}</div></div>', unsafe_allow_html=True)
@@ -402,5 +462,5 @@ else:
     with m4:
         st.markdown(f'<div class="metric-box"><div class="metric-title">Missing Alt</div><div class="metric-val">{d["no_alt"]}/{d["tot_img"]}</div></div>', unsafe_allow_html=True)
 
-    # Report Content
+    # Report Content (Clean Image 1 Styling)
     st.markdown(d["report"])
