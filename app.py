@@ -172,74 +172,54 @@ html, body, .stApp {
     font-weight: 400;
 }
 
-/* RADAR PULSE CANVAS CONTAINER (IMAGE 2 RECREATION) */
-.radar-wrapper {
+/* ANIMATED STANDALONE RADAR PULSE WIDGET (NO BOX) */
+.radar-standalone {
     position: relative;
-    width: 100%;
-    height: 380px;
-    background: rgba(11, 19, 38, 0.5);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    border-radius: 20px;
+    width: 340px;
+    height: 340px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5) inset;
+    align-items: center;
+    margin: 0 auto;
 }
 
-.radar-grid-bg {
+.radar-ring {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: radial-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 0);
-    background-size: 18px 18px;
-    opacity: 0.4;
+    border-radius: 50%;
+    border: 1px solid rgba(56, 189, 248, 0.15);
 }
 
-.radar-circle-outer {
-    position: absolute;
+.ring-outer {
     width: 310px;
     height: 310px;
-    border: 1px solid rgba(56, 189, 248, 0.18);
-    border-radius: 50%;
 }
 
-.radar-circle-mid {
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 50%;
-}
-
-.radar-circle-inner {
-    position: absolute;
-    width: 130px;
-    height: 130px;
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    border-radius: 50%;
+.ring-mid {
+    width: 210px;
+    height: 210px;
 }
 
 .radar-cross-h {
     position: absolute;
-    width: 320px;
+    width: 310px;
     height: 1px;
     background: rgba(56, 189, 248, 0.12);
 }
 
 .radar-cross-v {
     position: absolute;
-    height: 320px;
+    height: 310px;
     width: 1px;
     background: rgba(56, 189, 248, 0.12);
 }
 
-.radar-sweep-line {
+.radar-sweeper {
     position: absolute;
     width: 310px;
     height: 310px;
     border-radius: 50%;
-    animation: radarRotate 6s linear infinite;
+    animation: radarRotate 4s linear infinite;
+    background: conic-gradient(from 0deg, transparent 70%, rgba(56, 189, 248, 0.25) 100%);
 }
 
 @keyframes radarRotate {
@@ -247,98 +227,63 @@ html, body, .stApp {
     to { transform: rotate(360deg); }
 }
 
-.radar-blip-1 {
+.radar-dot {
     position: absolute;
-    top: 85px;
-    left: 105px;
     width: 8px;
     height: 8px;
-    background: #38bdf8;
     border-radius: 50%;
-    box-shadow: 0 0 10px #38bdf8;
+    animation: pulseRadarDot 2s ease-in-out infinite alternate;
 }
 
-.radar-blip-2 {
-    position: absolute;
-    top: 165px;
-    right: 85px;
-    width: 8px;
-    height: 8px;
-    background: #818cf8;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #818cf8;
+.dot-1 { background: #38bdf8; top: 80px; left: 90px; }
+.dot-2 { background: #818cf8; top: 150px; right: 45px; animation-delay: 0.6s; }
+.dot-3 { background: #34d399; bottom: 65px; left: 120px; animation-delay: 1.2s; }
+
+@keyframes pulseRadarDot {
+    0% { transform: scale(0.8); opacity: 0.3; }
+    100% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 12px currentColor; }
 }
 
-.radar-blip-3 {
-    position: absolute;
-    bottom: 60px;
-    left: 145px;
-    width: 8px;
-    height: 8px;
-    background: #34d399;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #34d399;
-}
-
-.radar-core-gauge {
+.score-circle {
     position: relative;
     z-index: 5;
-    width: 110px;
-    height: 110px;
-    background: #09101d;
-    border: 1.5px solid #38bdf8;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
+    background: #0b0f19;
+    border: 2px solid #38bdf8;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+    align-items: center;
+    animation: glowPulseCircle 2.5s ease-in-out infinite alternate;
 }
 
-.radar-score-num {
-    font-size: 2.2rem;
+.score-num {
+    font-size: 2.3rem;
     font-weight: 800;
-    color: #ffffff;
     line-height: 1;
+    color: #ffffff;
     letter-spacing: -1px;
 }
 
-.radar-score-label {
-    font-size: 0.65rem;
+.score-label {
+    font-size: 0.68rem;
     color: #94a3b8;
     font-family: 'JetBrains Mono', monospace;
-    text-transform: lowercase;
     margin-top: 4px;
+    text-transform: lowercase;
 }
 
-.radar-top-tag {
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    text-align: right;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.radar-top-tag-title {
-    font-size: 0.65rem;
-    color: #64748b;
-    letter-spacing: 1px;
-}
-
-.radar-top-tag-val {
-    font-size: 0.95rem;
-    color: #ffffff;
-    font-weight: 700;
-}
-
-.radar-bottom-tags {
-    position: absolute;
-    bottom: 20px;
-    display: flex;
-    gap: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: #94a3b8;
+@keyframes glowPulseCircle {
+    0% {
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        border-color: rgba(56, 189, 248, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.7);
+        border-color: rgba(56, 189, 248, 1);
+    }
 }
 
 /* CARDS & GLASS CONTAINERS */
@@ -383,7 +328,6 @@ html, body, .stApp {
     color: #ef4444;
 }
 
-/* TYPOGRAPHY FIXES FOR METADATA & HEADERS */
 .meta-field-title {
     font-weight: 600 !important;
     color: #f1f5f9 !important;
@@ -467,7 +411,6 @@ div[data-testid="stExpander"] details summary:hover {
     font-weight: 500;
 }
 
-/* CODE / HEADERS DISPLAY BLOCK */
 .headers-block {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -715,7 +658,7 @@ def scan_individual_url(page_url):
 
         canonical_tag = soup.find("link", attrs={"rel": "canonical"})
         if not canonical_tag:
-            flaws.append("Canonical URL link <link rel=\"canonical\"> is missing.")
+            flaws.append('Canonical URL link <link rel="canonical"> is missing.')
             recommendations.append(
                 "Add a canonical tag to prevent duplicate content indexing issues."
             )
@@ -983,7 +926,7 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
         with c_in:
             url_input = st.text_input(
                 "",
-                placeholder="http://demo.testfire.net",
+                placeholder="codicares.com",
                 label_visibility="collapsed",
                 key="input_url_val",
             )
@@ -1004,8 +947,7 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
                 disabled=st.session_state.loading,
             )
 
-        sub_info_html = """<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
-<span style="color: #34d399;">✓ Scrapes Headers, DOM & Meta</span>
+        sub_info_html = """<div style="display: flex; justify-content: flex-end; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
 <span style="font-family: 'JetBrains Mono';">Multi-threaded Crawl Engine</span>
 </div>"""
         st.markdown(sub_info_html, unsafe_allow_html=True)
@@ -1029,36 +971,23 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
             st.rerun()
 
     with col_hero_right:
-        # EXACT RECREATION OF PIC 2: RADAR PULSE 84 SCORE UI WIDGET
-        radar_widget_html = """<div class="radar-wrapper">
-<div class="radar-grid-bg"></div>
-
-<div class="radar-top-tag">
-<div class="radar-top-tag-title">SCAN RADIUS</div>
-<div class="radar-top-tag-val">12.4 km</div>
-</div>
-
-<div class="radar-circle-outer"></div>
-<div class="radar-circle-mid"></div>
-<div class="radar-circle-inner"></div>
-
+        # STANDALONE ANIMATED RADAR PULSE 84 SCORE (BOX CONTAINER REMOVED)
+        radar_widget_html = """<div class="radar-standalone">
 <div class="radar-cross-h"></div>
 <div class="radar-cross-v"></div>
 
-<div class="radar-sweep-line"></div>
+<div class="radar-ring ring-outer"></div>
+<div class="radar-ring ring-mid"></div>
 
-<div class="radar-blip-1"></div>
-<div class="radar-blip-2"></div>
-<div class="radar-blip-3"></div>
+<div class="radar-sweeper"></div>
 
-<div class="radar-core-gauge">
-<div class="radar-score-num">84</div>
-<div class="radar-score-label">health score</div>
-</div>
+<div class="radar-dot dot-1"></div>
+<div class="radar-dot dot-2"></div>
+<div class="radar-dot dot-3"></div>
 
-<div class="radar-bottom-tags">
-<span>🛡️ Secure scan</span>
-<span>⏱️ 182 ms avg</span>
+<div class="score-circle">
+<div class="score-num">84</div>
+<div class="score-label">health score</div>
 </div>
 </div>"""
         st.markdown(radar_widget_html, unsafe_allow_html=True)
