@@ -30,7 +30,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- ADVANCED RESPONSIVE ULTRA-DARK GLASS UI STYLING ---
+# --- ADVANCED RESPONSIVE ULTRA-DARK GLASS UI STYLING & KEYFRAME ANIMATIONS ---
 st.markdown(
     """<style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -71,6 +71,7 @@ html, body, .stApp {
     gap: 12px;
 }
 
+/* ANIMATED LOGO ICON */
 .nav-logo-icon {
     width: 38px;
     height: 38px;
@@ -81,6 +82,12 @@ html, body, .stApp {
     justify-content: center;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: logoGlow 3s infinite alternate;
+}
+
+@keyframes logoGlow {
+    0% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+    100% { box-shadow: 0 0 22px rgba(59, 130, 246, 0.9), 0 0 8px rgba(255, 255, 255, 0.6); }
 }
 
 .brand-title {
@@ -136,6 +143,13 @@ html, body, .stApp {
     background-color: #10b981;
     border-radius: 50%;
     box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
 }
 
 .hero-badge {
@@ -174,18 +188,33 @@ html, body, .stApp {
     margin-bottom: 2.5rem;
 }
 
+/* ANIMATED RADAR SCORE SECTION */
 .radar-container {
     position: relative;
     width: 340px;
     height: 340px;
     margin: 0 auto;
     border-radius: 50%;
-    border: 1px solid rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     background: radial-gradient(circle, rgba(15, 23, 42, 0.6) 0%, rgba(11, 15, 25, 0.8) 100%);
-    box-shadow: 0 0 50px rgba(56, 189, 248, 0.05);
+    box-shadow: 0 0 50px rgba(56, 189, 248, 0.08);
+}
+
+.radar-sweep-line {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(56, 189, 248, 0.3) 0deg, transparent 60deg, transparent 360deg);
+    animation: radarSweep 4s linear infinite;
+}
+
+@keyframes radarSweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .radar-ring-mid {
@@ -193,7 +222,8 @@ html, body, .stApp {
     width: 240px;
     height: 240px;
     border-radius: 50%;
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    animation: ringPulse 3s ease-in-out infinite alternate;
 }
 
 .radar-ring-inner {
@@ -201,15 +231,26 @@ html, body, .stApp {
     width: 140px;
     height: 140px;
     border-radius: 50%;
-    border: 1px dashed rgba(99, 102, 241, 0.4);
+    border: 1px dashed rgba(99, 102, 241, 0.5);
+    animation: innerSpin 12s linear infinite reverse;
+}
+
+@keyframes ringPulse {
+    0% { transform: scale(0.98); opacity: 0.6; }
+    100% { transform: scale(1.02); opacity: 1; }
+}
+
+@keyframes innerSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .radar-center-card {
     position: relative;
     z-index: 5;
     text-align: center;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     width: 110px;
     height: 110px;
@@ -217,7 +258,13 @@ html, body, .stApp {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+    animation: floatCard 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatCard {
+    0% { transform: translateY(-3px); }
+    100% { transform: translateY(3px); }
 }
 
 .radar-score-num {
@@ -242,6 +289,12 @@ html, body, .stApp {
     background: #38bdf8;
     border-radius: 50%;
     box-shadow: 0 0 10px #38bdf8;
+    animation: blipFade 2s ease-in-out infinite alternate;
+}
+
+@keyframes blipFade {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.3); }
 }
 
 .glass-card {
@@ -636,7 +689,7 @@ def perform_website_audit(target_url, mode="Full site"):
         "meta": main_page["meta"],
         "h1": main_page["h1"],
         "tot_img": main_page["tot_img"],
-        "no_alt": main_page["no_alt"],
+        "no_alt": no_alt,
         "size_kb": main_page["size_kb"],
         "health_score": health_score,
         "flaws": all_flaws,
@@ -692,35 +745,34 @@ Your server responds in **{data['rt']} ms**, placing it in the healthy range. Co
 
 
 # --- TOP NAVIGATION BAR ---
-st.markdown(
-    """<div class="top-nav">
-    <div class="nav-brand">
-        <div class="nav-logo-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 2a10 10 0 0 1 10 10"></path>
-                <circle cx="12" cy="12" r="3" fill="#ffffff"></circle>
-            </svg>
-        </div>
-        <div>
-            <div class="brand-title">SitePulse</div>
-            <div class="brand-subtitle">Enterprise Auditor</div>
-        </div>
-    </div>
-    <div class="nav-links">
-        <a href="#" class="nav-link active">Overview</a>
-        <a href="#" class="nav-link">Audits</a>
-        <a href="#" class="nav-link">Crawl map</a>
-        <a href="#" class="nav-link">AI report</a>
-    </div>
-    <div class="nav-status">
-        <div class="status-indicator">
-            <span class="status-dot"></span> Engine online
-        </div>
-    </div>
-</div>""",
-    unsafe_allow_html=True,
-)
+top_nav_html = """<div class="top-nav">
+<div class="nav-brand">
+<div class="nav-logo-icon">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M12 2a10 10 0 0 1 10 10"></path>
+<circle cx="12" cy="12" r="3" fill="#ffffff"></circle>
+</svg>
+</div>
+<div>
+<div class="brand-title">SitePulse</div>
+<div class="brand-subtitle">Enterprise Auditor</div>
+</div>
+</div>
+<div class="nav-links">
+<a href="#" class="nav-link active">Overview</a>
+<a href="#" class="nav-link">Audits</a>
+<a href="#" class="nav-link">Crawl map</a>
+<a href="#" class="nav-link">AI report</a>
+</div>
+<div class="nav-status">
+<div class="status-indicator">
+<span class="status-dot"></span> Engine online
+</div>
+</div>
+</div>"""
+
+st.markdown(top_nav_html, unsafe_allow_html=True)
 
 # Download button in Top Bar
 if st.session_state.scanned and "txt_data" in st.session_state.audit_data:
@@ -745,18 +797,16 @@ if not st.session_state.scanned:
     col_hero_left, col_hero_right = st.columns([1.2, 0.8], gap="large")
 
     with col_hero_left:
-        st.markdown(
-            """<div class="hero-badge">
-    <span style="color:#10b981;">●</span> LIVE AUDIT ENGINE V2.8.4
+        hero_left_html = """<div class="hero-badge">
+<span style="color:#10b981;">●</span> LIVE AUDIT ENGINE V2.8.4
 </div>
 <div class="hero-heading-main">
-    Know what your website is <span class="hero-heading-highlight">really</span> saying.
+Know what your website is <span class="hero-heading-highlight">really</span> saying.
 </div>
 <div class="hero-desc">
-    SitePulse turns technical signals into a clear, prioritized path to a faster, healthier web presence.
-</div>""",
-            unsafe_allow_html=True,
-        )
+SitePulse turns technical signals into a clear, prioritized path to a faster, healthier web presence.
+</div>"""
+        st.markdown(hero_left_html, unsafe_allow_html=True)
 
         st.markdown(
             '<div style="color: #94a3b8; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Website URL</div>',
@@ -789,13 +839,11 @@ if not st.session_state.scanned:
                 disabled=st.session_state.loading,
             )
 
-        st.markdown(
-            """<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
-    <span style="color: #34d399;">✓ URL format looks good</span>
-    <span style="font-family: 'JetBrains Mono';">12 pages max</span>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        sub_info_html = """<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
+<span style="color: #34d399;">✓ URL format looks good</span>
+<span style="font-family: 'JetBrains Mono';">12 pages max</span>
+</div>"""
+        st.markdown(sub_info_html, unsafe_allow_html=True)
 
         if btn_click and url_input.strip():
             st.session_state.loading = True
@@ -814,25 +862,24 @@ if not st.session_state.scanned:
             st.rerun()
 
     with col_hero_right:
-        st.markdown(
-            """<div class="radar-container">
-    <div class="radar-ring-mid"></div>
-    <div class="radar-ring-inner"></div>
-    <div class="radar-blip" style="top: 35%; left: 30%;"></div>
-    <div class="radar-blip" style="top: 55%; right: 20%;"></div>
-    <div class="radar-blip" style="bottom: 25%; left: 45%;"></div>
-    <div class="radar-center-card">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <div class="radar-score-num">84</div>
-        <div class="radar-score-label">health score</div>
-    </div>
+        radar_html = """<div class="radar-container">
+<div class="radar-sweep-line"></div>
+<div class="radar-ring-mid"></div>
+<div class="radar-ring-inner"></div>
+<div class="radar-blip" style="top: 35%; left: 30%;"></div>
+<div class="radar-blip" style="top: 55%; right: 20%; animation-delay: 0.7s;"></div>
+<div class="radar-blip" style="bottom: 25%; left: 45%; animation-delay: 1.2s;"></div>
+<div class="radar-center-card">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+<div class="radar-score-num">84</div>
+<div class="radar-score-label">health score</div>
+</div>
 </div>
 <div style="display: flex; justify-content: space-around; margin-top: 1.5rem; color: #64748b; font-family: 'JetBrains Mono'; font-size: 0.78rem;">
-    <span>🛡 Secure scan</span>
-    <span>⏱ 182 ms avg</span>
-</div>""",
-            unsafe_allow_html=True,
-        )
+<span>🛡 Secure scan</span>
+<span>⏱ 182 ms avg</span>
+</div>"""
+        st.markdown(radar_html, unsafe_allow_html=True)
 
 
 # ==============================================================================
@@ -842,74 +889,64 @@ else:
     d = st.session_state.audit_data
 
     # Header Row
-    st.markdown(
-        f"""<div style="margin-bottom: 2rem;">
-    <div class="hero-badge">DIAGNOSTIC OVERVIEW</div>
-    <div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1;">
-        One scan. Every signal.
-    </div>
-    <div style="color: #64748b; font-size: 0.95rem; margin-top: 6px;">
-        Latest audit for <span style="color: #38bdf8; font-weight: 600;">{d['url']}</span>
-    </div>
-</div>""",
-        unsafe_allow_html=True,
-    )
+    header_html = f"""<div style="margin-bottom: 2rem;">
+<div class="hero-badge">DIAGNOSTIC OVERVIEW</div>
+<div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1;">
+One scan. Every signal.
+</div>
+<div style="color: #64748b; font-size: 0.95rem; margin-top: 6px;">
+Latest audit for <span style="color: #38bdf8; font-weight: 600;">{d['url']}</span>
+</div>
+</div>"""
+    st.markdown(header_html, unsafe_allow_html=True)
 
     # Overview Cards 4-Column Row
     c1, c2, c3, c4 = st.columns([1.5, 1, 1, 1], gap="medium")
 
     with c1:
-        st.markdown(
-            f"""<div class="glass-card">
-    <div class="card-label-mono">SITE HEALTH</div>
-    <div class="score-donut-container" style="margin-top: 0.8rem;">
-        <div class="score-circle">
-            <div class="score-circle-inner">
-                <span style="font-size: 1.8rem; font-weight: 800; color: #fff;">{d['health_score']}</span>
-                <span style="font-size: 0.65rem; color: #64748b;">/ 100</span>
-            </div>
-        </div>
-        <div>
-            <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Strong foundation</div>
-            <div style="font-size: 0.8rem; color: #94a3b8;">Four opportunities are keeping this site from peak performance.</div>
-        </div>
-    </div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        card1_html = f"""<div class="glass-card">
+<div class="card-label-mono">SITE HEALTH</div>
+<div class="score-donut-container" style="margin-top: 0.8rem;">
+<div class="score-circle">
+<div class="score-circle-inner">
+<span style="font-size: 1.8rem; font-weight: 800; color: #fff;">{d['health_score']}</span>
+<span style="font-size: 0.65rem; color: #64748b;">/ 100</span>
+</div>
+</div>
+<div>
+<div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Strong foundation</div>
+<div style="font-size: 0.8rem; color: #94a3b8;">Four opportunities are keeping this site from peak performance.</div>
+</div>
+</div>
+</div>"""
+        st.markdown(card1_html, unsafe_allow_html=True)
 
     with c2:
-        st.markdown(
-            f"""<div class="glass-card">
-    <div style="color: #10b981; margin-bottom: 0.5rem;">🌐</div>
-    <div class="card-label-mono">HTTP status</div>
-    <div class="card-metric-val">{d['status']} OK</div>
-    <div class="card-subtext">Healthy response</div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        card2_html = f"""<div class="glass-card">
+<div style="color: #10b981; margin-bottom: 0.5rem;">🌐</div>
+<div class="card-label-mono">HTTP status</div>
+<div class="card-metric-val">{d['status']} OK</div>
+<div class="card-subtext">Healthy response</div>
+</div>"""
+        st.markdown(card2_html, unsafe_allow_html=True)
 
     with c3:
-        st.markdown(
-            f"""<div class="glass-card">
-    <div style="color: #6366f1; margin-bottom: 0.5rem;">⏱</div>
-    <div class="card-label-mono">Server latency</div>
-    <div class="card-metric-val">{d['rt']} ms</div>
-    <div class="card-subtext">14% faster than avg</div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        card3_html = f"""<div class="glass-card">
+<div style="color: #6366f1; margin-bottom: 0.5rem;">⏱</div>
+<div class="card-label-mono">Server latency</div>
+<div class="card-metric-val">{d['rt']} ms</div>
+<div class="card-subtext">14% faster than avg</div>
+</div>"""
+        st.markdown(card3_html, unsafe_allow_html=True)
 
     with c4:
-        st.markdown(
-            f"""<div class="glass-card">
-    <div style="color: #f59e0b; margin-bottom: 0.5rem;">⚠️</div>
-    <div class="card-label-mono">Missing alt</div>
-    <div class="card-metric-val">{d['no_alt']} Images</div>
-    <div class="card-subtext card-subtext-warn">Needs attention</div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        card4_html = f"""<div class="glass-card">
+<div style="color: #f59e0b; margin-bottom: 0.5rem;">⚠️</div>
+<div class="card-label-mono">Missing alt</div>
+<div class="card-metric-val">{d['no_alt']} Images</div>
+<div class="card-subtext card-subtext-warn">Needs attention</div>
+</div>"""
+        st.markdown(card4_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
@@ -919,79 +956,69 @@ else:
     col_findings, col_meta = st.columns([1.3, 1], gap="medium")
 
     with col_findings:
-        st.markdown(
-            """<div class="glass-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
-        <div>
-            <div class="card-label-mono">PRIORITIZED FINDINGS</div>
-            <div style="font-size: 1.3rem; font-weight: 700; color: #fff;">What needs your attention</div>
-        </div>
-        <span style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #64748b;">3 groups</span>
-    </div>
-    
-    <div class="finding-item">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="finding-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">!</div>
-            <div>
-                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Missing meta descriptions</div>
-                <div style="font-size: 0.8rem; color: #64748b;">2 affected checks</div>
-            </div>
-        </div>
-        <span style="color: #64748b;">∨</span>
-    </div>
-
-    <div class="finding-item">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="finding-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">!</div>
-            <div>
-                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Images without alt text</div>
-                <div style="font-size: 0.8rem; color: #64748b;">4 affected checks</div>
-            </div>
-        </div>
-        <span style="color: #64748b;">∨</span>
-    </div>
-
-    <div class="finding-item">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="finding-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">✓</div>
-            <div>
-                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">HTTPS and canonical signals</div>
-                <div style="font-size: 0.8rem; color: #64748b;">1 affected check</div>
-            </div>
-        </div>
-        <span style="color: #64748b;">∨</span>
-    </div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        findings_html = """<div class="glass-card">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+<div>
+<div class="card-label-mono">PRIORITIZED FINDINGS</div>
+<div style="font-size: 1.3rem; font-weight: 700; color: #fff;">What needs your attention</div>
+</div>
+<span style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #64748b;">3 groups</span>
+</div>
+<div class="finding-item">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="finding-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">!</div>
+<div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Missing meta descriptions</div>
+<div style="font-size: 0.8rem; color: #64748b;">2 affected checks</div>
+</div>
+</div>
+<span style="color: #64748b;">∨</span>
+</div>
+<div class="finding-item">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="finding-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">!</div>
+<div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Images without alt text</div>
+<div style="font-size: 0.8rem; color: #64748b;">4 affected checks</div>
+</div>
+</div>
+<span style="color: #64748b;">∨</span>
+</div>
+<div class="finding-item">
+<div style="display: flex; align-items: center; gap: 12px;">
+<div class="finding-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">✓</div>
+<div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">HTTPS and canonical signals</div>
+<div style="font-size: 0.8rem; color: #64748b;">1 affected check</div>
+</div>
+</div>
+<span style="color: #64748b;">∨</span>
+</div>
+</div>"""
+        st.markdown(findings_html, unsafe_allow_html=True)
 
     with col_meta:
         title_len = len(d["title"])
-        st.markdown(
-            f"""<div class="glass-card">
-    <div class="card-label-mono">PAGE INTELLIGENCE</div>
-    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Metadata inspection</div>
-    
-    <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <div class="card-label-mono">PAGE TITLE</div>
-        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['title']}</div>
-        <div style="color: #10b981; font-size: 0.78rem; margin-top: 2px;">Good · {title_len} chars</div>
-    </div>
-
-    <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <div class="card-label-mono">META DESCRIPTION</div>
-        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['meta']}</div>
-        <div style="color: #f59e0b; font-size: 0.78rem; margin-top: 2px;">Action needed</div>
-    </div>
-
-    <div>
-        <div class="card-label-mono">IMAGE COVERAGE</div>
-        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['tot_img']} images · {d['tot_img'] - d['no_alt']} alt tags</div>
-        <div style="color: #ef4444; font-size: 0.78rem; margin-top: 2px;">{d['no_alt']} missing</div>
-    </div>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        meta_html = f"""<div class="glass-card">
+<div class="card-label-mono">PAGE INTELLIGENCE</div>
+<div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Metadata inspection</div>
+<div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+<div class="card-label-mono">PAGE TITLE</div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['title']}</div>
+<div style="color: #10b981; font-size: 0.78rem; margin-top: 2px;">Good · {title_len} chars</div>
+</div>
+<div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+<div class="card-label-mono">META DESCRIPTION</div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['meta']}</div>
+<div style="color: #f59e0b; font-size: 0.78rem; margin-top: 2px;">Action needed</div>
+</div>
+<div>
+<div class="card-label-mono">IMAGE COVERAGE</div>
+<div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['tot_img']} images · {d['tot_img'] - d['no_alt']} alt tags</div>
+<div style="color: #ef4444; font-size: 0.78rem; margin-top: 2px;">{d['no_alt']} missing</div>
+</div>
+</div>"""
+        st.markdown(meta_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
@@ -1009,51 +1036,46 @@ else:
         parsed_path = urllib.parse.urlparse(page["url"]).path or "/"
 
         table_rows += f"""<tr>
-    <td>{parsed_path}</td>
-    <td><span class="badge-status-200">{page['status']} OK</span></td>
-    <td style="font-family: 'JetBrains Mono';">{page['rt']} ms</td>
-    <td>{flaw_html}</td>
-    <td>↗</td>
+<td>{parsed_path}</td>
+<td><span class="badge-status-200">{page['status']} OK</span></td>
+<td style="font-family: 'JetBrains Mono';">{page['rt']} ms</td>
+<td>{flaw_html}</td>
+<td>↗</td>
 </tr>"""
 
-    st.markdown(
-        f"""<div class="glass-card">
-    <div class="card-label-mono">SITE TOPOLOGY</div>
-    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Multi-page crawl</div>
-    
-    <table class="crawl-table">
-        <thead>
-            <tr>
-                <th>PAGE</th>
-                <th>STATUS</th>
-                <th>LATENCY</th>
-                <th>FLAWS</th>
-                <th>ACTION</th>
-            </tr>
-        </thead>
-        <tbody>
-            {table_rows}
-        </tbody>
-    </table>
-</div>""",
-        unsafe_allow_html=True,
-    )
+    crawl_html = f"""<div class="glass-card">
+<div class="card-label-mono">SITE TOPOLOGY</div>
+<div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Multi-page crawl</div>
+<table class="crawl-table">
+<thead>
+<tr>
+<th>PAGE</th>
+<th>STATUS</th>
+<th>LATENCY</th>
+<th>FLAWS</th>
+<th>ACTION</th>
+</tr>
+</thead>
+<tbody>
+{table_rows}
+</tbody>
+</table>
+</div>"""
+    st.markdown(crawl_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
     )
 
     # AI SYNTHESIS REPORT
-    st.markdown(
-        f"""<div class="glass-card">
-    <div class="card-label-mono">TECHNICAL INTELLIGENCE</div>
-    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">AI Audit Report</div>
-    <div style="color: #cbd5e1; line-height: 1.7; font-size: 0.95rem;">
-        {d['report']}
-    </div>
-</div>""",
-        unsafe_allow_html=True,
-    )
+    ai_html = f"""<div class="glass-card">
+<div class="card-label-mono">TECHNICAL INTELLIGENCE</div>
+<div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">AI Audit Report</div>
+<div style="color: #cbd5e1; line-height: 1.7; font-size: 0.95rem;">
+{d['report']}
+</div>
+</div>"""
+    st.markdown(ai_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
