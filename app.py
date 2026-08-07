@@ -27,7 +27,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- EXACT REFLEX ENTERPRISE UI STYLING ---
+# --- ELEGANT ENTERPRISE LIGHT / MODERN UI STYLING ---
 st.markdown(
     """
     <style>
@@ -37,130 +37,147 @@ st.markdown(
         visibility: hidden !important;
     }
 
-    /* Global Dark Theme Background */
+    /* Global Modern Theme Background */
     .stApp {
-        background-color: #090312 !important;
-        color: #e2e8f0;
+        background-color: #f8fafc !important;
+        color: #0f172a;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 2rem !important;
-        max-width: 1250px !important;
+        padding-top: 1rem !important;
+        padding-bottom: 3rem !important;
+        max-width: 1280px !important;
     }
     
     /* Top Header Navbar */
     .logo-container {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
     
     .logo-icon {
-        background: #8b5cf6;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
         color: #ffffff;
         font-weight: 800;
         font-size: 1.1rem;
-        width: 32px;
-        height: 32px;
-        border-radius: 7px;
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
     
     .logo-text {
         font-weight: 800;
-        font-size: 1.1rem;
-        color: #ffffff;
+        font-size: 1.2rem;
+        color: #0f172a;
+        letter-spacing: -0.3px;
     }
     
     .logo-subtext {
-        color: #a78bfa;
-        font-weight: 400;
+        color: #64748b;
+        font-weight: 500;
         font-size: 0.95rem;
     }
     
     .status-badge {
-        border: 1px solid rgba(139, 92, 246, 0.4);
-        background: rgba(139, 92, 246, 0.05);
-        color: #c084fc;
-        padding: 0.35rem 0.85rem;
-        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #10b981;
+        padding: 0.4rem 0.9rem;
+        border-radius: 30px;
         font-size: 0.8rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        white-space: nowrap;
+        gap: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .status-badge::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
+        display: inline-block;
     }
 
-    /* DOWNLOAD BUTTON PURPLE SHADE & STYLING */
+    /* DOWNLOAD BUTTON ELEGANT STYLING */
     .stDownloadButton > button {
-        background: #8b5cf6 !important;
+        background: #4f46e5 !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
         border: none !important;
         border-radius: 8px !important;
-        height: 38px !important;
-        padding: 0 1.2rem !important;
-        box-shadow: 0 0 14px rgba(139, 92, 246, 0.4) !important;
-        margin-top: 0px !important;
+        height: 40px !important;
+        padding: 0 1.4rem !important;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
         transition: all 0.2s ease-in-out !important;
     }
     .stDownloadButton > button:hover {
-        background: #7c3aed !important;
-        box-shadow: 0 0 20px rgba(139, 92, 246, 0.7) !important;
+        background: #4338ca !important;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
         color: #ffffff !important;
+        transform: translateY(-1px);
     }
     
     /* Audit New Target Button */
     .audit-new-btn > button {
-        background: transparent !important;
-        border: 1px solid rgba(168, 85, 247, 0.6) !important;
-        color: #ffffff !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #334155 !important;
         font-weight: 600 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.88rem !important;
         border-radius: 8px !important;
         height: 42px !important;
         padding: 0 1.2rem !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
     }
     .audit-new-btn > button:hover {
-        background: rgba(168, 85, 247, 0.15) !important;
-        border-color: #a855f7 !important;
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #0f172a !important;
     }
 
     /* Hero & Input Section */
     .badge-capsule {
         display: inline-block;
-        padding: 0.4rem 1.2rem;
-        border: 1px solid rgba(168, 85, 247, 0.4);
+        padding: 0.35rem 1rem;
+        border: 1px solid #e0e7ff;
         border-radius: 20px;
-        background: rgba(168, 85, 247, 0.08);
-        color: #c084fc;
-        font-size: 0.72rem;
+        background: #eep2ff;
+        background: rgba(224, 231, 255, 0.6);
+        color: #4338ca;
+        font-size: 0.75rem;
         font-weight: 700;
-        letter-spacing: 1.2px;
+        letter-spacing: 0.8px;
     }
     
     .hero-heading {
-        color: #ffffff;
-        font-size: 2.8rem;
-        font-weight: 900;
-        line-height: 1.15;
-        margin-top: 1.2rem;
-        margin-bottom: 1rem;
+        color: #0f172a;
+        font-size: 2.75rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-top: 1rem;
+        margin-bottom: 0.8rem;
         text-align: center;
+        letter-spacing: -0.8px;
     }
     
     .hero-subtitle {
-        color: #94a3b8;
-        font-size: 1rem;
-        max-width: 650px;
+        color: #64748b;
+        font-size: 1.05rem;
+        max-width: 620px;
         margin: 0 auto 2.2rem auto;
         text-align: center;
-        line-height: 1.5;
+        line-height: 1.6;
     }
 
     /* Input & Selectbox & Button Styling */
@@ -175,17 +192,18 @@ st.markdown(
     }
     
     .stTextInput > div > div > input, .stSelectbox > div > div {
-        background-color: rgba(15, 7, 29, 0.9) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(139, 92, 246, 0.35) !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 10px !important;
         font-size: 0.95rem !important;
-        height: 46px !important;
+        height: 48px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #a855f7 !important;
-        box-shadow: 0 0 12px rgba(168, 85, 247, 0.35) !important;
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
     }
     
     .stButton {
@@ -193,124 +211,144 @@ st.markdown(
     }
     
     .stButton > button {
-        background: #8b5cf6 !important;
+        background: #4f46e5 !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
         font-size: 0.95rem !important;
         border: none !important;
         border-radius: 10px !important;
-        height: 46px !important;
-        box-shadow: 0 0 18px rgba(139, 92, 246, 0.45) !important;
+        height: 48px !important;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         margin-top: 0px !important;
+        transition: all 0.2s ease !important;
+    }
+    .stButton > button:hover {
+        background: #4338ca !important;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
     }
 
     .stButton > button:disabled {
-        background: #6d28d9 !important;
-        color: #e2e8f0 !important;
-        opacity: 0.9 !important;
+        background: #a5b4fc !important;
+        color: #ffffff !important;
         cursor: not-allowed !important;
     }
 
     /* Metric Cards */
     .metric-card {
-        background: #0f071d;
-        border: 1px solid #20103b;
-        border-radius: 10px;
-        padding: 1.2rem 1rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.25rem 1rem;
         text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-2px);
     }
     .metric-card-title {
-        color: #a78bfa;
-        font-size: 0.82rem;
+        color: #64748b;
+        font-size: 0.8rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
     }
     .metric-card-value {
-        color: #ffffff;
-        font-size: 1.6rem;
+        color: #0f172a;
+        font-size: 1.65rem;
         font-weight: 800;
     }
 
     /* Metadata Card Box */
     .outer-card-box {
-        background: #0f071d;
-        border: 1px solid #20103b;
-        border-radius: 12px;
-        padding: 1.4rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.5rem;
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     .outer-card-title {
-        color: #ffffff;
-        font-size: 1.25rem;
+        color: #0f172a;
+        font-size: 1.15rem;
         font-weight: 700;
         margin-bottom: 1.2rem;
     }
     .meta-inner-box {
-        background: #090312;
-        border: 1px solid #1c0e35;
-        border-radius: 8px;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 10px;
         padding: 1.1rem;
         height: 100%;
     }
     .meta-inner-title {
-        color: #c084fc;
-        font-size: 0.85rem;
+        color: #475569;
+        font-size: 0.82rem;
         font-weight: 700;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
     }
     .meta-inner-val {
-        color: #ffffff;
-        font-size: 1.05rem;
-        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.98rem;
+        font-weight: 600;
         word-break: break-word;
+        line-height: 1.5;
     }
     .meta-badge-missing {
-        background: #ef4444;
-        color: #ffffff;
-        font-size: 0.7rem;
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        font-size: 0.72rem;
         font-weight: 700;
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
     }
     .meta-badge-ok {
-        background: #22c55e;
-        color: #ffffff;
-        font-size: 0.7rem;
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #dcfce7;
+        font-size: 0.72rem;
         font-weight: 700;
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
     }
 
     /* Report Box */
     .report-card-box {
-        background: #0f071d;
-        border: 1px solid #20103b;
-        border-radius: 12px;
-        padding: 1.8rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 2rem;
         margin-top: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
     .stMarkdown h3 {
-        color: #c084fc !important;
-        font-size: 1.25rem !important;
+        color: #1e1b4b !important;
+        font-size: 1.2rem !important;
         font-weight: 700 !important;
-        margin-top: 1.5rem !important;
+        margin-top: 1.6rem !important;
         margin-bottom: 0.8rem !important;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.4rem;
     }
     .stMarkdown p, .stMarkdown li {
-        color: #e2e8f0 !important;
+        color: #334155 !important;
         font-size: 0.95rem !important;
-        line-height: 1.6 !important;
+        line-height: 1.65 !important;
     }
     .stMarkdown strong {
-        color: #c084fc !important;
+        color: #4f46e5 !important;
         font-weight: 700 !important;
     }
     </style>
@@ -854,7 +892,7 @@ st.markdown('<div style="margin-bottom: 1.5rem;"></div>', unsafe_allow_html=True
 if not st.session_state.scanned:
     st.markdown(
         """
-        <div style="text-align: center;">
+        <div style="text-align: center; margin-top: 2rem;">
             <div class="badge-capsule">ENTERPRISE DIAGNOSTICS PLATFORM</div>
             <div class="hero-heading">
                 Enterprise Website Audit &<br>Diagnostics
@@ -925,8 +963,8 @@ else:
         st.markdown(
             f"""
             <div style="margin-bottom: 1.5rem;">
-                <h1 style="color: #ffffff; font-size: 2.2rem; font-weight: 800; margin: 0;">Audit Results for {d['url']}</h1>
-                <p style="color: #a78bfa; font-size: 0.95rem; margin-top: 4px;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
+                <h1 style="color: #0f172a; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
+                <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -968,7 +1006,7 @@ else:
         else '<span class="meta-badge-ok">Valid</span>'
     )
     meta_color = (
-        "#f87171" if d["meta"] == "Meta Description Tag Missing" else "#ffffff"
+        "#ef4444" if d["meta"] == "Meta Description Tag Missing" else "#0f172a"
     )
 
     st.markdown(
@@ -996,7 +1034,7 @@ else:
     # Multi-Page Crawl Results Table (if Full Site mode was selected)
     if d.get("total_pages_scanned", 1) > 1:
         st.markdown(
-            '<div style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.8rem;">🌐 Scanned Sub-Pages Overview</div>',
+            '<div style="color: #0f172a; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.8rem;">🌐 Scanned Sub-Pages Overview</div>',
             unsafe_allow_html=True,
         )
         page_summary = []
@@ -1015,7 +1053,7 @@ else:
     # Technical Diagnostic & Inspection Report
     st.markdown('<div class="report-card-box">', unsafe_allow_html=True)
     st.markdown(
-        '<div style="color: #ffffff; font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
+        '<div style="color: #0f172a; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
         unsafe_allow_html=True,
     )
     st.markdown(d["report"])
