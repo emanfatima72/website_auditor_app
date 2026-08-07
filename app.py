@@ -61,6 +61,17 @@ st.markdown(
         100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0), 0 8px 20px rgba(0,0,0,0.06); }
     }
 
+    @keyframes radarScan {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes radarPulse {
+        0% { transform: scale(0.8); opacity: 0.8; }
+        50% { transform: scale(1.15); opacity: 0.4; }
+        100% { transform: scale(0.8); opacity: 0.8; }
+    }
+
     /* Global Soft Lavender 3D Gradient Background Force */
     .stApp, [data-testid="stAppViewContainer"] {
         background: radial-gradient(circle at 50% 20%, #f5f3ff 0%, #eef2ff 60%, #e0e7ff 100%) !important;
@@ -76,30 +87,47 @@ st.markdown(
         animation: fadeInUp3D 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    /* Top Header Navbar with 3D Depth */
+    /* Top Header Navbar with 3D Depth & Radar Animation */
     .logo-container {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .logo-container:hover {
         transform: translateY(-2px) scale(1.02);
     }
     
-    .logo-icon {
-        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-        color: #ffffff;
-        font-weight: 800;
-        font-size: 1.1rem;
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
+    .logo-icon-3d {
+        position: relative;
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #6366f1 0%, #312e81 100%);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+    }
+
+    .radar-sweep {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, transparent 0%, transparent 75%, rgba(255, 255, 255, 0.6) 100%);
+        animation: radarScan 2.5s linear infinite;
+    }
+
+    .radar-pulse-ring {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border: 1.5px solid rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        animation: radarPulse 2s ease-in-out infinite;
     }
     
     .logo-text {
@@ -232,7 +260,7 @@ st.markdown(
         font-weight: 500;
     }
 
-    /* INPUT & STYLISH 3D SELECTBOX CONTROLS */
+    /* INPUT & STYLISH MATCHING PURPLE SELECTBOX CONTROLS */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
@@ -265,31 +293,50 @@ st.markdown(
         transform: translateY(-2px);
     }
 
-    /* STRICT 3D FIX FOR SELECTBOX TEXT VISIBILITY & STYLING */
+    /* MATCHED SELECTBOX BUTTON STYLING (PURPLE GRADIENT WITH CLEAR TEXT) */
     .stSelectbox > div > div {
-        background-color: rgba(255, 255, 255, 0.95) !important;
-        border: 1.5px solid #c7d2fe !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
         border-radius: 14px !important;
         height: 52px !important;
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 8px 22px rgba(79, 70, 229, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
     .stSelectbox > div > div:hover {
-        border-color: #818cf8 !important;
-        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.16) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+        box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45) !important;
         transform: translateY(-2px);
     }
     
-    /* Force high contrast text color inside BaseWeb Select DOM element */
-    div[data-baseweb="select"] * {
-        color: #1e1b4b !important;
+    /* Force clear white text & arrow inside the Selectbox header */
+    .stSelectbox div[data-baseweb="select"] span {
+        color: #ffffff !important;
         font-weight: 800 !important;
         font-size: 0.94rem !important;
-        fill: #1e1b4b !important;
     }
-    div[data-baseweb="popover"] * {
+    .stSelectbox div[data-baseweb="select"] svg {
+        fill: #ffffff !important;
+    }
+    
+    /* Popover dropdown styling for visible text items */
+    div[data-baseweb="popover"] {
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+    div[data-baseweb="popover"] ul {
         background-color: #ffffff !important;
+        padding: 6px !important;
+        border-radius: 12px !important;
+    }
+    div[data-baseweb="popover"] li {
         color: #1e1b4b !important;
+        font-weight: 700 !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+    }
+    div[data-baseweb="popover"] li:hover {
+        background-color: #e0e7ff !important;
+        color: #4338ca !important;
     }
 
     /* 3D Dynamic Glowing Button */
@@ -946,14 +993,25 @@ Live runtime scan performed for **{data['url']}**. The analysis indicates a serv
 """
 
 
-# --- UNIFIED HEADER NAVBAR ---
+# --- UNIFIED HEADER NAVBAR WITH ANIMATED WEB AUDIT RADAR ICON ---
 h_col1, h_col2 = st.columns([2.2, 1.8])
 
 with h_col1:
     st.markdown(
         """
         <div class="logo-container" style="padding-top: 4px;">
-            <div class="logo-icon">S</div>
+            <div class="logo-icon-3d">
+                <div class="radar-pulse-ring"></div>
+                <div class="radar-sweep"></div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="z-index: 2;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="2" x2="12" y2="6"></line>
+                    <line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <circle cx="12" cy="12" r="3" fill="#ffffff"></circle>
+                </svg>
+            </div>
             <span class="logo-text">SitePulse Enterprise</span>
             <span class="logo-subtext">| Website Auditor</span>
         </div>
