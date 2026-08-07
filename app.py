@@ -1,3 +1,9 @@
+# ==============================================================================
+# REQUIRED LIBRARIES INSTALLATION INSTRUCTIONS:
+# Run the following command in your terminal/command prompt to install dependencies:
+# pip install streamlit requests beautifulsoup4 python-dotenv google-genai urllib3
+# ==============================================================================
+
 import concurrent.futures
 import os
 import re
@@ -27,7 +33,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- ANIMATED, ELEGANT PURPLE ENTERPRISE THEME ---
+# --- ADVANCED 3D GLASSMORPHIC ENTERPRISE THEME ---
 st.markdown(
     """
     <style>
@@ -37,98 +43,97 @@ st.markdown(
         visibility: hidden !important;
     }
 
-    /* KEYFRAME ANIMATIONS */
-    @keyframes fadeInUp {
-        from {
+    /* 3D KEYFRAME ANIMATIONS */
+    @keyframes fadeInUp3D {
+        0% {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.97) rotateX(4deg);
         }
-        to {
+        100% {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1) rotateX(0deg);
         }
     }
 
-    @keyframes pulseGlow {
-        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-        70% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    @keyframes pulseGlow3D {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4), 0 8px 20px rgba(0,0,0,0.06); }
+        70% { box-shadow: 0 0 0 14px rgba(99, 102, 241, 0), 0 12px 25px rgba(0,0,0,0.12); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0), 0 8px 20px rgba(0,0,0,0.06); }
     }
 
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
-
-    /* Global Soft Purple Gradient Background Force */
+    /* Global Soft Lavender 3D Gradient Background Force */
     .stApp, [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #f3e8ff 0%, #eef2ff 50%, #f5f3ff 100%) !important;
+        background: radial-gradient(circle at 50% 20%, #f5f3ff 0%, #eef2ff 60%, #e0e7ff 100%) !important;
         color: #1e1b4b !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        perspective: 1000px;
     }
     
     .block-container {
         padding-top: 1.2rem !important;
         padding-bottom: 3rem !important;
         max-width: 1280px !important;
-        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: fadeInUp3D 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    /* Top Header Navbar */
+    /* Top Header Navbar with 3D Depth */
     .logo-container {
         display: flex;
         align-items: center;
         gap: 12px;
-        transition: transform 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .logo-container:hover {
-        transform: scale(1.02);
+        transform: translateY(-2px) scale(1.02);
     }
     
     .logo-icon {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
         color: #ffffff;
         font-weight: 800;
         font-size: 1.1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 11px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .logo-text {
         font-weight: 800;
-        font-size: 1.25rem;
+        font-size: 1.28rem;
         color: #1e1b4b;
         letter-spacing: -0.3px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     .logo-subtext {
         color: #64748b;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 0.95rem;
     }
     
     .status-badge {
-        border: 1px solid #c7d2fe;
-        background: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
         color: #059669;
-        padding: 0.45rem 1rem;
+        padding: 0.48rem 1.1rem;
         border-radius: 30px;
         font-size: 0.82rem;
-        font-weight: 600;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
         transition: all 0.3s ease;
     }
     .status-badge:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
     }
     
     .status-badge::before {
@@ -138,92 +143,96 @@ st.markdown(
         background-color: #10b981;
         border-radius: 50%;
         display: inline-block;
-        animation: pulseGlow 2s infinite;
+        animation: pulseGlow3D 2s infinite;
     }
 
-    /* DOWNLOAD BUTTON ELEGANT STYLING */
+    /* DOWNLOAD BUTTON 3D STYLING */
     .stDownloadButton > button {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important;
         color: #ffffff !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         font-size: 0.88rem !important;
-        border: none !important;
-        border-radius: 10px !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
         height: 44px !important;
         padding: 0 1.4rem !important;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.28) !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
     .stDownloadButton > button:hover {
-        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+        box-shadow: 0 12px 28px rgba(79, 70, 229, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
         color: #ffffff !important;
-        transform: translateY(-2px);
+        transform: translateY(-3px) scale(1.02);
     }
     
     /* Audit New Target Button */
     .audit-new-btn > button {
-        background: #ffffff !important;
+        background: rgba(255, 255, 255, 0.9) !important;
         border: 1.5px solid #c7d2fe !important;
         color: #4338ca !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         font-size: 0.88rem !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         height: 44px !important;
         padding: 0 1.2rem !important;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08) !important;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1), inset 0 1px 0 #ffffff !important;
         transition: all 0.3s ease !important;
     }
     .audit-new-btn > button:hover {
-        background: #eef2ff !important;
+        background: #ffffff !important;
         border-color: #818cf8 !important;
         color: #312e81 !important;
         transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.18) !important;
     }
 
-    /* Hero Section */
+    /* Hero Section 3D */
     .hero-container {
-        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: fadeInUp3D 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .badge-capsule {
         display: inline-block;
-        padding: 0.4rem 1.1rem;
-        border: 1px solid #c7d2fe;
+        padding: 0.45rem 1.2rem;
+        border: 1px solid rgba(199, 210, 254, 0.8);
         border-radius: 20px;
-        background: #e0e7ff;
+        background: rgba(224, 231, 255, 0.7);
+        backdrop-filter: blur(10px);
         color: #4338ca;
         font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.8px;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.12);
+        font-weight: 800;
+        letter-spacing: 0.9px;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
         transition: all 0.3s ease;
     }
     .badge-capsule:hover {
-        transform: scale(1.04);
+        transform: scale(1.05) translateY(-2px);
         border-color: #818cf8;
     }
     
     .hero-heading {
         color: #1e1b4b;
-        font-size: 2.85rem;
-        font-weight: 800;
+        font-size: 2.9rem;
+        font-weight: 900;
         line-height: 1.2;
         margin-top: 1rem;
         margin-bottom: 0.8rem;
         text-align: center;
         letter-spacing: -0.8px;
+        text-shadow: 0 4px 12px rgba(30, 27, 75, 0.08);
     }
     
     .hero-subtitle {
-        color: #64748b;
-        font-size: 1.05rem;
-        max-width: 620px;
+        color: #475569;
+        font-size: 1.08rem;
+        max-width: 630px;
         margin: 0 auto 2.2rem auto;
         text-align: center;
         line-height: 1.6;
+        font-weight: 500;
     }
 
-    /* INPUT & STYLISH SELECTBOX CONTROLS */
+    /* INPUT & STYLISH 3D SELECTBOX CONTROLS */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
@@ -234,16 +243,16 @@ st.markdown(
         margin-bottom: 0px !important;
     }
 
-    /* Text Input Field */
+    /* 3D Text Input Field */
     .stTextInput > div > div > input {
-        background-color: #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
         color: #1e1b4b !important;
         border: 1.5px solid #c7d2fe !important;
-        border-radius: 12px !important;
-        font-size: 0.95rem !important;
-        height: 50px !important;
-        padding-left: 1rem !important;
-        box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06) !important;
+        border-radius: 14px !important;
+        font-size: 0.98rem !important;
+        height: 52px !important;
+        padding-left: 1.1rem !important;
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.02) !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     .stTextInput > div > div > input::placeholder {
@@ -252,30 +261,30 @@ st.markdown(
     }
     .stTextInput > div > div > input:focus {
         border-color: #6366f1 !important;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
-        transform: translateY(-1px);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22), 0 8px 24px rgba(99, 102, 241, 0.15) !important;
+        transform: translateY(-2px);
     }
 
-    /* STRICT FIX FOR SELECTBOX TEXT VISIBILITY & STYLING */
+    /* STRICT 3D FIX FOR SELECTBOX TEXT VISIBILITY & STYLING */
     .stSelectbox > div > div {
-        background-color: #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
         border: 1.5px solid #c7d2fe !important;
-        border-radius: 12px !important;
-        height: 50px !important;
-        box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06) !important;
+        border-radius: 14px !important;
+        height: 52px !important;
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     .stSelectbox > div > div:hover {
         border-color: #818cf8 !important;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12) !important;
-        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.16) !important;
+        transform: translateY(-2px);
     }
     
-    /* Force text color inside BaseWeb Select DOM element */
+    /* Force high contrast text color inside BaseWeb Select DOM element */
     div[data-baseweb="select"] * {
         color: #1e1b4b !important;
-        font-weight: 700 !important;
-        font-size: 0.92rem !important;
+        font-weight: 800 !important;
+        font-size: 0.94rem !important;
         fill: #1e1b4b !important;
     }
     div[data-baseweb="popover"] * {
@@ -283,113 +292,114 @@ st.markdown(
         color: #1e1b4b !important;
     }
 
-    /* Run Analysis Button */
+    /* 3D Dynamic Glowing Button */
     .stButton {
         width: 100% !important;
     }
     
     .stButton > button {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
-        border: none !important;
-        border-radius: 12px !important;
-        height: 50px !important;
-        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.32) !important;
+        font-weight: 800 !important;
+        font-size: 0.98rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 14px !important;
+        height: 52px !important;
+        box-shadow: 0 8px 22px rgba(79, 70, 229, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         margin-top: 0px !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
     .stButton > button:hover {
-        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-        box-shadow: 0 6px 22px rgba(79, 70, 229, 0.45) !important;
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+        box-shadow: 0 14px 30px rgba(79, 70, 229, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+        transform: translateY(-3px) scale(1.02);
     }
     .stButton > button:active {
-        transform: translateY(0px);
-    }
-    .stButton > button:disabled {
-        background: #a5b4fc !important;
-        color: #ffffff !important;
-        cursor: not-allowed !important;
+        transform: translateY(-1px) scale(0.99);
     }
 
-    /* Metric Cards with Floating Hover Effect */
+    /* Metric Cards with Dynamic 3D Depth */
     .metric-card {
-        background: #ffffff;
-        border: 1.5px solid #e0e7ff;
-        border-radius: 14px;
-        padding: 1.3rem 1rem;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1.5px solid rgba(224, 231, 255, 0.8);
+        border-radius: 16px;
+        padding: 1.4rem 1rem;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        animation: fadeInUp 0.6s ease;
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01), inset 0 1px 0 #ffffff;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        animation: fadeInUp3D 0.6s ease;
     }
     .metric-card:hover {
-        transform: translateY(-4px);
+        transform: translateY(-6px) translateZ(10px);
         border-color: #a5b4fc;
-        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+        box-shadow: 0 18px 35px -5px rgba(99, 102, 241, 0.2), inset 0 1px 0 #ffffff;
     }
     .metric-card-title {
         color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 700;
+        font-size: 0.82rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
         margin-bottom: 0.4rem;
     }
     .metric-card-value {
         color: #1e1b4b;
-        font-size: 1.65rem;
-        font-weight: 800;
+        font-size: 1.7rem;
+        font-weight: 900;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
-    /* Metadata Card Container */
+    /* Outer Card Glassmorphic Box */
     .outer-card-box {
-        background: #ffffff;
-        border: 1.5px solid #e0e7ff;
-        border-radius: 16px;
-        padding: 1.6rem;
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
-        animation: fadeInUp 0.7s ease;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(16px);
+        border: 1.5px solid rgba(224, 231, 255, 0.8);
+        border-radius: 18px;
+        padding: 1.8rem;
+        margin-top: 1.6rem;
+        margin-bottom: 1.6rem;
+        box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff;
+        animation: fadeInUp3D 0.7s ease;
     }
     .outer-card-title {
         color: #1e1b4b;
-        font-size: 1.15rem;
-        font-weight: 800;
+        font-size: 1.2rem;
+        font-weight: 900;
         margin-bottom: 1.2rem;
     }
     .meta-inner-box {
-        background: #f8fafc;
+        background: rgba(248, 250, 252, 0.8);
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.2rem;
+        border-radius: 14px;
+        padding: 1.3rem;
         height: 100%;
-        transition: border-color 0.3s ease;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s ease;
     }
     .meta-inner-box:hover {
         border-color: #c7d2fe;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08);
     }
     .meta-inner-title {
         color: #64748b;
         font-size: 0.82rem;
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 0.6rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         text-transform: uppercase;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.5px;
     }
     .meta-inner-val {
         color: #0f172a;
-        font-size: 0.98rem;
-        font-weight: 600;
+        font-size: 1rem;
+        font-weight: 700;
         word-break: break-word;
         line-height: 1.5;
     }
@@ -398,7 +408,7 @@ st.markdown(
         color: #ef4444;
         border: 1px solid #fee2e2;
         font-size: 0.72rem;
-        font-weight: 700;
+        font-weight: 800;
         padding: 0.2rem 0.6rem;
         border-radius: 6px;
     }
@@ -407,39 +417,40 @@ st.markdown(
         color: #16a34a;
         border: 1px solid #dcfce7;
         font-size: 0.72rem;
-        font-weight: 700;
+        font-weight: 800;
         padding: 0.2rem 0.6rem;
         border-radius: 6px;
     }
 
-    /* Technical Report Box */
+    /* 3D Technical Report Container */
     .report-card-box {
-        background: #ffffff;
-        border: 1.5px solid #e0e7ff;
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 1.5rem;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
-        animation: fadeInUp 0.8s ease;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(16px);
+        border: 1.5px solid rgba(224, 231, 255, 0.8);
+        border-radius: 20px;
+        padding: 2.2rem;
+        margin-top: 1.6rem;
+        box-shadow: 0 14px 35px rgba(99, 102, 241, 0.09), inset 0 1px 0 #ffffff;
+        animation: fadeInUp3D 0.8s ease;
     }
 
     .stMarkdown h3 {
         color: #312e81 !important;
-        font-size: 1.2rem !important;
-        font-weight: 800 !important;
+        font-size: 1.25rem !important;
+        font-weight: 900 !important;
         margin-top: 1.6rem !important;
         margin-bottom: 0.8rem !important;
-        border-bottom: 1px solid #e0e7ff;
+        border-bottom: 1.5px solid #e0e7ff;
         padding-bottom: 0.4rem;
     }
     .stMarkdown p, .stMarkdown li {
         color: #334155 !important;
-        font-size: 0.95rem !important;
+        font-size: 0.96rem !important;
         line-height: 1.65 !important;
     }
     .stMarkdown strong {
         color: #4f46e5 !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
     }
     </style>
     """,
@@ -1052,9 +1063,9 @@ else:
     with c1:
         st.markdown(
             f"""
-            <div style="margin-bottom: 1.5rem; animation: fadeInUp 0.5s ease;">
-                <h1 style="color: #1e1b4b; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
-                <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
+            <div style="margin-bottom: 1.5rem; animation: fadeInUp3D 0.5s ease;">
+                <h1 style="color: #1e1b4b; font-size: 2.1rem; font-weight: 900; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
+                <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px; font-weight: 600;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1066,7 +1077,7 @@ else:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # 4 Diagnostic Metric Cards
+    # 4 Diagnostic Metric Cards with 3D Float
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown(
@@ -1089,7 +1100,7 @@ else:
             unsafe_allow_html=True,
         )
 
-    # Scraped Metadata Overview Card Container
+    # Scraped Metadata Overview 3D Card Box
     meta_badge_html = (
         '<span class="meta-badge-missing">Missing Tag</span>'
         if d["meta"] == "Meta Description Tag Missing"
@@ -1140,10 +1151,10 @@ else:
             )
         st.dataframe(page_summary, use_container_width=True)
 
-    # Technical Diagnostic & Inspection Report
+    # 3D Technical Diagnostic & Inspection Report Box
     st.markdown('<div class="report-card-box">', unsafe_allow_html=True)
     st.markdown(
-        '<div style="color: #1e1b4b; font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
+        '<div style="color: #1e1b4b; font-size: 1.28rem; font-weight: 900; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
         unsafe_allow_html=True,
     )
     st.markdown(d["report"])
