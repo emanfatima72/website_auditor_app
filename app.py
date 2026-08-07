@@ -27,7 +27,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- ELEGANT LIGHT PURPLE & LAVENDER ENTERPRISE THEME ---
+# --- ANIMATED, ELEGANT PURPLE ENTERPRISE THEME ---
 st.markdown(
     """
     <style>
@@ -37,10 +37,33 @@ st.markdown(
         visibility: hidden !important;
     }
 
-    /* Global Soft Purple Gradient Background */
-    .stApp {
-        background: linear-gradient(135deg, #f3f0ff 0%, #faf8ff 50%, #f5f3ff 100%) !important;
-        color: #1e1b4b;
+    /* KEYFRAME ANIMATIONS */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+        70% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* Global Soft Purple Gradient Background Force */
+    .stApp, [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #f3e8ff 0%, #eef2ff 50%, #f5f3ff 100%) !important;
+        color: #1e1b4b !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
@@ -48,6 +71,7 @@ st.markdown(
         padding-top: 1.2rem !important;
         padding-bottom: 3rem !important;
         max-width: 1280px !important;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     /* Top Header Navbar */
@@ -55,6 +79,10 @@ st.markdown(
         display: flex;
         align-items: center;
         gap: 12px;
+        transition: transform 0.3s ease;
+    }
+    .logo-container:hover {
+        transform: scale(1.02);
     }
     
     .logo-icon {
@@ -62,13 +90,13 @@ st.markdown(
         color: #ffffff;
         font-weight: 800;
         font-size: 1.1rem;
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
     }
     
     .logo-text {
@@ -79,13 +107,13 @@ st.markdown(
     }
     
     .logo-subtext {
-        color: #6b7280;
+        color: #64748b;
         font-weight: 500;
         font-size: 0.95rem;
     }
     
     .status-badge {
-        border: 1px solid #ddd6fe;
+        border: 1px solid #c7d2fe;
         background: #ffffff;
         color: #059669;
         padding: 0.45rem 1rem;
@@ -95,7 +123,12 @@ st.markdown(
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.06);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        transition: all 0.3s ease;
+    }
+    .status-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
     }
     
     .status-badge::before {
@@ -105,6 +138,7 @@ st.markdown(
         background-color: #10b981;
         border-radius: 50%;
         display: inline-block;
+        animation: pulseGlow 2s infinite;
     }
 
     /* DOWNLOAD BUTTON ELEGANT STYLING */
@@ -117,14 +151,14 @@ st.markdown(
         border-radius: 10px !important;
         height: 44px !important;
         padding: 0 1.4rem !important;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28) !important;
-        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.28) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     .stDownloadButton > button:hover {
         background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.38) !important;
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
         color: #ffffff !important;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
     }
     
     /* Audit New Target Button */
@@ -137,16 +171,20 @@ st.markdown(
         border-radius: 10px !important;
         height: 44px !important;
         padding: 0 1.2rem !important;
-        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.06) !important;
-        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08) !important;
+        transition: all 0.3s ease !important;
     }
     .audit-new-btn > button:hover {
         background: #eef2ff !important;
-        border-color: #a5b4fc !important;
+        border-color: #818cf8 !important;
         color: #312e81 !important;
+        transform: translateY(-2px);
     }
 
     /* Hero Section */
+    .hero-container {
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
     .badge-capsule {
         display: inline-block;
         padding: 0.4rem 1.1rem;
@@ -157,7 +195,12 @@ st.markdown(
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.8px;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.12);
+        transition: all 0.3s ease;
+    }
+    .badge-capsule:hover {
+        transform: scale(1.04);
+        border-color: #818cf8;
     }
     
     .hero-heading {
@@ -172,7 +215,7 @@ st.markdown(
     }
     
     .hero-subtitle {
-        color: #6b7280;
+        color: #64748b;
         font-size: 1.05rem;
         max-width: 620px;
         margin: 0 auto 2.2rem auto;
@@ -200,32 +243,44 @@ st.markdown(
         font-size: 0.95rem !important;
         height: 50px !important;
         padding-left: 1rem !important;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06) !important;
-        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .stTextInput > div > div > input::placeholder {
+        color: #94a3b8 !important;
+        opacity: 1 !important;
     }
     .stTextInput > div > div > input:focus {
         border-color: #6366f1 !important;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18) !important;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+        transform: translateY(-1px);
     }
 
-    /* Stylish Selectbox */
+    /* STRICT FIX FOR SELECTBOX TEXT VISIBILITY & STYLING */
     .stSelectbox > div > div {
         background-color: #ffffff !important;
-        color: #312e81 !important;
         border: 1.5px solid #c7d2fe !important;
         border-radius: 12px !important;
-        font-size: 0.92rem !important;
-        font-weight: 600 !important;
         height: 50px !important;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06) !important;
-        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     .stSelectbox > div > div:hover {
         border-color: #818cf8 !important;
-        background-color: #f5f3ff !important;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12) !important;
+        transform: translateY(-1px);
     }
+    
+    /* Force text color inside BaseWeb Select DOM element */
     div[data-baseweb="select"] * {
-        color: #312e81 !important;
+        color: #1e1b4b !important;
+        font-weight: 700 !important;
+        font-size: 0.92rem !important;
+        fill: #1e1b4b !important;
+    }
+    div[data-baseweb="popover"] * {
+        background-color: #ffffff !important;
+        color: #1e1b4b !important;
     }
 
     /* Run Analysis Button */
@@ -241,17 +296,20 @@ st.markdown(
         border: none !important;
         border-radius: 12px !important;
         height: 50px !important;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3) !important;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.32) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         margin-top: 0px !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     .stButton > button:hover {
         background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4) !important;
-        transform: translateY(-1px);
+        box-shadow: 0 6px 22px rgba(79, 70, 229, 0.45) !important;
+        transform: translateY(-2px);
+    }
+    .stButton > button:active {
+        transform: translateY(0px);
     }
     .stButton > button:disabled {
         background: #a5b4fc !important;
@@ -259,7 +317,7 @@ st.markdown(
         cursor: not-allowed !important;
     }
 
-    /* Metric Cards */
+    /* Metric Cards with Floating Hover Effect */
     .metric-card {
         background: #ffffff;
         border: 1.5px solid #e0e7ff;
@@ -267,14 +325,16 @@ st.markdown(
         padding: 1.3rem 1rem;
         text-align: center;
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
-        transition: transform 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: fadeInUp 0.6s ease;
     }
     .metric-card:hover {
-        transform: translateY(-2px);
-        border-color: #c7d2fe;
+        transform: translateY(-4px);
+        border-color: #a5b4fc;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
     }
     .metric-card-title {
-        color: #6b7280;
+        color: #64748b;
         font-size: 0.8rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -287,7 +347,7 @@ st.markdown(
         font-weight: 800;
     }
 
-    /* Metadata Card Box */
+    /* Metadata Card Container */
     .outer-card-box {
         background: #ffffff;
         border: 1.5px solid #e0e7ff;
@@ -296,6 +356,7 @@ st.markdown(
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
+        animation: fadeInUp 0.7s ease;
     }
     .outer-card-title {
         color: #1e1b4b;
@@ -309,6 +370,10 @@ st.markdown(
         border-radius: 12px;
         padding: 1.2rem;
         height: 100%;
+        transition: border-color 0.3s ease;
+    }
+    .meta-inner-box:hover {
+        border-color: #c7d2fe;
     }
     .meta-inner-title {
         color: #64748b;
@@ -355,6 +420,7 @@ st.markdown(
         padding: 2rem;
         margin-top: 1.5rem;
         box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
+        animation: fadeInUp 0.8s ease;
     }
 
     .stMarkdown h3 {
@@ -916,7 +982,7 @@ st.markdown('<div style="margin-bottom: 1.5rem;"></div>', unsafe_allow_html=True
 if not st.session_state.scanned:
     st.markdown(
         """
-        <div style="text-align: center; margin-top: 2rem;">
+        <div class="hero-container" style="text-align: center; margin-top: 2rem;">
             <div class="badge-capsule">ENTERPRISE DIAGNOSTICS PLATFORM</div>
             <div class="hero-heading">
                 Enterprise Website Audit &<br>Diagnostics
@@ -986,9 +1052,9 @@ else:
     with c1:
         st.markdown(
             f"""
-            <div style="margin-bottom: 1.5rem;">
+            <div style="margin-bottom: 1.5rem; animation: fadeInUp 0.5s ease;">
                 <h1 style="color: #1e1b4b; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
-                <p style="color: #6b7280; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
+                <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
             </div>
             """,
             unsafe_allow_html=True,
