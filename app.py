@@ -27,7 +27,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- ELEGANT ENTERPRISE LIGHT / MODERN UI STYLING ---
+# --- ELEGANT LIGHT PURPLE & LAVENDER ENTERPRISE THEME ---
 st.markdown(
     """
     <style>
@@ -37,15 +37,15 @@ st.markdown(
         visibility: hidden !important;
     }
 
-    /* Global Modern Theme Background */
+    /* Global Soft Purple Gradient Background */
     .stApp {
-        background-color: #f8fafc !important;
-        color: #0f172a;
+        background: linear-gradient(135deg, #f3f0ff 0%, #faf8ff 50%, #f5f3ff 100%) !important;
+        color: #1e1b4b;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 1.2rem !important;
         padding-bottom: 3rem !important;
         max-width: 1280px !important;
     }
@@ -62,40 +62,40 @@ st.markdown(
         color: #ffffff;
         font-weight: 800;
         font-size: 1.1rem;
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
     }
     
     .logo-text {
         font-weight: 800;
-        font-size: 1.2rem;
-        color: #0f172a;
+        font-size: 1.25rem;
+        color: #1e1b4b;
         letter-spacing: -0.3px;
     }
     
     .logo-subtext {
-        color: #64748b;
+        color: #6b7280;
         font-weight: 500;
         font-size: 0.95rem;
     }
     
     .status-badge {
-        border: 1px solid #e2e8f0;
+        border: 1px solid #ddd6fe;
         background: #ffffff;
-        color: #10b981;
-        padding: 0.4rem 0.9rem;
+        color: #059669;
+        padding: 0.45rem 1rem;
         border-radius: 30px;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        gap: 8px;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.06);
     }
     
     .status-badge::before {
@@ -109,20 +109,20 @@ st.markdown(
 
     /* DOWNLOAD BUTTON ELEGANT STYLING */
     .stDownloadButton > button {
-        background: #4f46e5 !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
         color: #ffffff !important;
         font-weight: 600 !important;
         font-size: 0.88rem !important;
         border: none !important;
-        border-radius: 8px !important;
-        height: 40px !important;
+        border-radius: 10px !important;
+        height: 44px !important;
         padding: 0 1.4rem !important;
-        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28) !important;
         transition: all 0.2s ease-in-out !important;
     }
     .stDownloadButton > button:hover {
-        background: #4338ca !important;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.38) !important;
         color: #ffffff !important;
         transform: translateY(-1px);
     }
@@ -130,39 +130,39 @@ st.markdown(
     /* Audit New Target Button */
     .audit-new-btn > button {
         background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
-        color: #334155 !important;
+        border: 1.5px solid #c7d2fe !important;
+        color: #4338ca !important;
         font-weight: 600 !important;
         font-size: 0.88rem !important;
-        border-radius: 8px !important;
-        height: 42px !important;
+        border-radius: 10px !important;
+        height: 44px !important;
         padding: 0 1.2rem !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.06) !important;
         transition: all 0.2s ease !important;
     }
     .audit-new-btn > button:hover {
-        background: #f1f5f9 !important;
-        border-color: #94a3b8 !important;
-        color: #0f172a !important;
+        background: #eef2ff !important;
+        border-color: #a5b4fc !important;
+        color: #312e81 !important;
     }
 
-    /* Hero & Input Section */
+    /* Hero Section */
     .badge-capsule {
         display: inline-block;
-        padding: 0.35rem 1rem;
-        border: 1px solid #e0e7ff;
+        padding: 0.4rem 1.1rem;
+        border: 1px solid #c7d2fe;
         border-radius: 20px;
-        background: #eep2ff;
-        background: rgba(224, 231, 255, 0.6);
+        background: #e0e7ff;
         color: #4338ca;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.8px;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
     }
     
     .hero-heading {
-        color: #0f172a;
-        font-size: 2.75rem;
+        color: #1e1b4b;
+        font-size: 2.85rem;
         font-weight: 800;
         line-height: 1.2;
         margin-top: 1rem;
@@ -172,7 +172,7 @@ st.markdown(
     }
     
     .hero-subtitle {
-        color: #64748b;
+        color: #6b7280;
         font-size: 1.05rem;
         max-width: 620px;
         margin: 0 auto 2.2rem auto;
@@ -180,7 +180,7 @@ st.markdown(
         line-height: 1.6;
     }
 
-    /* Input & Selectbox & Button Styling */
+    /* INPUT & STYLISH SELECTBOX CONTROLS */
     div[data-testid="column"] {
         display: flex;
         align-items: center;
@@ -190,35 +190,58 @@ st.markdown(
         width: 100% !important;
         margin-bottom: 0px !important;
     }
-    
-    .stTextInput > div > div > input, .stSelectbox > div > div {
+
+    /* Text Input Field */
+    .stTextInput > div > div > input {
         background-color: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 10px !important;
+        color: #1e1b4b !important;
+        border: 1.5px solid #c7d2fe !important;
+        border-radius: 12px !important;
         font-size: 0.95rem !important;
-        height: 48px !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        height: 50px !important;
+        padding-left: 1rem !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06) !important;
+        transition: all 0.2s ease !important;
     }
-    
     .stTextInput > div > div > input:focus {
         border-color: #6366f1 !important;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18) !important;
     }
-    
+
+    /* Stylish Selectbox */
+    .stSelectbox > div > div {
+        background-color: #ffffff !important;
+        color: #312e81 !important;
+        border: 1.5px solid #c7d2fe !important;
+        border-radius: 12px !important;
+        font-size: 0.92rem !important;
+        font-weight: 600 !important;
+        height: 50px !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06) !important;
+        transition: all 0.2s ease !important;
+    }
+    .stSelectbox > div > div:hover {
+        border-color: #818cf8 !important;
+        background-color: #f5f3ff !important;
+    }
+    div[data-baseweb="select"] * {
+        color: #312e81 !important;
+    }
+
+    /* Run Analysis Button */
     .stButton {
         width: 100% !important;
     }
     
     .stButton > button {
-        background: #4f46e5 !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
         color: #ffffff !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         font-size: 0.95rem !important;
         border: none !important;
-        border-radius: 10px !important;
-        height: 48px !important;
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25) !important;
+        border-radius: 12px !important;
+        height: 50px !important;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -226,10 +249,10 @@ st.markdown(
         transition: all 0.2s ease !important;
     }
     .stButton > button:hover {
-        background: #4338ca !important;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4) !important;
+        transform: translateY(-1px);
     }
-
     .stButton > button:disabled {
         background: #a5b4fc !important;
         color: #ffffff !important;
@@ -239,26 +262,27 @@ st.markdown(
     /* Metric Cards */
     .metric-card {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.25rem 1rem;
+        border: 1.5px solid #e0e7ff;
+        border-radius: 14px;
+        padding: 1.3rem 1rem;
         text-align: center;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
         transition: transform 0.2s ease;
     }
     .metric-card:hover {
         transform: translateY(-2px);
+        border-color: #c7d2fe;
     }
     .metric-card-title {
-        color: #64748b;
+        color: #6b7280;
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-bottom: 0.4rem;
     }
     .metric-card-value {
-        color: #0f172a;
+        color: #1e1b4b;
         font-size: 1.65rem;
         font-weight: 800;
     }
@@ -266,31 +290,31 @@ st.markdown(
     /* Metadata Card Box */
     .outer-card-box {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 1.5rem;
+        border: 1.5px solid #e0e7ff;
+        border-radius: 16px;
+        padding: 1.6rem;
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
     }
     .outer-card-title {
-        color: #0f172a;
+        color: #1e1b4b;
         font-size: 1.15rem;
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 1.2rem;
     }
     .meta-inner-box {
         background: #f8fafc;
-        border: 1px solid #f1f5f9;
-        border-radius: 10px;
-        padding: 1.1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.2rem;
         height: 100%;
     }
     .meta-inner-title {
-        color: #475569;
+        color: #64748b;
         font-size: 0.82rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.6rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -323,23 +347,23 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* Report Box */
+    /* Technical Report Box */
     .report-card-box {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
+        border: 1.5px solid #e0e7ff;
+        border-radius: 16px;
         padding: 2rem;
         margin-top: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.05);
     }
 
     .stMarkdown h3 {
-        color: #1e1b4b !important;
+        color: #312e81 !important;
         font-size: 1.2rem !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         margin-top: 1.6rem !important;
         margin-bottom: 0.8rem !important;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid #e0e7ff;
         padding-bottom: 0.4rem;
     }
     .stMarkdown p, .stMarkdown li {
@@ -906,7 +930,7 @@ if not st.session_state.scanned:
     )
 
     col_left, col_input, col_mode, col_btn, col_right = st.columns(
-        [0.5, 3.5, 1.5, 1.5, 0.5]
+        [0.4, 3.4, 1.8, 1.4, 0.4]
     )
 
     with col_input:
@@ -963,8 +987,8 @@ else:
         st.markdown(
             f"""
             <div style="margin-bottom: 1.5rem;">
-                <h1 style="color: #0f172a; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
-                <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
+                <h1 style="color: #1e1b4b; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Audit Results for {d['url']}</h1>
+                <p style="color: #6b7280; font-size: 0.95rem; margin-top: 4px; font-weight: 500;">Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned) | Comprehensive live structural & AI analysis</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1034,7 +1058,7 @@ else:
     # Multi-Page Crawl Results Table (if Full Site mode was selected)
     if d.get("total_pages_scanned", 1) > 1:
         st.markdown(
-            '<div style="color: #0f172a; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.8rem;">🌐 Scanned Sub-Pages Overview</div>',
+            '<div style="color: #1e1b4b; font-size: 1.2rem; font-weight: 800; margin-bottom: 0.8rem;">🌐 Scanned Sub-Pages Overview</div>',
             unsafe_allow_html=True,
         )
         page_summary = []
@@ -1053,7 +1077,7 @@ else:
     # Technical Diagnostic & Inspection Report
     st.markdown('<div class="report-card-box">', unsafe_allow_html=True)
     st.markdown(
-        '<div style="color: #0f172a; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
+        '<div style="color: #1e1b4b; font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">Technical Diagnostic & Inspection Report</div>',
         unsafe_allow_html=True,
     )
     st.markdown(d["report"])
