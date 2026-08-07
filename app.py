@@ -21,7 +21,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Load environment variables
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Streamlit Page Configuration
 st.set_page_config(
@@ -33,448 +32,391 @@ st.set_page_config(
 
 # --- ADVANCED RESPONSIVE ULTRA-DARK GLASS UI STYLING ---
 st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    """<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-    /* HIDE DEFAULT STREAMLIT HEADER & FOOTER */
-    header[data-testid="stHeader"], .stAppHeader, #MainMenu, footer {
-        display: none !important;
-        visibility: hidden !important;
-    }
+header[data-testid="stHeader"], .stAppHeader, #MainMenu, footer {
+    display: none !important;
+    visibility: hidden !important;
+}
 
-    /* GLOBAL APP STYLING */
-    html, body, .stApp {
-        background-color: #0b0f19 !important;
-        background-image: 
-            radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.25) 0%, transparent 60%),
-            radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-            radial-gradient(circle at 15% 70%, rgba(16, 185, 129, 0.08) 0%, transparent 50%) !important;
-        color: #f1f5f9 !important;
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    }
+html, body, .stApp {
+    background-color: #0b0f19 !important;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 15% 70%, rgba(16, 185, 129, 0.08) 0%, transparent 50%) !important;
+    color: #f1f5f9 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
 
-    .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 4rem !important;
-        max-width: 1280px !important;
-    }
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 4rem !important;
+    max-width: 1280px !important;
+}
 
-    /* NAVIGATION BAR CONTAINER */
-    .top-nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.8rem 0;
-        margin-bottom: 2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    
-    .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
+.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
 
-    .nav-logo-icon {
-        width: 38px;
-        height: 38px;
-        background: radial-gradient(circle, #3b82f6 0%, #1d4ed8 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-    .brand-title {
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: #ffffff;
-        letter-spacing: -0.4px;
-        line-height: 1.1;
-    }
+.nav-logo-icon {
+    width: 38px;
+    height: 38px;
+    background: radial-gradient(circle, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-    .brand-subtitle {
-        font-size: 0.65rem;
-        color: #64748b;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
+.brand-title {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.1;
+}
 
-    .nav-links {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-    }
+.brand-subtitle {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
 
-    .nav-link {
-        color: #94a3b8;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    
-    .nav-link.active {
-        color: #ffffff;
-        font-weight: 600;
-    }
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
 
-    .nav-status {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
+.nav-link {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+}
 
-    .status-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.78rem;
-        color: #a7f3d0;
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        padding: 0.35rem 0.8rem;
-        border-radius: 20px;
-    }
+.nav-link.active {
+    color: #ffffff;
+    font-weight: 600;
+}
 
-    .status-dot {
-        width: 6px;
-        height: 6px;
-        background-color: #10b981;
-        border-radius: 50%;
-        box-shadow: 0 0 8px #10b981;
-    }
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #a7f3d0;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+}
 
-    /* HERO LAYOUT & RADAR GRAPHIC */
-    .hero-badge {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        color: #38bdf8;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 1.2rem;
-    }
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+}
 
-    .hero-heading-main {
-        font-size: 3.8rem;
-        font-weight: 800;
-        line-height: 1.08;
-        color: #ffffff;
-        letter-spacing: -1.5px;
-        margin-bottom: 1.2rem;
-    }
+.hero-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #38bdf8;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+}
 
-    .hero-heading-highlight {
-        color: #38bdf8;
-        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+.hero-heading-main {
+    font-size: 3.8rem;
+    font-weight: 800;
+    line-height: 1.08;
+    color: #ffffff;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.2rem;
+}
 
-    .hero-desc {
-        color: #94a3b8;
-        font-size: 1.05rem;
-        line-height: 1.6;
-        max-width: 480px;
-        margin-bottom: 2.5rem;
-    }
+.hero-heading-highlight {
+    color: #38bdf8;
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    /* HERO RADAR HUD GRAPHIC */
-    .radar-container {
-        position: relative;
-        width: 340px;
-        height: 340px;
-        margin: 0 auto;
-        border-radius: 50%;
-        border: 1px solid rgba(56, 189, 248, 0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient(circle, rgba(15, 23, 42, 0.6) 0%, rgba(11, 15, 25, 0.8) 100%);
-        box-shadow: 0 0 50px rgba(56, 189, 248, 0.05);
-    }
+.hero-desc {
+    color: #94a3b8;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+}
 
-    .radar-ring-mid {
-        position: absolute;
-        width: 240px;
-        height: 240px;
-        border-radius: 50%;
-        border: 1px solid rgba(56, 189, 248, 0.25);
-    }
+.radar-container {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(15, 23, 42, 0.6) 0%, rgba(11, 15, 25, 0.8) 100%);
+    box-shadow: 0 0 50px rgba(56, 189, 248, 0.05);
+}
 
-    .radar-ring-inner {
-        position: absolute;
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        border: 1px dashed rgba(99, 102, 241, 0.4);
-    }
+.radar-ring-mid {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+}
 
-    .radar-center-card {
-        position: relative;
-        z-index: 5;
-        text-align: center;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 50%;
-        width: 110px;
-        height: 110px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
-    }
+.radar-ring-inner {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 1px dashed rgba(99, 102, 241, 0.4);
+}
 
-    .radar-score-num {
-        font-size: 2.2rem;
-        font-weight: 800;
-        color: #ffffff;
-        line-height: 1;
-    }
+.radar-center-card {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
 
-    .radar-score-label {
-        font-size: 0.65rem;
-        color: #94a3b8;
-        font-family: 'JetBrains Mono', monospace;
-        margin-top: 4px;
-        text-transform: uppercase;
-    }
+.radar-score-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
 
-    .radar-blip {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        background: #38bdf8;
-        border-radius: 50%;
-        box-shadow: 0 0 10px #38bdf8;
-    }
+.radar-score-label {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
 
-    /* INPUT BAR STYLING MATCHING SCREENSHOT */
-    .search-bar-wrapper {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        padding: 6px 8px;
-        backdrop-filter: blur(16px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
+.radar-blip {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #38bdf8;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #38bdf8;
+}
 
-    .stTextInput > div > div > input {
-        background: transparent !important;
-        color: #ffffff !important;
-        border: none !important;
-        font-size: 1.05rem !important;
-        height: 50px !important;
-        padding-left: 1rem !important;
-        box-shadow: none !important;
-    }
+.glass-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.4rem;
+    backdrop-filter: blur(12px);
+    height: 100%;
+}
 
-    .stSelectbox > div > div {
-        background: rgba(30, 41, 59, 0.6) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
-        height: 48px !important;
-        font-weight: 600 !important;
-    }
+.card-label-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.6rem;
+}
 
-    .stButton > button {
-        background: #4f46e5 !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
-        border: none !important;
-        border-radius: 12px !important;
-        height: 48px !important;
-        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4) !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    .stButton > button:hover {
-        background: #4338ca !important;
-        box-shadow: 0 6px 25px rgba(79, 70, 229, 0.6) !important;
-    }
+.card-metric-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
 
-    .stDownloadButton > button {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        font-weight: 700 !important;
-        border-radius: 10px !important;
-        height: 40px !important;
-        border: none !important;
-        font-size: 0.85rem !important;
-    }
+.card-subtext {
+    font-size: 0.8rem;
+    color: #10b981;
+    margin-top: 0.4rem;
+    font-weight: 500;
+}
 
-    /* AUDIT DASHBOARD GRID CARDS */
-    .glass-card {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 1.4rem;
-        backdrop-filter: blur(12px);
-        height: 100%;
-    }
+.card-subtext-warn {
+    color: #f59e0b;
+}
 
-    .card-label-mono {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.72rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 0.6rem;
-    }
+.score-donut-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
 
-    .card-metric-val {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -0.5px;
-    }
+.score-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(#6366f1 0% 84%, #1e293b 84% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .card-subtext {
-        font-size: 0.8rem;
-        color: #10b981;
-        margin-top: 0.4rem;
-        font-weight: 500;
-    }
+.score-circle-inner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
-    .card-subtext-warn {
-        color: #f59e0b;
-    }
+.finding-item {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-    /* SCORE DONUT CARD */
-    .score-donut-container {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
+.finding-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
 
-    .score-circle {
-        position: relative;
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        background: conic-gradient(#6366f1 0% 84%, #1e293b 84% 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.crawl-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
 
-    .score-circle-inner {
-        width: 88px;
-        height: 88px;
-        border-radius: 50%;
-        background: #0f172a;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
+.crawl-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    text-align: left;
+}
 
-    /* FINDINGS / ACCORDION ITEMS */
-    .finding-item {
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 12px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 0.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+.crawl-table td {
+    background: rgba(30, 41, 59, 0.3);
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
 
-    .finding-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
+.crawl-table tr td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
+    font-weight: 600;
+    color: #ffffff;
+}
 
-    /* TABLE STYLING */
-    .crawl-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 0.5rem;
-    }
+.crawl-table tr td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
 
-    .crawl-table th {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.7rem;
-        color: #64748b;
-        text-transform: uppercase;
-        padding: 0.6rem 1rem;
-        text-align: left;
-    }
+.badge-status-200 {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
 
-    .crawl-table td {
-        background: rgba(30, 41, 59, 0.3);
-        padding: 0.8rem 1rem;
-        font-size: 0.9rem;
-        color: #cbd5e1;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    }
-    
-    .crawl-table tr td:first-child {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-left: 1px solid rgba(255, 255, 255, 0.04);
-        font-weight: 600;
-        color: #ffffff;
-    }
+.stTextInput > div > div > input {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-size: 1.05rem !important;
+    height: 50px !important;
+    padding-left: 1rem !important;
+    box-shadow: none !important;
+}
 
-    .crawl-table tr td:last-child {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-        border-right: 1px solid rgba(255, 255, 255, 0.04);
-    }
+.stSelectbox > div > div {
+    background: rgba(30, 41, 59, 0.6) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    height: 48px !important;
+    font-weight: 600 !important;
+}
 
-    .badge-status-200 {
-        background: rgba(16, 185, 129, 0.15);
-        color: #34d399;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        padding: 0.2rem 0.6rem;
-        border-radius: 6px;
-        font-weight: 600;
-    }
+.stButton > button {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    border: none !important;
+    border-radius: 12px !important;
+    height: 48px !important;
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4) !important;
+}
 
-    /* MOBILE RESPONSIVE MEDIA QUERIES */
-    @media (max-width: 768px) {
-        .hero-heading-main {
-            font-size: 2.4rem !important;
-        }
-        .nav-links {
-            display: none !important;
-        }
-        .radar-container {
-            width: 260px !important;
-            height: 260px !important;
-            margin-top: 2rem;
-        }
-        .radar-ring-mid {
-            width: 180px !important;
-            height: 180px !important;
-        }
-        .radar-ring-inner {
-            width: 100px !important;
-            height: 100px !important;
-        }
-    }
-    </style>
-    """,
+.stDownloadButton > button {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    height: 40px !important;
+    border: none !important;
+    font-size: 0.85rem !important;
+}
+</style>""",
     unsafe_allow_html=True,
 )
 
@@ -751,38 +693,36 @@ Your server responds in **{data['rt']} ms**, placing it in the healthy range. Co
 
 # --- TOP NAVIGATION BAR ---
 st.markdown(
-    f"""
-    <div class="top-nav">
-        <div class="nav-brand">
-            <div class="nav-logo-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 2a10 10 0 0 1 10 10"></path>
-                    <circle cx="12" cy="12" r="3" fill="#ffffff"></circle>
-                </svg>
-            </div>
-            <div>
-                <div class="brand-title">SitePulse</div>
-                <div class="brand-subtitle">Enterprise Auditor</div>
-            </div>
+    """<div class="top-nav">
+    <div class="nav-brand">
+        <div class="nav-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a10 10 0 0 1 10 10"></path>
+                <circle cx="12" cy="12" r="3" fill="#ffffff"></circle>
+            </svg>
         </div>
-        <div class="nav-links">
-            <a href="#" class="nav-link active">Overview</a>
-            <a href="#" class="nav-link">Audits</a>
-            <a href="#" class="nav-link">Crawl map</a>
-            <a href="#" class="nav-link">AI report</a>
-        </div>
-        <div class="nav-status">
-            <div class="status-indicator">
-                <span class="status-dot"></span> Engine online
-            </div>
+        <div>
+            <div class="brand-title">SitePulse</div>
+            <div class="brand-subtitle">Enterprise Auditor</div>
         </div>
     </div>
-    """,
+    <div class="nav-links">
+        <a href="#" class="nav-link active">Overview</a>
+        <a href="#" class="nav-link">Audits</a>
+        <a href="#" class="nav-link">Crawl map</a>
+        <a href="#" class="nav-link">AI report</a>
+    </div>
+    <div class="nav-status">
+        <div class="status-indicator">
+            <span class="status-dot"></span> Engine online
+        </div>
+    </div>
+</div>""",
     unsafe_allow_html=True,
 )
 
-# Download button handling in Top Bar area
+# Download button in Top Bar
 if st.session_state.scanned and "txt_data" in st.session_state.audit_data:
     t_col1, t_col2 = st.columns([8, 2])
     with t_col2:
@@ -806,17 +746,15 @@ if not st.session_state.scanned:
 
     with col_hero_left:
         st.markdown(
-            """
-            <div class="hero-badge">
-                <span style="color:#10b981;">●</span> LIVE AUDIT ENGINE V2.8.4
-            </div>
-            <div class="hero-heading-main">
-                Know what your website is <span class="hero-heading-highlight">really</span> saying.
-            </div>
-            <div class="hero-desc">
-                SitePulse turns technical signals into a clear, prioritized path to a faster, healthier web presence.
-            </div>
-            """,
+            """<div class="hero-badge">
+    <span style="color:#10b981;">●</span> LIVE AUDIT ENGINE V2.8.4
+</div>
+<div class="hero-heading-main">
+    Know what your website is <span class="hero-heading-highlight">really</span> saying.
+</div>
+<div class="hero-desc">
+    SitePulse turns technical signals into a clear, prioritized path to a faster, healthier web presence.
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -825,7 +763,6 @@ if not st.session_state.scanned:
             unsafe_allow_html=True,
         )
 
-        # Input Row matching layout
         c_in, c_sel, c_btn = st.columns([2.5, 1.2, 1.3])
 
         with c_in:
@@ -853,12 +790,10 @@ if not st.session_state.scanned:
             )
 
         st.markdown(
-            """
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
-                <span style="color: #34d399;">✓ URL format looks good</span>
-                <span style="font-family: 'JetBrains Mono';">12 pages max</span>
-            </div>
-            """,
+            """<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
+    <span style="color: #34d399;">✓ URL format looks good</span>
+    <span style="font-family: 'JetBrains Mono';">12 pages max</span>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -880,24 +815,22 @@ if not st.session_state.scanned:
 
     with col_hero_right:
         st.markdown(
-            """
-            <div class="radar-container">
-                <div class="radar-ring-mid"></div>
-                <div class="radar-ring-inner"></div>
-                <div class="radar-blip" style="top: 35%; left: 30%;"></div>
-                <div class="radar-blip" style="top: 55%; right: 20%;"></div>
-                <div class="radar-blip" style="bottom: 25%; left: 45%;"></div>
-                <div class="radar-center-card">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                    <div class="radar-score-num">84</div>
-                    <div class="radar-score-label">health score</div>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-around; margin-top: 1.5rem; color: #64748b; font-family: 'JetBrains Mono'; font-size: 0.78rem;">
-                <span>🛡 Secure scan</span>
-                <span>⏱ 182 ms avg</span>
-            </div>
-            """,
+            """<div class="radar-container">
+    <div class="radar-ring-mid"></div>
+    <div class="radar-ring-inner"></div>
+    <div class="radar-blip" style="top: 35%; left: 30%;"></div>
+    <div class="radar-blip" style="top: 55%; right: 20%;"></div>
+    <div class="radar-blip" style="bottom: 25%; left: 45%;"></div>
+    <div class="radar-center-card">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <div class="radar-score-num">84</div>
+        <div class="radar-score-label">health score</div>
+    </div>
+</div>
+<div style="display: flex; justify-content: space-around; margin-top: 1.5rem; color: #64748b; font-family: 'JetBrains Mono'; font-size: 0.78rem;">
+    <span>🛡 Secure scan</span>
+    <span>⏱ 182 ms avg</span>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -910,17 +843,15 @@ else:
 
     # Header Row
     st.markdown(
-        f"""
-        <div style="margin-bottom: 2rem;">
-            <div class="hero-badge">DIAGNOSTIC OVERVIEW</div>
-            <div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1;">
-                One scan. Every signal.
-            </div>
-            <div style="color: #64748b; font-size: 0.95rem; margin-top: 6px;">
-                Latest audit for <span style="color: #38bdf8; font-weight: 600;">{d['url']}</span>
-            </div>
-        </div>
-        """,
+        f"""<div style="margin-bottom: 2rem;">
+    <div class="hero-badge">DIAGNOSTIC OVERVIEW</div>
+    <div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1;">
+        One scan. Every signal.
+    </div>
+    <div style="color: #64748b; font-size: 0.95rem; margin-top: 6px;">
+        Latest audit for <span style="color: #38bdf8; font-weight: 600;">{d['url']}</span>
+    </div>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -929,62 +860,54 @@ else:
 
     with c1:
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div class="card-label-mono">SITE HEALTH</div>
-                <div class="score-donut-container" style="margin-top: 0.8rem;">
-                    <div class="score-circle">
-                        <div class="score-circle-inner">
-                            <span style="font-size: 1.8rem; font-weight: 800; color: #fff;">{d['health_score']}</span>
-                            <span style="font-size: 0.65rem; color: #64748b;">/ 100</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Strong foundation</div>
-                        <div style="font-size: 0.8rem; color: #94a3b8;">Four opportunities are keeping this site from peak performance.</div>
-                    </div>
-                </div>
+            f"""<div class="glass-card">
+    <div class="card-label-mono">SITE HEALTH</div>
+    <div class="score-donut-container" style="margin-top: 0.8rem;">
+        <div class="score-circle">
+            <div class="score-circle-inner">
+                <span style="font-size: 1.8rem; font-weight: 800; color: #fff;">{d['health_score']}</span>
+                <span style="font-size: 0.65rem; color: #64748b;">/ 100</span>
             </div>
-            """,
+        </div>
+        <div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Strong foundation</div>
+            <div style="font-size: 0.8rem; color: #94a3b8;">Four opportunities are keeping this site from peak performance.</div>
+        </div>
+    </div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with c2:
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div style="color: #10b981; margin-bottom: 0.5rem;">🌐</div>
-                <div class="card-label-mono">HTTP status</div>
-                <div class="card-metric-val">{d['status']} OK</div>
-                <div class="card-subtext">Healthy response</div>
-            </div>
-            """,
+            f"""<div class="glass-card">
+    <div style="color: #10b981; margin-bottom: 0.5rem;">🌐</div>
+    <div class="card-label-mono">HTTP status</div>
+    <div class="card-metric-val">{d['status']} OK</div>
+    <div class="card-subtext">Healthy response</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with c3:
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div style="color: #6366f1; margin-bottom: 0.5rem;">⏱</div>
-                <div class="card-label-mono">Server latency</div>
-                <div class="card-metric-val">{d['rt']} ms</div>
-                <div class="card-subtext">14% faster than avg</div>
-            </div>
-            """,
+            f"""<div class="glass-card">
+    <div style="color: #6366f1; margin-bottom: 0.5rem;">⏱</div>
+    <div class="card-label-mono">Server latency</div>
+    <div class="card-metric-val">{d['rt']} ms</div>
+    <div class="card-subtext">14% faster than avg</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with c4:
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div style="color: #f59e0b; margin-bottom: 0.5rem;">⚠️</div>
-                <div class="card-label-mono">Missing alt</div>
-                <div class="card-metric-val">{d['no_alt']} Images</div>
-                <div class="card-subtext card-subtext-warn">Needs attention</div>
-            </div>
-            """,
+            f"""<div class="glass-card">
+    <div style="color: #f59e0b; margin-bottom: 0.5rem;">⚠️</div>
+    <div class="card-label-mono">Missing alt</div>
+    <div class="card-metric-val">{d['no_alt']} Images</div>
+    <div class="card-subtext card-subtext-warn">Needs attention</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -997,80 +920,76 @@ else:
 
     with col_findings:
         st.markdown(
-            """
-            <div class="glass-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
-                    <div>
-                        <div class="card-label-mono">PRIORITIZED FINDINGS</div>
-                        <div style="font-size: 1.3rem; font-weight: 700; color: #fff;">What needs your attention</div>
-                    </div>
-                    <span style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #64748b;">3 groups</span>
-                </div>
-                
-                <div class="finding-item">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="finding-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">!</div>
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Missing meta descriptions</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">2 affected checks</div>
-                        </div>
-                    </div>
-                    <span style="color: #64748b;">∨</span>
-                </div>
-
-                <div class="finding-item">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="finding-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">!</div>
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Images without alt text</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">4 affected checks</div>
-                        </div>
-                    </div>
-                    <span style="color: #64748b;">∨</span>
-                </div>
-
-                <div class="finding-item">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="finding-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">✓</div>
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">HTTPS and canonical signals</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">1 affected check</div>
-                        </div>
-                    </div>
-                    <span style="color: #64748b;">∨</span>
-                </div>
-
+            """<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <div>
+            <div class="card-label-mono">PRIORITIZED FINDINGS</div>
+            <div style="font-size: 1.3rem; font-weight: 700; color: #fff;">What needs your attention</div>
+        </div>
+        <span style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #64748b;">3 groups</span>
+    </div>
+    
+    <div class="finding-item">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="finding-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">!</div>
+            <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Missing meta descriptions</div>
+                <div style="font-size: 0.8rem; color: #64748b;">2 affected checks</div>
             </div>
-            """,
+        </div>
+        <span style="color: #64748b;">∨</span>
+    </div>
+
+    <div class="finding-item">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="finding-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">!</div>
+            <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Images without alt text</div>
+                <div style="font-size: 0.8rem; color: #64748b;">4 affected checks</div>
+            </div>
+        </div>
+        <span style="color: #64748b;">∨</span>
+    </div>
+
+    <div class="finding-item">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="finding-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">✓</div>
+            <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">HTTPS and canonical signals</div>
+                <div style="font-size: 0.8rem; color: #64748b;">1 affected check</div>
+            </div>
+        </div>
+        <span style="color: #64748b;">∨</span>
+    </div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with col_meta:
+        title_len = len(d["title"])
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div class="card-label-mono">PAGE INTELLIGENCE</div>
-                <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Metadata inspection</div>
-                
-                <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div class="card-label-mono">PAGE TITLE</div>
-                    <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['title']}</div>
-                    <div style="color: #10b981; font-size: 0.78rem; margin-top: 2px;">Good · {len(d['title'])} chars</div>
-                </div>
+            f"""<div class="glass-card">
+    <div class="card-label-mono">PAGE INTELLIGENCE</div>
+    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Metadata inspection</div>
+    
+    <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="card-label-mono">PAGE TITLE</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['title']}</div>
+        <div style="color: #10b981; font-size: 0.78rem; margin-top: 2px;">Good · {title_len} chars</div>
+    </div>
 
-                <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div class="card-label-mono">META DESCRIPTION</div>
-                    <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['meta']}</div>
-                    <div style="color: #f59e0b; font-size: 0.78rem; margin-top: 2px;">Action needed</div>
-                </div>
+    <div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="card-label-mono">META DESCRIPTION</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['meta']}</div>
+        <div style="color: #f59e0b; font-size: 0.78rem; margin-top: 2px;">Action needed</div>
+    </div>
 
-                <div>
-                    <div class="card-label-mono">IMAGE COVERAGE</div>
-                    <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['tot_img']} images · {d['tot_img'] - d['no_alt']} alt tags</div>
-                    <div style="color: #ef4444; font-size: 0.78rem; margin-top: 2px;">{d['no_alt']} missing</div>
-                </div>
-            </div>
-            """,
+    <div>
+        <div class="card-label-mono">IMAGE COVERAGE</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{d['tot_img']} images · {d['tot_img'] - d['no_alt']} alt tags</div>
+        <div style="color: #ef4444; font-size: 0.78rem; margin-top: 2px;">{d['no_alt']} missing</div>
+    </div>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -1078,49 +997,45 @@ else:
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
     )
 
-    # SITE TOPOLOGY / CRAWL MAP TABLE
+    # CRAWL MAP TABLE
+    table_rows = ""
+    for page in d.get("scanned_pages", [d]):
+        flaw_count = len(page.get("flaws", []))
+        flaw_html = (
+            f'<span style="color: #ef4444; font-weight: bold;">{flaw_count}</span>'
+            if flaw_count > 0
+            else '<span style="color: #10b981;">✓</span>'
+        )
+        parsed_path = urllib.parse.urlparse(page["url"]).path or "/"
+
+        table_rows += f"""<tr>
+    <td>{parsed_path}</td>
+    <td><span class="badge-status-200">{page['status']} OK</span></td>
+    <td style="font-family: 'JetBrains Mono';">{page['rt']} ms</td>
+    <td>{flaw_html}</td>
+    <td>↗</td>
+</tr>"""
+
     st.markdown(
-        f"""
-        <div class="glass-card">
-            <div class="card-label-mono">SITE TOPOLOGY</div>
-            <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Multi-page crawl</div>
-            
-            <table class="crawl-table">
-                <thead>
-                    <tr>
-                        <th>PAGE</th>
-                        <th>STATUS</th>
-                        <th>LATENCY</th>
-                        <th>FLAWS</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>/</td>
-                        <td><span class="badge-status-200">{d['status']} OK</span></td>
-                        <td style="font-family: 'JetBrains Mono';">{d['rt']} ms</td>
-                        <td style="color: #ef4444; font-weight: bold;">1</td>
-                        <td>↗</td>
-                    </tr>
-                    <tr>
-                        <td>/pricing</td>
-                        <td><span class="badge-status-200">200 OK</span></td>
-                        <td style="font-family: 'JetBrains Mono';">246 ms</td>
-                        <td style="color: #ef4444; font-weight: bold;">2</td>
-                        <td>↗</td>
-                    </tr>
-                    <tr>
-                        <td>/about</td>
-                        <td><span class="badge-status-200">200 OK</span></td>
-                        <td style="font-family: 'JetBrains Mono';">201 ms</td>
-                        <td style="color: #10b981;">✓</td>
-                        <td>↗</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        """,
+        f"""<div class="glass-card">
+    <div class="card-label-mono">SITE TOPOLOGY</div>
+    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">Multi-page crawl</div>
+    
+    <table class="crawl-table">
+        <thead>
+            <tr>
+                <th>PAGE</th>
+                <th>STATUS</th>
+                <th>LATENCY</th>
+                <th>FLAWS</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            {table_rows}
+        </tbody>
+    </table>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -1130,15 +1045,13 @@ else:
 
     # AI SYNTHESIS REPORT
     st.markdown(
-        f"""
-        <div class="glass-card">
-            <div class="card-label-mono">TECHNICAL INTELLIGENCE</div>
-            <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">AI Audit Report</div>
-            <div style="color: #cbd5e1; line-height: 1.7; font-size: 0.95rem;">
-                {d['report']}
-            </div>
-        </div>
-        """,
+        f"""<div class="glass-card">
+    <div class="card-label-mono">TECHNICAL INTELLIGENCE</div>
+    <div style="font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 1.2rem;">AI Audit Report</div>
+    <div style="color: #cbd5e1; line-height: 1.7; font-size: 0.95rem;">
+        {d['report']}
+    </div>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -1146,7 +1059,7 @@ else:
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
     )
 
-    # RE-SCAN BUTTON AT BOTTOM
+    # RE-SCAN BUTTON
     if st.button("← Scan Another Website", use_container_width=False):
         st.session_state.scanned = False
         st.rerun()
