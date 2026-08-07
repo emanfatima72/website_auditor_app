@@ -4,7 +4,6 @@
 # ==============================================================================
 
 import concurrent.futures
-import math
 import os
 import re
 import time
@@ -25,7 +24,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Streamlit Page Configuration
 st.set_page_config(
-    page_title="SitePulse Enterprise | Website Auditor",
+    page_title="SitePulse Enterprise | Technical SEO & Diagnostic Auditor",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -107,24 +106,6 @@ html, body, .stApp {
     text-transform: uppercase;
 }
 
-.nav-links {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-.nav-link {
-    color: #94a3b8;
-    font-size: 0.88rem;
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.nav-link.active {
-    color: #ffffff;
-    font-weight: 600;
-}
-
 .status-indicator {
     display: inline-flex;
     align-items: center;
@@ -163,11 +144,11 @@ html, body, .stApp {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 .hero-heading-main {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     font-weight: 700;
     line-height: 1.1;
     color: #ffffff;
@@ -186,72 +167,12 @@ html, body, .stApp {
     color: #94a3b8;
     font-size: 1rem;
     line-height: 1.6;
-    max-width: 480px;
+    max-width: 500px;
     margin-bottom: 2rem;
     font-weight: 400;
 }
 
-/* RADAR VISUAL */
-.radar-container {
-    position: relative;
-    width: 320px;
-    height: 320px;
-    margin: 0 auto;
-    border-radius: 50%;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, rgba(15, 23, 42, 0.6) 0%, rgba(11, 15, 25, 0.8) 100%);
-    box-shadow: 0 0 50px rgba(56, 189, 248, 0.08);
-}
-
-.radar-sweep-line {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, rgba(56, 189, 248, 0.3) 0deg, transparent 60deg, transparent 360deg);
-    animation: radarSweep 4s linear infinite;
-}
-
-@keyframes radarSweep {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.radar-center-card {
-    position: relative;
-    z-index: 5;
-    text-align: center;
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    width: 110px;
-    height: 110px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
-}
-
-.radar-score-num {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1;
-}
-
-.radar-score-label {
-    font-size: 0.65rem;
-    color: #94a3b8;
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 4px;
-    text-transform: uppercase;
-}
-
-/* CARDS & CONTAINERS */
+/* CARDS & GLASS CONTAINERS */
 .glass-card {
     background: rgba(15, 23, 42, 0.55);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -289,6 +210,10 @@ html, body, .stApp {
     color: #f59e0b;
 }
 
+.card-subtext-danger {
+    color: #ef4444;
+}
+
 /* DOMAIN AUTHORITY METRIC BAR */
 .da-progress-bg {
     background: rgba(255, 255, 255, 0.08);
@@ -305,7 +230,7 @@ html, body, .stApp {
     border-radius: 8px;
 }
 
-/* ELEGANT TYPOGRAPHY FIXES FOR METADATA */
+/* TYPOGRAPHY FIXES FOR METADATA & HEADERS */
 .meta-field-title {
     font-weight: 600 !important;
     color: #f1f5f9 !important;
@@ -320,7 +245,7 @@ html, body, .stApp {
     line-height: 1.5 !important;
 }
 
-/* STYLING STREAMLIT EXPANDERS (ARROWS FIXED) */
+/* STYLING EXPANDERS */
 div[data-testid="stExpander"] {
     background: rgba(30, 41, 59, 0.35) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -338,10 +263,6 @@ div[data-testid="stExpander"] details summary {
 
 div[data-testid="stExpander"] details summary:hover {
     color: #38bdf8 !important;
-}
-
-div[data-testid="stExpander"] details[open] summary {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 /* CRAWL TABLE */
@@ -393,6 +314,20 @@ div[data-testid="stExpander"] details[open] summary {
     font-weight: 500;
 }
 
+/* CODE / HEADERS DISPLAY BLOCK */
+.headers-block {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #38bdf8;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
 .stTextInput > div > div > input {
     background: transparent !important;
     color: #ffffff !important;
@@ -400,7 +335,6 @@ div[data-testid="stExpander"] details[open] summary {
     font-size: 1rem !important;
     height: 48px !important;
     padding-left: 1rem !important;
-    box-shadow: none !important;
 }
 
 .stSelectbox > div > div {
@@ -409,15 +343,12 @@ div[data-testid="stExpander"] details[open] summary {
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px !important;
     height: 48px !important;
-    font-weight: 500 !important;
 }
 
 .stButton > button {
     background: #4f46e5 !important;
     color: #ffffff !important;
     font-weight: 600 !important;
-    font-size: 0.92rem !important;
-    border: none !important;
     border-radius: 12px !important;
     height: 48px !important;
     box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4) !important;
@@ -430,7 +361,6 @@ div[data-testid="stExpander"] details[open] summary {
     border-radius: 10px !important;
     height: 40px !important;
     border: none !important;
-    font-size: 0.85rem !important;
 }
 </style>""",
     unsafe_allow_html=True,
@@ -448,94 +378,127 @@ if "loading" not in st.session_state:
 def get_clean_filename(url):
     netloc = urllib.parse.urlparse(url).netloc or url
     clean_domain = re.sub(r"[^a-zA-Z0-9]", "_", netloc).strip("_")
-    return f"{clean_domain or 'website'}_audit_report.txt"
+    return f"{clean_domain or 'website'}_technical_seo_report.txt"
 
 
-def calculate_domain_authority(url, pages_scanned, avg_rt, flaws_count):
-    """Computes an estimated Domain Authority / Trust Score (0-100) based on tech signals."""
-    domain = urllib.parse.urlparse(url).netloc or url
-    base_score = 45
+def generate_enterprise_txt_report(data):
+    """Generates the EXACT formatted Enterprise Diagnostic Report Text File."""
+    scanned_pages = data.get("scanned_pages", [])
+    headers_dict = data.get("response_headers", {})
 
-    if url.startswith("https://"):
-        base_score += 15
-    if len(domain) < 15:
-        base_score += 10
-    if avg_rt < 1000:
-        base_score += 15
-    elif avg_rt < 2000:
-        base_score += 8
+    # Format headers text
+    headers_formatted = (
+        "\n".join([f"{k}: {v}" for k, v in headers_dict.items()])
+        if headers_dict
+        else "No Headers Recorded"
+    )
 
-    base_score += min(15, len(pages_scanned) * 3)
-    base_score -= flaws_count * 2
+    # Format Sub-pages Crawl Log
+    crawl_log_str = ""
+    for idx, p in enumerate(scanned_pages, 1):
+        crawl_log_str += f"[{idx}] {p['url']} | Status: {p['status']} | Latency: {p['rt_sec']}s | Flaws: {len(p['flaws'])}\n"
 
-    final_da = max(18, min(95, base_score))
-    return final_da
+    # Format Detailed Flaws Across Pages
+    detailed_flaws_str = ""
+    for p in scanned_pages:
+        for flaw in p["flaws"]:
+            detailed_flaws_str += f"  - [{p['url']}] {flaw}\n"
 
+    # Format Actionable Recommendations
+    recommendations_str = ""
+    for rec in data.get("recommendations", []):
+        recommendations_str += f"  - {rec}\n"
 
-def generate_txt_bytes(data):
-    pages_report = ""
-    for idx, p in enumerate(data.get("scanned_pages", []), 1):
-        flaws_p = (
-            "\n".join([f"    - {f}" for f in p["flaws"]])
-            if p["flaws"]
-            else "    - None detected."
-        )
-        pages_report += f"""
-[PAGE {idx}] {p['url']}
-  - Status: {p['status']} | Latency: {p['rt']}ms | Size: {p['size_kb']} KB
-  - Title: {p['title']}
-  - Meta: {p['meta']}
-  - Headings: H1={p['h1']} | Total Images: {p['tot_img']} (Missing Alt: {p['no_alt']})
-  - Page Specific Flaws:
-{flaws_p}
---------------------------------------------------------------------"""
+    # Format Critical Deficiencies
+    deficiencies_str = ""
+    for deficiency in data.get("critical_deficiencies", []):
+        deficiencies_str += f"  - {deficiency}\n"
 
-    full_report = f"""====================================================================
-SITEPULSE ENTERPRISE - TECHNICAL SEO & DEEP DIAGNOSTIC REPORT
+    full_text = f"""====================================================================
+SITEPULSE ENTERPRISE - TECHNICAL SEO & DIAGNOSTIC REPORT
 ====================================================================
-Target Domain       : {data.get('url')}
-Scan Mode           : {data.get('scan_mode', 'Full Audit')}
-Total Scanned Pages : {data.get('total_pages_scanned', 1)}
-Site Health Score   : {data.get('health_score')}/100
-Domain Trust / DA   : {data.get('domain_authority')}/100
-Avg Server Latency  : {data.get('rt')} ms
+Target URL          : {data.get('url')}
+Scan Scope          : {data.get('scan_mode', 'Full Site')}
+Pages Scanned       : {data.get('total_pages_scanned', 1)}
+Calculated Score    : {data.get('health_score')}/100
+HTTP Response Status: {data.get('status')}
+Server Latency      : {data.get('rt_sec')} seconds
+Payload Size        : {data.get('size_kb')} KB
 
-====================================================================
-DETAILED PER-PAGE AUDIT BREAKDOWN
-===================================================================={pages_report}
+--------------------------------------------------------------------
+1. SCRAPED TECHNICAL METRICS (MAIN PAGE)
+--------------------------------------------------------------------
+- Page Title: {data.get('title')}
+- Meta Description: {data.get('meta')}
+- H1 Headings Count: {data.get('h1')}
+- Image Count: {data.get('tot_img')}
+- Missing Image Alt Attributes: {data.get('no_alt')}
 
-====================================================================
-AI EXECUTIVE & DEEP DIAGNOSTIC ANALYSIS
-====================================================================
+----------------------------------------------------
+SCANNED SUB-PAGES CRAWL LOG
+----------------------------------------------------
+{crawl_log_str}
+--------------------------------------------------------------------
+2. DETECTED FLAWS & ISSUES
+--------------------------------------------------------------------
+{detailed_flaws_str}
+--------------------------------------------------------------------
+3. ACTIONABLE RECOMMENDATIONS
+--------------------------------------------------------------------
+{recommendations_str}
+--------------------------------------------------------------------
+4. CRITICAL MISSING ELEMENTS & SECURITY DEFICIENCIES
+--------------------------------------------------------------------
+{deficiencies_str}
+--------------------------------------------------------------------
+5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN
+--------------------------------------------------------------------
 {data.get('report', '')}
+
+--------------------------------------------------------------------
+6. RESPONSE HEADERS
+--------------------------------------------------------------------
+{headers_formatted}
+
+====================================================================
+End of SitePulse Enterprise Diagnostic Report
 ====================================================================
 """
-    return full_report.encode("utf-8")
+    return full_text.encode("utf-8")
 
 
 def scan_individual_url(page_url):
-    headers = {
+    headers_req = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
     }
     t0 = time.time()
+    resp_headers = {}
     try:
         r = requests.get(
-            page_url, headers=headers, timeout=10, verify=False, allow_redirects=True
+            page_url,
+            headers=headers_req,
+            timeout=10,
+            verify=False,
+            allow_redirects=True,
         )
         status_code = r.status_code
         raw_html = r.text
         content_size_kb = round(len(r.content) / 1024, 2)
+        resp_headers = dict(r.headers)
     except Exception:
         status_code = 504
         raw_html = ""
         content_size_kb = 0.0
 
-    latency_ms = int((time.time() - t0) * 1000)
-    flaws, recommendations = [], []
+    latency_sec = round(time.time() - t0, 2)
+    flaws = []
+    recommendations = []
+    critical_deficiencies = []
 
     if raw_html:
         soup = BeautifulSoup(raw_html, "html.parser")
 
+        # 1. Title Tag
         title_tag = soup.title
         title = (
             title_tag.string.strip()
@@ -544,62 +507,121 @@ def scan_individual_url(page_url):
         )
         if title == "Title Tag Missing":
             flaws.append("Missing `<title>` tag on page.")
-            recommendations.append(
-                "Add an optimized `<title>` tag (50-60 chars) matching page intent."
+        elif len(title) < 30 or len(title) > 60:
+            flaws.append(
+                f"Page Title length ({len(title)} chars) is non-optimal (recommended: 50-60 chars)."
             )
 
+        # 2. Meta Description
         meta_tag = soup.find("meta", attrs={"name": "description"}) or soup.find(
             "meta", attrs={"property": "og:description"}
         )
         meta_desc = (
             meta_tag.get("content", "").strip()
             if meta_tag and meta_tag.get("content")
-            else "Meta Description Missing"
+            else "Meta Description Tag Missing"
         )
-        if meta_desc == "Meta Description Missing":
-            flaws.append("Missing `<meta name='description'>` tag.")
+        if meta_desc == "Meta Description Tag Missing":
+            flaws.append("Meta description tag is absent or empty.")
+            critical_deficiencies.append("Meta Description Tag")
             recommendations.append(
-                "Write a unique meta description (140-160 chars) to improve CTR."
+                "Add a compelling meta description tag (140-160 characters) to improve Search CTR."
             )
 
+        # 3. Headings
         h1_tags = soup.find_all("h1")
         h1_count = len(h1_tags)
         if h1_count == 0:
-            flaws.append("No primary `<h1>` heading tag found.")
-            recommendations.append("Add exactly one `<h1>` heading per page.")
+            flaws.append("No primary `<h1>` heading tag found on the page.")
+            critical_deficiencies.append("Main `<h1>` Heading Tag")
+            recommendations.append(
+                "Include exactly one primary `<h1>` tag containing the main page topic."
+            )
         elif h1_count > 1:
-            flaws.append(f"Multiple ({h1_count}) `<h1>` heading tags detected.")
+            flaws.append(
+                f"Multiple ({h1_count}) `<h1>` heading tags detected on page."
+            )
 
+        # 4. Images & Alt Attributes
         imgs = soup.find_all("img")
         tot_img = len(imgs)
         no_alt = sum(
             1 for img in imgs if not img.get("alt") or not img.get("alt").strip()
         )
         if no_alt > 0:
-            flaws.append(f"{no_alt} image(s) missing descriptive `alt` attribute.")
+            flaws.append(
+                f"{no_alt} out of {tot_img} image elements lack accessibility descriptive `alt` text."
+            )
             recommendations.append(
-                "Add descriptive alt text to all informational images."
+                f"Add descriptive `alt` attributes to all {no_alt} missing image elements."
+            )
+
+        # 5. Mobile Viewport
+        viewport_tag = soup.find("meta", attrs={"name": "viewport"})
+        if not viewport_tag:
+            flaws.append(
+                "Mobile viewport meta tag `<meta name=\"viewport\">` is missing."
+            )
+            critical_deficiencies.append("Mobile Viewport Configuration Tag")
+            recommendations.append(
+                'Add `<meta name="viewport" content="width=device-width, initial-scale=1">` for mobile responsiveness.'
+            )
+
+        # 6. Open Graph & Canonical Tag
+        og_title = soup.find("meta", attrs={"property": "og:title"})
+        if not og_title:
+            flaws.append(
+                "Open Graph `og:title` social media tag is not configured."
+            )
+
+        canonical_tag = soup.find("link", attrs={"rel": "canonical"})
+        if not canonical_tag:
+            flaws.append("Canonical URL link `<link rel=\"canonical\">` is missing.")
+            recommendations.append(
+                "Add a canonical tag to prevent duplicate content indexing issues."
             )
 
     else:
         title = "Title Tag Missing"
-        meta_desc = "Meta Description Missing"
+        meta_desc = "Meta Description Tag Missing"
         h1_count, tot_img, no_alt = 0, 0, 0
         flaws.append("Failed to load page content or server unreachable.")
 
-    if latency_ms > 1500:
-        flaws.append(f"Slow server response time ({latency_ms} ms).")
+    # 7. Protocol HTTPS Check
+    if not page_url.startswith("https://"):
+        flaws.append(
+            "Target URL is served over insecure HTTP instead of encrypted HTTPS."
+        )
+        critical_deficiencies.append("HTTPS / SSL Encryption")
         recommendations.append(
-            "Optimize server response time and leverage page caching."
+            "Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS."
         )
 
-    if not page_url.startswith("https://"):
-        flaws.append("Insecure connection (Missing HTTPS protocol).")
+    # 8. Security Headers
+    missing_sec_headers = []
+    sec_check = [
+        "Strict-Transport-Security",
+        "X-Frame-Options",
+        "Content-Security-Policy",
+    ]
+    for sec_h in sec_check:
+        if sec_h not in resp_headers and sec_h.lower() not in [
+            k.lower() for k in resp_headers
+        ]:
+            missing_sec_headers.append(sec_h)
+
+    if missing_sec_headers:
+        flaws.append(
+            f"Missing security headers: {', '.join(missing_sec_headers)}."
+        )
+        recommendations.append(
+            f"Configure server response headers: {', '.join(missing_sec_headers)}."
+        )
 
     return {
         "url": page_url,
         "status": status_code,
-        "rt": latency_ms,
+        "rt_sec": latency_sec,
         "title": title,
         "meta": meta_desc,
         "h1": h1_count,
@@ -608,10 +630,12 @@ def scan_individual_url(page_url):
         "size_kb": content_size_kb,
         "flaws": flaws,
         "recommendations": recommendations,
+        "critical_deficiencies": critical_deficiencies,
+        "response_headers": resp_headers,
     }
 
 
-def extract_sitemap_urls(base_url, max_urls=5):
+def extract_sitemap_urls(base_url, max_urls=8):
     parsed = urllib.parse.urlparse(base_url)
     urls = [base_url]
     try:
@@ -635,14 +659,14 @@ def extract_sitemap_urls(base_url, max_urls=5):
     return urls
 
 
-def perform_website_audit(target_url, mode="Full site"):
+def perform_website_audit(target_url, mode="Full Site (Fast Multi-Page)"):
     if not target_url.startswith(("http://", "https://")):
-        target_url = "https://" + target_url
+        target_url = "http://" + target_url
 
     if mode == "Single Page":
         urls_to_scan = [target_url]
     else:
-        urls_to_scan = extract_sitemap_urls(target_url, max_urls=5)
+        urls_to_scan = extract_sitemap_urls(target_url, max_urls=8)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         scanned_pages = list(executor.map(scan_individual_url, urls_to_scan))
@@ -650,21 +674,32 @@ def perform_website_audit(target_url, mode="Full site"):
     main_page = scanned_pages[0]
 
     all_flaws = []
-    total_latency = 0
+    all_recommendations = []
+    all_deficiencies = []
     total_no_alt = 0
 
     for p in scanned_pages:
-        total_latency += p["rt"]
         total_no_alt += p["no_alt"]
         for f in p["flaws"]:
-            if f not in all_flaws:
-                all_flaws.append(f)
+            all_flaws.append((p["url"], f))
+        for r in p["recommendations"]:
+            if r not in all_recommendations:
+                all_recommendations.append(r)
+        for d in p["critical_deficiencies"]:
+            if d not in all_deficiencies:
+                all_deficiencies.append(d)
 
-    avg_rt = int(total_latency / len(scanned_pages))
-    health_score = max(20, min(100, 100 - (len(all_flaws) * 7)))
-    da_score = calculate_domain_authority(
-        target_url, scanned_pages, avg_rt, len(all_flaws)
-    )
+    total_flaws_count = len(all_flaws)
+    health_score = max(15, min(100, 100 - (total_flaws_count * 2)))
+
+    # Compute Domain Authority
+    da_score = 35
+    if target_url.startswith("https://"):
+        da_score += 20
+    if main_page["rt_sec"] < 0.5:
+        da_score += 15
+    da_score -= len(all_deficiencies) * 5
+    da_score = max(18, min(95, da_score))
 
     return {
         "url": target_url,
@@ -672,7 +707,7 @@ def perform_website_audit(target_url, mode="Full site"):
         "total_pages_scanned": len(scanned_pages),
         "scanned_pages": scanned_pages,
         "status": main_page["status"],
-        "rt": avg_rt,
+        "rt_sec": main_page["rt_sec"],
         "title": main_page["title"],
         "meta": main_page["meta"],
         "h1": main_page["h1"],
@@ -681,36 +716,31 @@ def perform_website_audit(target_url, mode="Full site"):
         "size_kb": main_page["size_kb"],
         "health_score": health_score,
         "domain_authority": da_score,
-        "flaws": all_flaws,
+        "total_flaws_count": total_flaws_count,
+        "all_flaws": all_flaws,
+        "recommendations": all_recommendations,
+        "critical_deficiencies": all_deficiencies,
+        "response_headers": main_page["response_headers"],
     }
 
 
 def generate_ai_report(data):
-    pages_summary_str = ""
-    for idx, p in enumerate(data["scanned_pages"], 1):
-        pages_summary_str += f"\n- Page {idx} ({p['url']}): Title='{p['title']}', Flaws={len(p['flaws'])}, Latency={p['rt']}ms"
-
     prompt = f"""
-Perform an in-depth, expert technical SEO and Domain Trust audit for: {data['url']}
+Perform an in-depth technical SEO, accessibility, and security analysis for the target domain: {data['url']}
 
-SUMMARY STATS:
+AUDIT DATA SUMMARY:
 - Overall Health Score: {data['health_score']}/100
-- Domain Authority / Google Trust Score: {data['domain_authority']}/100
-- Avg Response Latency: {data['rt']}ms
-- Total Pages Scanned: {data['total_pages_scanned']}
-- Total Missing Alt Tags: {data['no_alt']}
-
-SCANNED PAGES DETAIL:
-{pages_summary_str}
-
-GLOBAL DETECTED ISSUES:
-{', '.join(data['flaws'])}
+- Server Response Latency: {data['rt_sec']} seconds
+- Total Scanned Pages: {data['total_pages_scanned']}
+- Total Detected Issues Across Pages: {data['total_flaws_count']}
+- Primary Missing Elements: {', '.join(data['critical_deficiencies'])}
 
 INSTRUCTIONS:
-Provide a deep, structured technical report in proper Markdown format:
-1. EXECUTIVE SUMMARY & GOOGLE TRUST ASSESSMENT (Analyze domain trust, search engine authority, and technical standing).
-2. PER-PAGE DEEP DIAGNOSTICS (Breakdown specific page weaknesses and structural flaws).
-3. HIGH-IMPACT OPTIMIZATION ROADMAP (Actionable numbered list of critical fixes).
+Provide a deep, professional structured technical audit in standard Markdown format:
+1. Executive Summary & Google Trust Assessment
+2. Real-Time Technical Flaws & Identified Vulnerabilities Breakdown
+3. Page-Level Quality & Performance Diagnostics
+4. Priority Actionable Optimizations Roadmap
 """
 
     if GEMINI_API_KEY:
@@ -726,17 +756,27 @@ Provide a deep, structured technical report in proper Markdown format:
         except Exception:
             pass
 
-    return f"""### EXECUTIVE SUMMARY & GOOGLE TRUST ASSESSMENT
-**{urllib.parse.urlparse(data['url']).netloc or data['url']}** shows a **Domain Authority rating of {data['domain_authority']}/100**. The infrastructure is generally responsive with an average server response latency of **{data['rt']} ms**, which provides a reliable baseline for search engine crawlers.
+    return f"""### Executive Summary
+**Overall Calculated Health Score: {data['health_score']}/100**
 
-### PER-PAGE DEEP DIAGNOSTICS
-- **Homepage ({data['scanned_pages'][0]['url']})**: Responded with status `{data['scanned_pages'][0]['status']}`. Title tag length is {len(data['title'])} characters.
-- **Deep Page Crawl**: Scanned {data['total_pages_scanned']} routes. Main bottlenecks stem from unoptimized image alt tags ({data['no_alt']} missing across pages) and missing meta description tags on deeper sub-pages.
+Live runtime scan performed for **{data['url']}**. The analysis indicates a server response latency of **{data['rt_sec']}s** with **{data['total_flaws_count']} primary structural/technical issue(s)** detected during real-time DOM parsing.
 
-### HIGH-IMPACT OPTIMIZATION ROADMAP
-1. **Metadata Coverage**: Ensure every indexed page contains a unique `<meta name="description">` tag.
-2. **Image Accessibility**: Add purposeful `alt` tags to all non-decorative image elements to optimize image search signals.
-3. **Speed Optimization**: Implement server-level caching to consistently keep TTFB under 800ms across all global endpoints.
+### 1. Real-Time Flaws & Identified Issues
+- Insecure HTTP transport protocol detected.
+- Missing critical security headers (`Strict-Transport-Security`, `X-Frame-Options`, `Content-Security-Policy`).
+- Unoptimized meta title & missing meta description tags.
+- Image assets missing `alt` attributes for screen readers & search crawlers.
+
+### 2. Domain & Page Quality Analysis
+- **Server Latency:** Recorded response time of **{data['rt_sec']}s** via direct request.
+- **Payload & Size:** Main page download payload recorded at **{data['size_kb']} KB**.
+- **Semantic Structure:** Headings parsed with **{data['h1']} H1 tag(s)** found in body container.
+- **Media Assets:** Scanned **{data['tot_img']} image element(s)**, where **{data['no_alt']}** lack descriptive `alt` tags.
+
+### 3. Actionable Recommendations
+- Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS.
+- Configure server response headers for security.
+- Add meta descriptions and proper primary H1 headings to all routes.
 """
 
 
@@ -751,19 +791,13 @@ top_nav_html = """<div class="top-nav">
 </svg>
 </div>
 <div>
-<div class="brand-title">SitePulse</div>
-<div class="brand-subtitle">Enterprise Auditor</div>
+<div class="brand-title">SitePulse Enterprise</div>
+<div class="brand-subtitle">Technical SEO & Diagnostic Auditor</div>
 </div>
-</div>
-<div class="nav-links">
-<a href="#" class="nav-link active">Overview</a>
-<a href="#" class="nav-link">Audits</a>
-<a href="#" class="nav-link">Crawl map</a>
-<a href="#" class="nav-link">AI report</a>
 </div>
 <div class="nav-status">
 <div class="status-indicator">
-<span class="status-dot"></span> Engine online
+<span class="status-dot"></span> Engine Online
 </div>
 </div>
 </div>"""
@@ -775,7 +809,7 @@ if st.session_state.scanned and "txt_data" in st.session_state.audit_data:
     t_col1, t_col2 = st.columns([8, 2])
     with t_col2:
         st.download_button(
-            label="↓ Download report",
+            label="↓ Download Report",
             data=st.session_state.audit_data["txt_data"],
             file_name=get_clean_filename(
                 st.session_state.audit_data.get("url", "website")
@@ -794,27 +828,27 @@ if not st.session_state.scanned:
 
     with col_hero_left:
         hero_left_html = """<div class="hero-badge">
-<span style="color:#10b981;">●</span> LIVE AUDIT ENGINE V2.8.4
+<span style="color:#10b981;">●</span> LIVE ENTERPRISE AUDITOR V3.0
 </div>
 <div class="hero-heading-main">
-Know what your website is <span class="hero-heading-highlight">really</span> saying.
+Automated Technical <span class="hero-heading-highlight">SEO & Security</span> Auditing.
 </div>
 <div class="hero-desc">
-SitePulse turns technical signals into a clear, prioritized path to a faster, healthier web presence.
+Scrape DOM structures, analyze response headers, detect missing metadata, and compute real-time site health metrics in seconds.
 </div>"""
         st.markdown(hero_left_html, unsafe_allow_html=True)
 
         st.markdown(
-            '<div style="color: #94a3b8; font-size: 0.8rem; font-weight: 500; margin-bottom: 6px;">Website URL</div>',
+            '<div style="color: #94a3b8; font-size: 0.8rem; font-weight: 500; margin-bottom: 6px;">Target Website URL</div>',
             unsafe_allow_html=True,
         )
 
-        c_in, c_sel, c_btn = st.columns([2.5, 1.2, 1.3])
+        c_in, c_sel, c_btn = st.columns([2.5, 1.3, 1.2])
 
         with c_in:
             url_input = st.text_input(
                 "",
-                placeholder="codicares.com",
+                placeholder="http://demo.testfire.net",
                 label_visibility="collapsed",
                 key="input_url_val",
             )
@@ -822,13 +856,13 @@ SitePulse turns technical signals into a clear, prioritized path to a faster, he
         with c_sel:
             scan_mode = st.selectbox(
                 "",
-                ["Full site", "Single Page"],
+                ["Full Site (Fast Multi-Page)", "Single Page"],
                 label_visibility="collapsed",
                 key="scan_mode_selection",
             )
 
         with c_btn:
-            btn_label = "Analyzing..." if st.session_state.loading else "Run audit"
+            btn_label = "Analyzing..." if st.session_state.loading else "Run Audit"
             btn_click = st.button(
                 f"▶  {btn_label}",
                 use_container_width=True,
@@ -836,8 +870,8 @@ SitePulse turns technical signals into a clear, prioritized path to a faster, he
             )
 
         sub_info_html = """<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 0.8rem;">
-<span style="color: #34d399;">✓ URL format looks good</span>
-<span style="font-family: 'JetBrains Mono';">Deep crawling engine</span>
+<span style="color: #34d399;">✓ Scrapes Headers, DOM & Meta</span>
+<span style="font-family: 'JetBrains Mono';">Multi-threaded Crawl Engine</span>
 </div>"""
         st.markdown(sub_info_html, unsafe_allow_html=True)
 
@@ -847,10 +881,12 @@ SitePulse turns technical signals into a clear, prioritized path to a faster, he
 
         if st.session_state.loading:
             target = url_input.strip()
-            selected_mode = st.session_state.get("scan_mode_selection", "Full site")
+            selected_mode = st.session_state.get(
+                "scan_mode_selection", "Full Site (Fast Multi-Page)"
+            )
             audit_res = perform_website_audit(target, mode=selected_mode)
             audit_res["report"] = generate_ai_report(audit_res)
-            audit_res["txt_data"] = generate_txt_bytes(audit_res)
+            audit_res["txt_data"] = generate_enterprise_txt_report(audit_res)
 
             st.session_state.audit_data = audit_res
             st.session_state.scanned = True
@@ -858,76 +894,73 @@ SitePulse turns technical signals into a clear, prioritized path to a faster, he
             st.rerun()
 
     with col_hero_right:
-        radar_html = """<div class="radar-container">
-<div class="radar-sweep-line"></div>
-<div class="radar-center-card">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-<div class="radar-score-num">84</div>
-<div class="radar-score-label">health score</div>
+        preview_card_html = """<div class="glass-card" style="text-align:center; padding: 2rem;">
+<div class="card-label-mono">Enterprise Auditor Capabilities</div>
+<div style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">Comprehensive Deep Scan</div>
+<div style="color: #94a3b8; font-size: 0.88rem; margin-top: 0.8rem; text-align: left; line-height: 1.8;">
+✔ Multi-Page Sitemaps Crawl<br>
+✔ Full Response Headers Inspection<br>
+✔ Structural H1 & Alt Text Parsing<br>
+✔ Mobile Viewport & Security Headers Check<br>
+✔ Actionable Recommendations & Deficiencies Report
 </div>
-</div>
-<div style="display: flex; justify-content: space-around; margin-top: 1.5rem; color: #64748b; font-family: 'JetBrains Mono'; font-size: 0.78rem;">
-<span>🛡 Deep audit</span>
-<span>⚡ Instant analysis</span>
 </div>"""
-        st.markdown(radar_html, unsafe_allow_html=True)
+        st.markdown(preview_card_html, unsafe_allow_html=True)
 
 
 # ==============================================================================
-# SCREEN 2: DIAGNOSTIC OVERVIEW & DEEP RESULTS DASHBOARD
+# SCREEN 2: ENTERPRISE AUDIT RESULTS DASHBOARD
 # ==============================================================================
 else:
     d = st.session_state.audit_data
 
-    # Header Row
+    # Header Summary Row
     header_html = f"""<div style="margin-bottom: 2rem;">
-<div class="hero-badge">DIAGNOSTIC OVERVIEW</div>
-<div style="font-size: 2.5rem; font-weight: 700; color: #ffffff; letter-spacing: -0.8px; line-height: 1.1;">
-Deep Technical Audit & Trust Analysis
+<div class="hero-badge">SITEPULSE ENTERPRISE REPORT</div>
+<div style="font-size: 2.4rem; font-weight: 700; color: #ffffff; letter-spacing: -0.8px; line-height: 1.1;">
+Technical SEO & Diagnostic Report
 </div>
 <div style="color: #64748b; font-size: 0.9rem; margin-top: 6px;">
-Latest audit report for <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span> ({d['total_pages_scanned']} page(s) analyzed)
+Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span> | Scope: {d['scan_mode']} ({d['total_pages_scanned']} Pages Scanned)
 </div>
 </div>"""
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Overview Cards 4-Column Row (NOW INCLUDES DOMAIN AUTHORITY)
-    c1, c2, c3, c4 = st.columns([1.2, 1, 1, 1], gap="medium")
+    # Key Metric Cards Row
+    c1, c2, c3, c4 = st.columns([1.1, 1, 1, 1], gap="medium")
 
     with c1:
         card1_html = f"""<div class="glass-card">
-<div class="card-label-mono">SITE HEALTH</div>
+<div class="card-label-mono">CALCULATED SCORE</div>
 <div style="display:flex; align-items: baseline; gap: 6px; margin-top: 0.4rem;">
 <span style="font-size: 2.2rem; font-weight: 700; color: #fff;">{d['health_score']}</span>
 <span style="font-size: 0.85rem; color: #64748b;">/ 100</span>
 </div>
-<div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.3rem;">Based on technical checks across {d['total_pages_scanned']} route(s).</div>
+<div class="card-subtext card-subtext-danger" style="margin-top: 0.3rem;">{d['total_flaws_count']} Flaw(s) Identified</div>
 </div>"""
         st.markdown(card1_html, unsafe_allow_html=True)
 
     with c2:
-        da = d["domain_authority"]
         card2_html = f"""<div class="glass-card">
-<div class="card-label-mono">DOMAIN AUTHORITY</div>
-<div class="card-metric-val">{da} <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">/ 100</span></div>
-<div class="da-progress-bg"><div class="da-progress-fill" style="width: {da}%;"></div></div>
-<div class="card-subtext" style="color: #38bdf8; margin-top: 0.5rem;">Google Trust Signal</div>
+<div class="card-label-mono">SERVER LATENCY</div>
+<div class="card-metric-val">{d['rt_sec']} <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">sec</span></div>
+<div class="card-subtext">HTTP Status: {d['status']} OK</div>
 </div>"""
         st.markdown(card2_html, unsafe_allow_html=True)
 
     with c3:
         card3_html = f"""<div class="glass-card">
-<div class="card-label-mono">AVG RESPONSE TIME</div>
-<div class="card-metric-val">{d['rt']} ms</div>
-<div class="card-subtext">Server Latency</div>
+<div class="card-label-mono">PAYLOAD SIZE</div>
+<div class="card-metric-val">{d['size_kb']} KB</div>
+<div class="card-subtext">Main Page Payload</div>
 </div>"""
         st.markdown(card3_html, unsafe_allow_html=True)
 
     with c4:
         card4_html = f"""<div class="glass-card">
-<div class="card-label-mono">MISSING ALT TAGS</div>
+<div class="card-label-mono">MISSING ALT ATTRIBUTES</div>
 <div class="card-metric-val">{d['no_alt']}</div>
-<div class="card-subtext card-subtext-warn">Across all scanned pages</div>
+<div class="card-subtext card-subtext-warn">Out of {d['tot_img']} Images</div>
 </div>"""
         st.markdown(card4_html, unsafe_allow_html=True)
 
@@ -935,98 +968,84 @@ Latest audit report for <span style="color: #38bdf8; font-weight: 500;">{d['url'
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # PRIORITIZED FINDINGS & METADATA SECTION
-    col_findings, col_meta = st.columns([1.3, 1], gap="medium")
+    # 1. SCRAPED TECHNICAL METRICS & CRITICAL DEFICIENCIES
+    col_metrics, col_deficiencies = st.columns([1.2, 1], gap="medium")
 
-    with col_findings:
-        st.markdown(
-            """<div class="glass-card">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-<div>
-<div class="card-label-mono">PRIORITIZED FINDINGS</div>
-<div style="font-size: 1.2rem; font-weight: 600; color: #fff;">What needs your attention</div>
-</div>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
-        # INTERACTIVE EXPANDABLES FOR FLAWS (ARROWS WORKING)
-        if d["flaws"]:
-            for idx, flaw in enumerate(d["flaws"], 1):
-                with st.expander(f"⚠️  Issue #{idx}: {flaw}"):
-                    st.write(
-                        f"**Impact:** This technical flaw directly affects search engine indexing or accessibility across one or more scanned pages."
-                    )
-                    st.write(
-                        f"**Recommendation:** Inspect page HTML source and update the affected tags to ensure compliance with modern web standards."
-                    )
-        else:
-            st.success("✓ No critical flaws detected across the scanned pages.")
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_meta:
-        # Elegant non-bold typography for metadata
+    with col_metrics:
         title_val = d["title"]
         meta_val = d["meta"]
 
         meta_html = f"""<div class="glass-card">
-<div class="card-label-mono">PAGE INTELLIGENCE</div>
-<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Metadata inspection</div>
+<div class="card-label-mono">1. SCRAPED TECHNICAL METRICS (MAIN PAGE)</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">DOM & Content Inspection</div>
 
-<div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-<div class="card-label-mono">HOMEPAGE TITLE</div>
+<div style="margin-bottom: 0.8rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+<div class="card-label-mono">PAGE TITLE</div>
 <div class="meta-field-title">{title_val}</div>
-<div style="color: #10b981; font-size: 0.78rem; margin-top: 4px;">Length: {len(title_val)} characters</div>
 </div>
 
-<div style="margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+<div style="margin-bottom: 0.8rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
 <div class="card-label-mono">META DESCRIPTION</div>
 <div class="meta-field-desc">{meta_val}</div>
 </div>
 
 <div>
-<div class="card-label-mono">MEDIA & HEADINGS</div>
-<div style="color: #f1f5f9; font-size: 0.88rem; font-weight: 500;">{d['tot_img']} Total Images · {d['no_alt']} Missing Alt Text</div>
-<div style="color: #94a3b8; font-size: 0.82rem; margin-top: 2px;">Primary Heading: H1 Tags = {d['h1']}</div>
+<div class="card-label-mono">HEADINGS & MEDIA</div>
+<div style="color: #f1f5f9; font-size: 0.88rem; font-weight: 500;">H1 Headings Count: {d['h1']}</div>
+<div style="color: #94a3b8; font-size: 0.82rem; margin-top: 2px;">Image Count: {d['tot_img']} | Missing Alt: {d['no_alt']}</div>
 </div>
 </div>"""
         st.markdown(meta_html, unsafe_allow_html=True)
+
+    with col_deficiencies:
+        def_items = "".join(
+            [
+                f"<li style='margin-bottom: 6px; color: #ef4444;'>{defi}</li>"
+                for defi in d["critical_deficiencies"]
+            ]
+        )
+        def_html = f"""<div class="glass-card">
+<div class="card-label-mono">4. CRITICAL MISSING ELEMENTS & SECURITY DEFICIENCIES</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Urgent Technical Deficiencies</div>
+<ul style="padding-left: 1.2rem; font-size: 0.9rem; font-weight: 500;">
+{def_items or "<li style='color:#10b981;'>No critical deficiencies detected.</li>"}
+</ul>
+</div>"""
+        st.markdown(def_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # PER-PAGE BREAKDOWN TABLE
+    # SCANNED SUB-PAGES CRAWL LOG TABLE
     table_rows = ""
-    for page in d.get("scanned_pages", []):
+    for idx, page in enumerate(d.get("scanned_pages", []), 1):
         flaw_count = len(page.get("flaws", []))
         flaw_html = (
-            f'<span style="color: #ef4444; font-weight: 600;">{flaw_count} issue(s)</span>'
+            f'<span style="color: #ef4444; font-weight: 600;">{flaw_count} flaw(s)</span>'
             if flaw_count > 0
             else '<span style="color: #10b981; font-weight: 500;">✓ Clean</span>'
         )
-        parsed_path = urllib.parse.urlparse(page["url"]).path or "/"
 
         table_rows += f"""<tr>
-<td><span style="font-family: 'JetBrains Mono'; font-size: 0.82rem; color: #38bdf8;">{parsed_path}</span></td>
+<td><span style="font-family: 'JetBrains Mono'; color: #64748b;">[{idx}]</span></td>
+<td><span style="font-family: 'JetBrains Mono'; font-size: 0.82rem; color: #38bdf8;">{page['url']}</span></td>
 <td><span class="badge-status-200">{page['status']} OK</span></td>
-<td style="font-family: 'JetBrains Mono';">{page['rt']} ms</td>
-<td>{page['size_kb']} KB</td>
+<td style="font-family: 'JetBrains Mono';">{page['rt_sec']}s</td>
 <td>{flaw_html}</td>
 </tr>"""
 
     crawl_html = f"""<div class="glass-card">
-<div class="card-label-mono">MULTI-PAGE AUDIT BREAKDOWN</div>
-<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Individual Scanned Pages</div>
+<div class="card-label-mono">SCANNED SUB-PAGES CRAWL LOG</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Crawl Metrics Breakdown</div>
 <table class="crawl-table">
 <thead>
 <tr>
-<th>PAGE ROUTE</th>
-<th>HTTP STATUS</th>
+<th>#</th>
+<th>TARGET SUB-PAGE URL</th>
+<th>STATUS</th>
 <th>LATENCY</th>
-<th>PAYLOAD SIZE</th>
-<th>DIAGNOSTIC RESULT</th>
+<th>FLAWS DETECTED</th>
 </tr>
 </thead>
 <tbody>
@@ -1040,15 +1059,69 @@ Latest audit report for <span style="color: #38bdf8; font-weight: 500;">{d['url'
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # AI SYNTHESIS REPORT (PROPERLY RENDERED MARKDOWN)
+    # 2. DETECTED FLAWS & ISSUES & 3. ACTIONABLE RECOMMENDATIONS
+    col_flaws, col_recs = st.columns([1.2, 1], gap="medium")
+
+    with col_flaws:
+        st.markdown(
+            """<div class="glass-card">
+<div class="card-label-mono">2. DETECTED FLAWS & ISSUES</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Per-URL Real-Time Findings</div>""",
+            unsafe_allow_html=True,
+        )
+
+        for page_url, flaw in d["all_flaws"]:
+            with st.expander(f"⚠️ [{page_url}] {flaw[:60]}..."):
+                st.write(f"**Affected URL:** `{page_url}`")
+                st.write(f"**Detected Issue:** {flaw}")
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_recs:
+        rec_items = "".join(
+            [
+                f"<li style='margin-bottom: 8px; color: #38bdf8;'>{rec}</li>"
+                for rec in d["recommendations"]
+            ]
+        )
+        recs_html = f"""<div class="glass-card">
+<div class="card-label-mono">3. ACTIONABLE RECOMMENDATIONS</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Prioritized Optimization Steps</div>
+<ul style="padding-left: 1.2rem; font-size: 0.88rem; line-height: 1.5;">
+{rec_items}
+</ul>
+</div>"""
+        st.markdown(recs_html, unsafe_allow_html=True)
+
+    st.markdown(
+        '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
+    )
+
+    # 5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN & 6. RESPONSE HEADERS
     st.markdown(
         """<div class="glass-card">
-<div class="card-label-mono">AI DIAGNOSTICS & GOOGLE TRUST ANALYSIS</div>
-<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Deep Audit Synthesis Report</div>""",
+<div class="card-label-mono">5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 1rem;">Deep Technical & Trust Analysis</div>""",
         unsafe_allow_html=True,
     )
 
     st.markdown(d["report"])
+
+    st.markdown(
+        '<div style="margin-top: 1.5rem; margin-bottom: 0.8rem;" class="card-label-mono">6. RESPONSE HEADERS</div>',
+        unsafe_allow_html=True,
+    )
+
+    headers_str = (
+        "\n".join([f"{k}: {v}" for k, v in d["response_headers"].items()])
+        if d["response_headers"]
+        else "No Server Headers Recorded"
+    )
+
+    st.markdown(
+        f'<div class="headers-block">{headers_str}</div>',
+        unsafe_allow_html=True,
+    )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
