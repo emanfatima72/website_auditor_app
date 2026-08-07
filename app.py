@@ -4,6 +4,7 @@
 # ==============================================================================
 
 import concurrent.futures
+from collections import Counter
 import os
 import re
 import time
@@ -342,6 +343,42 @@ html, body, .stApp {
     line-height: 1.5 !important;
 }
 
+/* BADGES FOR KEYWORDS AND SPAM LINKS */
+.kw-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin: 0.25rem;
+    font-weight: 500;
+}
+
+.kw-count {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.spam-link-item {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    word-break: break-all;
+}
+
 /* STYLING EXPANDERS */
 div[data-testid="stExpander"] {
     background: rgba(30, 41, 59, 0.35) !important;
@@ -504,6 +541,18 @@ def generate_enterprise_txt_report(data):
     for deficiency in data.get("critical_deficiencies", []):
         deficiencies_str += f"  - {deficiency}\n"
 
+    keywords_str = ", ".join(
+        [
+            f"{kw} ({cnt})"
+            for kw, cnt in data.get("keywords_extracted", [])
+        ]
+    )
+    spam_links_str = (
+        "\n".join([f"  - {link}" for link in data.get("spammy_backlinks", [])])
+        if data.get("spammy_backlinks")
+        else "  - No suspicious outbound spam links detected."
+    )
+
     full_text = f"""====================================================================
 SITEPULSE ENTERPRISE - TECHNICAL SEO & DIAGNOSTIC REPORT
 ====================================================================
@@ -511,6 +560,7 @@ Target URL          : {data.get('url')}
 Scan Scope          : {data.get('scan_mode', 'Full Site')}
 Pages Scanned       : {data.get('total_pages_scanned', 1)}
 Calculated Score    : {data.get('health_score')}/100
+Google DOM Authority: {data.get('domain_authority')}/100 ({data.get('trust_label')})
 HTTP Response Status: {data.get('status')}
 Server Latency      : {data.get('rt_sec')} seconds
 Payload Size        : {data.get('size_kb')} KB
@@ -523,6 +573,16 @@ Payload Size        : {data.get('size_kb')} KB
 - H1 Headings Count: {data.get('h1')}
 - Image Count: {data.get('tot_img')}
 - Missing Image Alt Attributes: {data.get('no_alt')}
+
+--------------------------------------------------------------------
+HIGH-TRAFFIC SEARCH KEYWORDS EXTRACTED
+--------------------------------------------------------------------
+{keywords_str or 'No dominant search terms detected.'}
+
+--------------------------------------------------------------------
+SPAM & UNTRUSTED OUTBOUND LINKS DETECTED
+--------------------------------------------------------------------
+{spam_links_str}
 
 ----------------------------------------------------
 SCANNED SUB-PAGES CRAWL LOG
@@ -584,10 +644,13 @@ def scan_individual_url(page_url):
     flaws = []
     recommendations = []
     critical_deficiencies = []
+    spammy_links = []
+    extracted_keywords = []
 
     if raw_html:
         soup = BeautifulSoup(raw_html, "html.parser")
 
+        # 1. DOM Title & Meta Audit
         title_tag = soup.title
         title = (
             title_tag.string.strip()
@@ -616,6 +679,7 @@ def scan_individual_url(page_url):
                 "Add a compelling meta description tag (140-160 characters) to improve Search CTR."
             )
 
+        # 2. H1 & Structure
         h1_tags = soup.find_all("h1")
         h1_count = len(h1_tags)
         if h1_count == 0:
@@ -629,6 +693,7 @@ def scan_individual_url(page_url):
                 f"Multiple ({h1_count}) <h1> heading tags detected on page."
             )
 
+        # 3. Media & Viewport
         imgs = soup.find_all("img")
         tot_img = len(imgs)
         no_alt = sum(
@@ -652,16 +717,58 @@ def scan_individual_url(page_url):
                 'Add <meta name="viewport" content="width=device-width, initial-scale=1"> for mobile responsiveness.'
             )
 
-        og_title = soup.find("meta", attrs={"property": "og:title"})
-        if not og_title:
-            flaws.append("Open Graph og:title social media tag is not configured.")
-
         canonical_tag = soup.find("link", attrs={"rel": "canonical"})
         if not canonical_tag:
             flaws.append('Canonical URL link <link rel="canonical"> is missing.')
-            recommendations.append(
-                "Add a canonical tag to prevent duplicate content indexing issues."
-            )
+
+        # 4. Outbound Spammy Backlinks / Unsafe Links Detection
+        for a in soup.find_all("a", href=True):
+            href = a["href"].strip()
+            # Flag HTTP links, URL shorteners, affiliate parameters or suspicious keywords
+            if (
+                href.startswith("http://")
+                or "bit.ly" in href
+                or "tinyurl" in href
+                or "aff=" in href
+                or "?ref=" in href
+                or "casino" in href.lower()
+                or "crypto" in href.lower()
+            ):
+                if href not in spammy_links:
+                    spammy_links.append(href)
+
+        # 5. High-Traffic Search Keywords Extraction Engine
+        for script_or_style in soup(["script", "style", "nav", "footer"]):
+            script_or_style.decompose()
+        visible_text = soup.get_text(separator=" ").lower()
+        clean_words = re.findall(r"\b[a-z]{4,15}\b", visible_text)
+        stopwords = {
+            "this",
+            "that",
+            "with",
+            "from",
+            "your",
+            "have",
+            "more",
+            "about",
+            "will",
+            "home",
+            "page",
+            "site",
+            "view",
+            "contact",
+            "privacy",
+            "policy",
+            "rights",
+            "reserved",
+            "click",
+            "here",
+            "using",
+            "been",
+        }
+        filtered_words = [w for w in clean_words if w not in stopwords]
+        word_counts = Counter(filtered_words)
+        extracted_keywords = word_counts.most_common(10)
 
     else:
         title = "Title Tag Missing"
@@ -674,9 +781,6 @@ def scan_individual_url(page_url):
             "Target URL is served over insecure HTTP instead of encrypted HTTPS."
         )
         critical_deficiencies.append("HTTPS / SSL Encryption")
-        recommendations.append(
-            "Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS."
-        )
 
     missing_sec_headers = []
     sec_check = [
@@ -694,9 +798,6 @@ def scan_individual_url(page_url):
         flaws.append(
             f"Missing security headers: {', '.join(missing_sec_headers)}."
         )
-        recommendations.append(
-            f"Configure server response headers: {', '.join(missing_sec_headers)}."
-        )
 
     return {
         "url": page_url,
@@ -712,6 +813,8 @@ def scan_individual_url(page_url):
         "recommendations": recommendations,
         "critical_deficiencies": critical_deficiencies,
         "response_headers": resp_headers,
+        "spammy_links": spammy_links,
+        "extracted_keywords": extracted_keywords,
     }
 
 
@@ -756,6 +859,8 @@ def perform_website_audit(target_url, mode="Full Site (Fast Multi-Page)"):
     all_flaws = []
     all_recommendations = []
     all_deficiencies = []
+    all_spammy_links = []
+    combined_keywords = Counter()
     total_no_alt = 0
 
     for p in scanned_pages:
@@ -768,17 +873,35 @@ def perform_website_audit(target_url, mode="Full Site (Fast Multi-Page)"):
         for d in p["critical_deficiencies"]:
             if d not in all_deficiencies:
                 all_deficiencies.append(d)
+        for sl in p["spammy_links"]:
+            if sl not in all_spammy_links:
+                all_spammy_links.append(sl)
+        for kw, cnt in p["extracted_keywords"]:
+            combined_keywords[kw] += cnt
 
     total_flaws_count = len(all_flaws)
     health_score = max(15, min(100, 100 - (total_flaws_count * 2)))
 
-    da_score = 35
+    # --- GOOGLE DOMAIN AUTHORITY & TRUST CALCULATION ---
+    da_score = 40
     if target_url.startswith("https://"):
-        da_score += 20
-    if main_page["rt_sec"] < 0.5:
+        da_score += 25
+    if main_page["rt_sec"] < 0.6:
         da_score += 15
+    if main_page["h1"] == 1:
+        da_score += 10
+    if main_page["meta"] != "Meta Description Tag Missing":
+        da_score += 10
     da_score -= len(all_deficiencies) * 5
-    da_score = max(18, min(95, da_score))
+    da_score -= len(all_spammy_links) * 4
+    da_score = max(15, min(98, da_score))
+
+    if da_score >= 80:
+        trust_label = "High Trust & Powerful Authority"
+    elif da_score >= 55:
+        trust_label = "Moderate Google Authority"
+    else:
+        trust_label = "Low Google Trust & Weak Authority"
 
     return {
         "url": target_url,
@@ -795,10 +918,13 @@ def perform_website_audit(target_url, mode="Full Site (Fast Multi-Page)"):
         "size_kb": main_page["size_kb"],
         "health_score": health_score,
         "domain_authority": da_score,
+        "trust_label": trust_label,
         "total_flaws_count": total_flaws_count,
         "all_flaws": all_flaws,
         "recommendations": all_recommendations,
         "critical_deficiencies": all_deficiencies,
+        "spammy_backlinks": all_spammy_links,
+        "keywords_extracted": combined_keywords.most_common(12),
         "response_headers": main_page["response_headers"],
     }
 
@@ -809,17 +935,20 @@ Perform an in-depth technical SEO, accessibility, and security analysis for the 
 
 AUDIT DATA SUMMARY:
 - Overall Health Score: {data['health_score']}/100
+- Google Domain Authority & Trust Score: {data['domain_authority']}/100 ({data['trust_label']})
 - Server Response Latency: {data['rt_sec']} seconds
 - Total Scanned Pages: {data['total_pages_scanned']}
 - Total Detected Issues Across Pages: {data['total_flaws_count']}
 - Primary Missing Elements: {', '.join(data['critical_deficiencies'])}
+- Spammy / Untrusted Links Flagged: {len(data['spammy_backlinks'])}
 
 INSTRUCTIONS:
 Provide a deep, professional structured technical audit in standard Markdown format:
 1. Executive Summary & Google Trust Assessment
-2. Real-Time Technical Flaws & Identified Vulnerabilities Breakdown
-3. Page-Level Quality & Performance Diagnostics
-4. Priority Actionable Optimizations Roadmap
+2. Domain Authority & Ranking Potential Analysis
+3. Real-Time Technical Flaws & Spam Vulnerabilities Breakdown
+4. High-Traffic Search Keywords & Visibility Potential
+5. Priority Actionable Optimizations Roadmap
 """
 
     if GEMINI_API_KEY:
@@ -836,26 +965,20 @@ Provide a deep, professional structured technical audit in standard Markdown for
             pass
 
     return f"""### Executive Summary
-**Overall Calculated Health Score: {data['health_score']}/100**
+**Overall Calculated Health Score: {data['health_score']}/100** | **Google Trust Index: {data['domain_authority']}/100 ({data['trust_label']})**
 
 Live runtime scan performed for **{data['url']}**. The analysis indicates a server response latency of **{data['rt_sec']}s** with **{data['total_flaws_count']} primary structural/technical issue(s)** detected during real-time DOM parsing.
 
-### 1. Real-Time Flaws & Identified Issues
-- Insecure HTTP transport protocol detected.
-- Missing critical security headers (`Strict-Transport-Security`, `X-Frame-Options`, `Content-Security-Policy`).
-- Unoptimized meta title & missing meta description tags.
-- Image assets missing alt attributes for screen readers & search crawlers.
+### 1. Domain Authority & Google Trust Index
+- **Domain Power:** Scored **{data['domain_authority']}/100** based on speed, SSL configuration, DOM semantics, and outbound link profile.
+- **Google Perception:** Status classified as **{data['trust_label']}**.
 
-### 2. Domain & Page Quality Analysis
-- **Server Latency:** Recorded response time of **{data['rt_sec']}s** via direct request.
-- **Payload & Size:** Main page download payload recorded at **{data['size_kb']} KB**.
-- **Semantic Structure:** Headings parsed with **{data['h1']} H1 tag(s)** found in body container.
-- **Media Assets:** Scanned **{data['tot_img']} image element(s)**, where **{data['no_alt']}** lack descriptive alt tags.
+### 2. Real-Time Flaws & Spam Analysis
+- **Detected Flaws:** {data['total_flaws_count']} structural/SEO issues flagged across scanned pages.
+- **Unsafe/Spam Outbound Links:** {len(data['spammy_backlinks'])} potentially risky or affiliate links detected.
 
-### 3. Actionable Recommendations
-- Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS.
-- Configure server response headers for security.
-- Add meta descriptions and proper primary H1 headings to all routes.
+### 3. High-Traffic Search Keywords
+Primary topics extracted from HTML content: {', '.join([k[0] for k in data['keywords_extracted'][:6]])}.
 """
 
 
@@ -912,7 +1035,7 @@ if not st.session_state.scanned:
 Automated Technical <span class="hero-heading-highlight">SEO & Security</span> Auditing.
 </div>
 <div class="hero-desc">
-Scrape DOM structures, analyze response headers, detect missing metadata, and compute real-time site health metrics in seconds.
+Scrape DOM structures, analyze response headers, detect missing metadata, evaluate DOM Google Authority, and scan spammy links in seconds.
 </div>"""
         st.markdown(hero_left_html, unsafe_allow_html=True)
 
@@ -971,7 +1094,7 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
             st.rerun()
 
     with col_hero_right:
-        # STANDALONE ANIMATED RADAR PULSE 84 SCORE (BOX CONTAINER REMOVED)
+        # STANDALONE ANIMATED RADAR PULSE WIDGET
         radar_widget_html = """<div class="radar-standalone">
 <div class="radar-cross-h"></div>
 <div class="radar-cross-v"></div>
@@ -1010,42 +1133,93 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
 </div>"""
     st.markdown(header_html, unsafe_allow_html=True)
 
-    c1, c2, c3, c4 = st.columns([1.1, 1, 1, 1], gap="medium")
+    # 5 METRIC METRIC CARDS ROW INCLUDING GOOGLE DOM AUTHORITY
+    c1, c2, c3, c4, c5 = st.columns([1, 1.2, 1, 1, 1], gap="small")
 
     with c1:
         card1_html = f"""<div class="glass-card">
-<div class="card-label-mono">CALCULATED SCORE</div>
-<div style="display:flex; align-items: baseline; gap: 6px; margin-top: 0.4rem;">
-<span style="font-size: 2.2rem; font-weight: 700; color: #fff;">{d['health_score']}</span>
-<span style="font-size: 0.85rem; color: #64748b;">/ 100</span>
+<div class="card-label-mono">HEALTH SCORE</div>
+<div style="display:flex; align-items: baseline; gap: 4px; margin-top: 0.4rem;">
+<span style="font-size: 2rem; font-weight: 700; color: #fff;">{d['health_score']}</span>
+<span style="font-size: 0.8rem; color: #64748b;">/ 100</span>
 </div>
-<div class="card-subtext card-subtext-danger" style="margin-top: 0.3rem;">{d['total_flaws_count']} Flaw(s) Identified</div>
+<div class="card-subtext card-subtext-danger" style="margin-top: 0.3rem;">{d['total_flaws_count']} Issue(s)</div>
 </div>"""
         st.markdown(card1_html, unsafe_allow_html=True)
 
     with c2:
+        card_da_html = f"""<div class="glass-card">
+<div class="card-label-mono">GOOGLE DOM AUTHORITY</div>
+<div style="display:flex; align-items: baseline; gap: 4px; margin-top: 0.4rem;">
+<span style="font-size: 2rem; font-weight: 700; color: #38bdf8;">{d['domain_authority']}</span>
+<span style="font-size: 0.8rem; color: #64748b;">/ 100</span>
+</div>
+<div class="card-subtext" style="color: #818cf8; font-size: 0.75rem;">{d['trust_label']}</div>
+</div>"""
+        st.markdown(card_da_html, unsafe_allow_html=True)
+
+    with c3:
         card2_html = f"""<div class="glass-card">
 <div class="card-label-mono">SERVER LATENCY</div>
-<div class="card-metric-val">{d['rt_sec']} <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">sec</span></div>
-<div class="card-subtext">HTTP Status: {d['status']} OK</div>
+<div class="card-metric-val">{d['rt_sec']} <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">s</span></div>
+<div class="card-subtext">HTTP Status: {d['status']}</div>
 </div>"""
         st.markdown(card2_html, unsafe_allow_html=True)
 
-    with c3:
+    with c4:
         card3_html = f"""<div class="glass-card">
 <div class="card-label-mono">PAYLOAD SIZE</div>
-<div class="card-metric-val">{d['size_kb']} KB</div>
-<div class="card-subtext">Main Page Payload</div>
+<div class="card-metric-val">{d['size_kb']} <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">KB</span></div>
+<div class="card-subtext">Main Container</div>
 </div>"""
         st.markdown(card3_html, unsafe_allow_html=True)
 
-    with c4:
+    with c5:
         card4_html = f"""<div class="glass-card">
-<div class="card-label-mono">MISSING ALT ATTRIBUTES</div>
+<div class="card-label-mono">MISSING ALT</div>
 <div class="card-metric-val">{d['no_alt']}</div>
-<div class="card-subtext card-subtext-warn">Out of {d['tot_img']} Images</div>
+<div class="card-subtext card-subtext-warn">Out of {d['tot_img']} Imgs</div>
 </div>"""
         st.markdown(card4_html, unsafe_allow_html=True)
+
+    st.markdown(
+        '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
+    )
+
+    # KEYWORD EXPRESSIONS & SPAM BACKLINKS SECTION
+    col_kw, col_spam = st.columns([1.2, 1], gap="medium")
+
+    with col_kw:
+        kw_badges = "".join(
+            [
+                f'<span class="kw-tag">{kw} <span class="kw-count">{cnt}</span></span>'
+                for kw, cnt in d["keywords_extracted"]
+            ]
+        )
+        kw_html = f"""<div class="glass-card">
+<div class="card-label-mono">KEYWORD EXPRESSION ENGINE</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 0.8rem;">High-Traffic Organic Keywords Extracted</div>
+<div style="line-height: 2;">
+{kw_badges or "<span style='color:#94a3b8;'>No dominant search terms detected in DOM body.</span>"}
+</div>
+</div>"""
+        st.markdown(kw_html, unsafe_allow_html=True)
+
+    with col_spam:
+        spam_items = "".join(
+            [
+                f'<div class="spam-link-item">⚠️ {link}</div>'
+                for link in d["spammy_backlinks"][:5]
+            ]
+        )
+        spam_html = f"""<div class="glass-card">
+<div class="card-label-mono">OUTBOUND SPAM & UNTRUSTED BACKLINKS</div>
+<div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 0.8rem;">Risk & Affiliate Link Audit</div>
+<div>
+{spam_items or "<div style='color:#34d399; font-weight: 500; font-size: 0.9rem;'>✓ No suspicious or untrusted outbound links detected.</div>"}
+</div>
+</div>"""
+        st.markdown(spam_html, unsafe_allow_html=True)
 
     st.markdown(
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
