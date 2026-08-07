@@ -689,7 +689,7 @@ def perform_website_audit(target_url, mode="Full site"):
         "meta": main_page["meta"],
         "h1": main_page["h1"],
         "tot_img": main_page["tot_img"],
-        "no_alt": no_alt,
+        "no_alt": main_page["no_alt"],
         "size_kb": main_page["size_kb"],
         "health_score": health_score,
         "flaws": all_flaws,
