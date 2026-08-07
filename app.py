@@ -174,11 +174,11 @@ html, body, .stApp {
 
 /* CARDS & GLASS CONTAINERS */
 .glass-card {
-    background: rgba(15, 23, 42, 0.55);
+    background: rgba(15, 23, 42, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 1.4rem;
-    backdrop-filter: blur(12px);
+    padding: 1.5rem;
+    backdrop-filter: blur(14px);
     height: 100%;
 }
 
@@ -212,22 +212,6 @@ html, body, .stApp {
 
 .card-subtext-danger {
     color: #ef4444;
-}
-
-/* DOMAIN AUTHORITY METRIC BAR */
-.da-progress-bg {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    height: 8px;
-    width: 100%;
-    margin-top: 10px;
-    overflow: hidden;
-}
-
-.da-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #38bdf8, #818cf8);
-    border-radius: 8px;
 }
 
 /* TYPOGRAPHY FIXES FOR METADATA & HEADERS */
@@ -382,34 +366,28 @@ def get_clean_filename(url):
 
 
 def generate_enterprise_txt_report(data):
-    """Generates the EXACT formatted Enterprise Diagnostic Report Text File."""
     scanned_pages = data.get("scanned_pages", [])
     headers_dict = data.get("response_headers", {})
 
-    # Format headers text
     headers_formatted = (
         "\n".join([f"{k}: {v}" for k, v in headers_dict.items()])
         if headers_dict
         else "No Headers Recorded"
     )
 
-    # Format Sub-pages Crawl Log
     crawl_log_str = ""
     for idx, p in enumerate(scanned_pages, 1):
         crawl_log_str += f"[{idx}] {p['url']} | Status: {p['status']} | Latency: {p['rt_sec']}s | Flaws: {len(p['flaws'])}\n"
 
-    # Format Detailed Flaws Across Pages
     detailed_flaws_str = ""
     for p in scanned_pages:
         for flaw in p["flaws"]:
             detailed_flaws_str += f"  - [{p['url']}] {flaw}\n"
 
-    # Format Actionable Recommendations
     recommendations_str = ""
     for rec in data.get("recommendations", []):
         recommendations_str += f"  - {rec}\n"
 
-    # Format Critical Deficiencies
     deficiencies_str = ""
     for deficiency in data.get("critical_deficiencies", []):
         deficiencies_str += f"  - {deficiency}\n"
@@ -498,7 +476,6 @@ def scan_individual_url(page_url):
     if raw_html:
         soup = BeautifulSoup(raw_html, "html.parser")
 
-        # 1. Title Tag
         title_tag = soup.title
         title = (
             title_tag.string.strip()
@@ -506,13 +483,12 @@ def scan_individual_url(page_url):
             else "Title Tag Missing"
         )
         if title == "Title Tag Missing":
-            flaws.append("Missing `<title>` tag on page.")
+            flaws.append("Missing <title> tag on page.")
         elif len(title) < 30 or len(title) > 60:
             flaws.append(
                 f"Page Title length ({len(title)} chars) is non-optimal (recommended: 50-60 chars)."
             )
 
-        # 2. Meta Description
         meta_tag = soup.find("meta", attrs={"name": "description"}) or soup.find(
             "meta", attrs={"property": "og:description"}
         )
@@ -528,21 +504,19 @@ def scan_individual_url(page_url):
                 "Add a compelling meta description tag (140-160 characters) to improve Search CTR."
             )
 
-        # 3. Headings
         h1_tags = soup.find_all("h1")
         h1_count = len(h1_tags)
         if h1_count == 0:
-            flaws.append("No primary `<h1>` heading tag found on the page.")
-            critical_deficiencies.append("Main `<h1>` Heading Tag")
+            flaws.append("No primary <h1> heading tag found on the page.")
+            critical_deficiencies.append("Main <h1> Heading Tag")
             recommendations.append(
-                "Include exactly one primary `<h1>` tag containing the main page topic."
+                "Include exactly one primary <h1> tag containing the main page topic."
             )
         elif h1_count > 1:
             flaws.append(
-                f"Multiple ({h1_count}) `<h1>` heading tags detected on page."
+                f"Multiple ({h1_count}) <h1> heading tags detected on page."
             )
 
-        # 4. Images & Alt Attributes
         imgs = soup.find_all("img")
         tot_img = len(imgs)
         no_alt = sum(
@@ -550,33 +524,29 @@ def scan_individual_url(page_url):
         )
         if no_alt > 0:
             flaws.append(
-                f"{no_alt} out of {tot_img} image elements lack accessibility descriptive `alt` text."
+                f"{no_alt} out of {tot_img} image elements lack accessibility descriptive alt text."
             )
             recommendations.append(
-                f"Add descriptive `alt` attributes to all {no_alt} missing image elements."
+                f"Add descriptive alt attributes to all {no_alt} missing image elements."
             )
 
-        # 5. Mobile Viewport
         viewport_tag = soup.find("meta", attrs={"name": "viewport"})
         if not viewport_tag:
             flaws.append(
-                "Mobile viewport meta tag `<meta name=\"viewport\">` is missing."
+                'Mobile viewport meta tag <meta name="viewport"> is missing.'
             )
             critical_deficiencies.append("Mobile Viewport Configuration Tag")
             recommendations.append(
-                'Add `<meta name="viewport" content="width=device-width, initial-scale=1">` for mobile responsiveness.'
+                'Add <meta name="viewport" content="width=device-width, initial-scale=1"> for mobile responsiveness.'
             )
 
-        # 6. Open Graph & Canonical Tag
         og_title = soup.find("meta", attrs={"property": "og:title"})
         if not og_title:
-            flaws.append(
-                "Open Graph `og:title` social media tag is not configured."
-            )
+            flaws.append("Open Graph og:title social media tag is not configured.")
 
         canonical_tag = soup.find("link", attrs={"rel": "canonical"})
         if not canonical_tag:
-            flaws.append("Canonical URL link `<link rel=\"canonical\">` is missing.")
+            flaws.append("Canonical URL link <link rel=\"canonical\"> is missing.")
             recommendations.append(
                 "Add a canonical tag to prevent duplicate content indexing issues."
             )
@@ -587,7 +557,6 @@ def scan_individual_url(page_url):
         h1_count, tot_img, no_alt = 0, 0, 0
         flaws.append("Failed to load page content or server unreachable.")
 
-    # 7. Protocol HTTPS Check
     if not page_url.startswith("https://"):
         flaws.append(
             "Target URL is served over insecure HTTP instead of encrypted HTTPS."
@@ -597,7 +566,6 @@ def scan_individual_url(page_url):
             "Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS."
         )
 
-    # 8. Security Headers
     missing_sec_headers = []
     sec_check = [
         "Strict-Transport-Security",
@@ -692,7 +660,6 @@ def perform_website_audit(target_url, mode="Full Site (Fast Multi-Page)"):
     total_flaws_count = len(all_flaws)
     health_score = max(15, min(100, 100 - (total_flaws_count * 2)))
 
-    # Compute Domain Authority
     da_score = 35
     if target_url.startswith("https://"):
         da_score += 20
@@ -765,13 +732,13 @@ Live runtime scan performed for **{data['url']}**. The analysis indicates a serv
 - Insecure HTTP transport protocol detected.
 - Missing critical security headers (`Strict-Transport-Security`, `X-Frame-Options`, `Content-Security-Policy`).
 - Unoptimized meta title & missing meta description tags.
-- Image assets missing `alt` attributes for screen readers & search crawlers.
+- Image assets missing alt attributes for screen readers & search crawlers.
 
 ### 2. Domain & Page Quality Analysis
 - **Server Latency:** Recorded response time of **{data['rt_sec']}s** via direct request.
 - **Payload & Size:** Main page download payload recorded at **{data['size_kb']} KB**.
 - **Semantic Structure:** Headings parsed with **{data['h1']} H1 tag(s)** found in body container.
-- **Media Assets:** Scanned **{data['tot_img']} image element(s)**, where **{data['no_alt']}** lack descriptive `alt` tags.
+- **Media Assets:** Scanned **{data['tot_img']} image element(s)**, where **{data['no_alt']}** lack descriptive alt tags.
 
 ### 3. Actionable Recommendations
 - Enforce SSL/TLS encryption and redirect all HTTP traffic to HTTPS.
@@ -804,7 +771,6 @@ top_nav_html = """<div class="top-nav">
 
 st.markdown(top_nav_html, unsafe_allow_html=True)
 
-# Download button in Top Bar
 if st.session_state.scanned and "txt_data" in st.session_state.audit_data:
     t_col1, t_col2 = st.columns([8, 2])
     with t_col2:
@@ -894,18 +860,35 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
             st.rerun()
 
     with col_hero_right:
-        preview_card_html = """<div class="glass-card" style="text-align:center; padding: 2rem;">
-<div class="card-label-mono">Enterprise Auditor Capabilities</div>
-<div style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">Comprehensive Deep Scan</div>
-<div style="color: #94a3b8; font-size: 0.88rem; margin-top: 0.8rem; text-align: left; line-height: 1.8;">
-✔ Multi-Page Sitemaps Crawl<br>
-✔ Full Response Headers Inspection<br>
-✔ Structural H1 & Alt Text Parsing<br>
-✔ Mobile Viewport & Security Headers Check<br>
-✔ Actionable Recommendations & Deficiencies Report
-</div>
-</div>"""
-        st.markdown(preview_card_html, unsafe_allow_html=True)
+        # Circular Score Animator Card (Requested Replacement)
+        circular_animator_html = """
+        <div class="glass-card" style="text-align: center; padding: 2.2rem 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="card-label-mono" style="margin-bottom: 1rem;">Live Score Analyzer Engine</div>
+            
+            <!-- Circular SVG Gauge -->
+            <div style="position: relative; width: 140px; height: 140px; margin: 0.5rem auto 1.2rem auto;">
+                <svg width="140" height="140" viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="10"></circle>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGradient)" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="50" stroke-linecap="round"></circle>
+                    <defs>
+                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38bdf8" />
+                            <stop offset="100%" stop-color="#4f46e5" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <span style="font-size: 2rem; font-weight: 700; color: #ffffff; letter-spacing: -1px;">84</span>
+                    <span style="font-size: 0.7rem; color: #64748b; font-family: 'JetBrains Mono'; text-transform: uppercase;">Health Score</span>
+                </div>
+            </div>
+
+            <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
+                Ready to inspect your website structure, meta tags, response headers, and security compliance in real time.
+            </div>
+        </div>
+        """
+        st.markdown(circular_animator_html, unsafe_allow_html=True)
 
 
 # ==============================================================================
@@ -914,7 +897,6 @@ Scrape DOM structures, analyze response headers, detect missing metadata, and co
 else:
     d = st.session_state.audit_data
 
-    # Header Summary Row
     header_html = f"""<div style="margin-bottom: 2rem;">
 <div class="hero-badge">SITEPULSE ENTERPRISE REPORT</div>
 <div style="font-size: 2.4rem; font-weight: 700; color: #ffffff; letter-spacing: -0.8px; line-height: 1.1;">
@@ -926,7 +908,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
 </div>"""
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Key Metric Cards Row
     c1, c2, c3, c4 = st.columns([1.1, 1, 1, 1], gap="medium")
 
     with c1:
@@ -968,7 +949,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # 1. SCRAPED TECHNICAL METRICS & CRITICAL DEFICIENCIES
     col_metrics, col_deficiencies = st.columns([1.2, 1], gap="medium")
 
     with col_metrics:
@@ -1017,7 +997,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # SCANNED SUB-PAGES CRAWL LOG TABLE
     table_rows = ""
     for idx, page in enumerate(d.get("scanned_pages", []), 1):
         flaw_count = len(page.get("flaws", []))
@@ -1059,7 +1038,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # 2. DETECTED FLAWS & ISSUES & 3. ACTIONABLE RECOMMENDATIONS
     col_flaws, col_recs = st.columns([1.2, 1], gap="medium")
 
     with col_flaws:
@@ -1071,16 +1049,21 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         )
 
         for page_url, flaw in d["all_flaws"]:
-            with st.expander(f"⚠️ [{page_url}] {flaw[:60]}..."):
+            safe_flaw = (
+                flaw.replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("`", "")
+            )
+            with st.expander(f"⚠️ [{page_url}] {safe_flaw[:55]}..."):
                 st.write(f"**Affected URL:** `{page_url}`")
-                st.write(f"**Detected Issue:** {flaw}")
+                st.write(f"**Detected Issue:** {safe_flaw}")
 
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_recs:
         rec_items = "".join(
             [
-                f"<li style='margin-bottom: 8px; color: #38bdf8;'>{rec}</li>"
+                f"<li style='margin-bottom: 8px; color: #38bdf8;'>{rec.replace('<', '&lt;').replace('>', '&gt;').replace('`', '')}</li>"
                 for rec in d["recommendations"]
             ]
         )
@@ -1097,7 +1080,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         '<div style="margin-bottom: 1.8rem;"></div>', unsafe_allow_html=True
     )
 
-    # 5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN & 6. RESPONSE HEADERS
     st.markdown(
         """<div class="glass-card">
 <div class="card-label-mono">5. COMPLETE AI DIAGNOSTIC REPORT BREAKDOWN</div>
@@ -1129,7 +1111,6 @@ Target Domain: <span style="color: #38bdf8; font-weight: 500;">{d['url']}</span>
         '<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True
     )
 
-    # RE-SCAN BUTTON
     if st.button("← Scan Another Website", use_container_width=False):
         st.session_state.scanned = False
         st.rerun()
